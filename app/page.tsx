@@ -1,7 +1,11 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { AccordionTrigger } from "@/components/ui/accordion"
+
+import type React from "react"
+
+import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
 import {
   ArrowRight,
   CalendarRange,
@@ -10,7 +14,6 @@ import {
   ShieldCheck,
   Users,
   Zap,
-  Instagram,
   Twitter,
   PhoneCall,
   Fingerprint,
@@ -26,66 +29,75 @@ import {
   Activity,
   Bell,
   Star,
-} from "lucide-react";
-import { motion } from "framer-motion";
+  CheckCircle2,
+  Send,
+  CreditCard,
+} from "lucide-react"
+import { motion } from "framer-motion"
 
-import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button"
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion"
+import { Card, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
 // Brand
-const PRIMARY = "#7930C8";
-const PRIMARY_OTHER = "#9340ebff";
-const SECONDARY = "#0D011F";
-const BRAND_GRADIENT = `linear-gradient(135deg, ${PRIMARY} 0%, ${PRIMARY_OTHER} 100%)`;
+const PRIMARY = "#7930C8"
+const SECONDARY = "#0D011F"
+const BRAND_GRADIENT = `linear-gradient(135deg, ${PRIMARY} 0%, ${SECONDARY} 100%)`
 
 // Animations
 const fadeUpContainer = {
   hidden: { opacity: 1 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
-  },
-};
+  show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
+}
 const fadeUpItem = {
   hidden: { opacity: 0, y: 18 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
-};
+}
 const floatAnim = {
   animate: { y: [0, -6, 0] },
-  transition: { duration: 6, repeat: Infinity as const, ease: "easeInOut" },
-};
+  transition: { duration: 6, repeat: Number.POSITIVE_INFINITY as const, ease: "easeInOut" },
+}
 
-// TODO: Replace with your real WhatsApp group invite link
-const WHATSAPP_GROUP_URL =
-  "https://chat.whatsapp.com/FKa9Jw5rYfqFyluH23Y3gv?mode=ac_t";
+// Social Links
+const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/FKa9Jw5rYfqFyluH23Y"
+const TWITTER_URL = "https://x.com/ZendIt_Official?t=mr3Cp3Dg64jTMiIXYG2bjg&s=09"
+
+// Launch Date Button Component
+function LaunchDateButton({ className, size = "default" }: { className?: string; size?: "default" | "lg" }) {
+  return (
+    <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noopener noreferrer" className="inline-flex">
+      <Button
+        size={size}
+        className={`rounded-full text-white shadow-lg hover:opacity-95 ${className || ""}`}
+        style={{ backgroundImage: BRAND_GRADIENT }}
+      >
+        Launch Date: Sep 15th
+        <ArrowRight className={`${size === "lg" ? "ml-3 h-5 w-5" : "ml-2 h-4 w-4"}`} />
+      </Button>
+    </a>
+  )
+}
 
 export default function Page() {
-  const heroRef = useRef<HTMLDivElement | null>(null);
-  const [offHero, setOffHero] = useState(false);
+  const heroRef = useRef<HTMLDivElement | null>(null)
+  const [offHero, setOffHero] = useState(false)
 
   // Observe hero visibility to toggle frosted header
   useEffect(() => {
-    if (!heroRef.current) return;
+    if (!heroRef.current) return
     const observer = new IntersectionObserver(
-      ([entry]) =>
-        setOffHero(!(entry.isIntersecting && entry.intersectionRatio > 0.2)),
-      { root: null, threshold: [0, 0.2, 1] }
-    );
-    observer.observe(heroRef.current);
-    return () => observer.disconnect();
-  }, []);
+      ([entry]) => setOffHero(!(entry.isIntersecting && entry.intersectionRatio > 0.2)),
+      { root: null, threshold: [0, 0.2, 1] },
+    )
+    observer.observe(heroRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <main className="min-h-screen bg-white text-[#0D011F]">
       <Header offHero={offHero} />
-      <Hero heroRef={heroRef as any} />
+      <Hero heroRef={heroRef} />
       <WhyZend />
       <Explainers />
       <Features />
@@ -96,7 +108,7 @@ export default function Page() {
       <CTA />
       <Footer />
     </main>
-  );
+  )
 }
 
 /* Header — transparent on hero with primary-colored nav; frosted + secondary when off hero */
@@ -105,72 +117,50 @@ function Header({ offHero }: { offHero: boolean }) {
     <header
       className={[
         "fixed inset-x-0 top-0 z-40 transition-all",
-        offHero
-          ? "bg-white/30 backdrop-blur-md"
-          : "border-transparent bg-transparent",
+        offHero ? "border-b bg-white/60 backdrop-blur-md" : "border-transparent bg-transparent",
       ].join(" ")}
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link href="#" className="flex items-center gap-2">
-          <img src="/logo.png" alt="ZEND logo" className="h-7 w-7" />
-          <span
-            className="text-lg font-semibold tracking-tight transition-colors"
-            style={{ color: PRIMARY }}
-          >
+          <img src="/images/logo-transparent.png" alt="ZEND logo" className="h-7 w-7" />
+          <span className="text-lg font-semibold tracking-tight" style={{ color: PRIMARY }}>
             ZEND
           </span>
         </Link>
-        {/* <nav
+        <nav
           className={[
             "hidden items-center gap-6 text-sm md:flex transition-colors",
             offHero ? "text-[#0D011F]" : "text-[color:var(--primary)]",
           ].join(" ")}
           style={{ ["--primary" as any]: PRIMARY }}
         >
-          <a href="#features" className="hover:opacity-90">Features</a>
-          <a href="#how-it-works" className="hover:opacity-90">How it works</a>
-          <a href="#faq" className="hover:opacity-90">FAQ</a>
-          <a href="#contact" className="hover:opacity-90">Contact</a>
-        </nav> */}
-        <div className="flex items-center gap-2">
-          <a
-            href={WHATSAPP_GROUP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button
-              className={[
-                "h-9 rounded-full px-4 text-white shadow-sm hover:opacity-95 transition-colors",
-                offHero ? "" : "ring-1 ring-[color:var(--primary)]/30",
-              ].join(" ")}
-              style={{
-                ["--primary" as any]: PRIMARY,
-                backgroundImage: BRAND_GRADIENT,
-              }}
-            >
-              Join Waitlist
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+          <a href="#features" className="hover:opacity-90">
+            Features
           </a>
+          <a href="#how-it-works" className="hover:opacity-90">
+            How it works
+          </a>
+          <a href="#faq" className="hover:opacity-90">
+            FAQ
+          </a>
+          <a href="#contact" className="hover:opacity-90">
+            Contact
+          </a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <LaunchDateButton
+            className={`h-9 px-4 text-sm shadow-sm ${offHero ? "" : "ring-1 ring-[color:var(--primary)]/30"}`}
+          />
         </div>
       </div>
     </header>
-  );
+  )
 }
 
 /* HERO — center text and image; image sits under text; entrance animation on text */
 function Hero({ heroRef }: { heroRef: React.RefObject<HTMLDivElement> }) {
   return (
-    <section
-      ref={heroRef}
-      id="hero"
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "300px",
-        backgroundPosition: "bottom center",
-      }}
-      className="relative overflow-hidden bg-[#0D011F] text-white h-[100vh]"
-    >
+    <section ref={heroRef} id="hero" className="relative overflow-hidden bg-[#0D011F] text-white">
       {/* Spacer for fixed header */}
       <div className="h-14" aria-hidden="true" />
 
@@ -179,14 +169,25 @@ function Hero({ heroRef }: { heroRef: React.RefObject<HTMLDivElement> }) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          backgroundColor: `radial-gradient(65% 45% at 50% 5%, ${hexToRgba(
-            PRIMARY,
-            0.22
-          )} 0%, ${hexToRgba(PRIMARY, 0)} 60%)`,
+          background: `radial-gradient(65% 45% at 50% 5%, ${hexToRgba(PRIMARY, 0.22)} 0%, ${hexToRgba(PRIMARY, 0)} 60%)`,
         }}
       />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ zIndex: -5 }}>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, rgba(13,1,31,0.00) 0%, rgba(13,1,31,0.35) 60%, rgba(13,1,31,0.65) 100%), url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Aug%207%2C%202025%2C%2010_27_59%20PM-KiemQn4JG2mxw8NcWfs1kUD2qq9l4j.png")`,
+            backgroundRepeat: "no-repeat, no-repeat",
+            backgroundSize: "cover, min(720px, 92vw)",
+            backgroundPosition: "center, center 75%",
+            filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.45))",
+            opacity: 1,
+          }}
+        />
+      </div>
+      <TransactionBg />
 
-      <div className="mx-auto my-auto flex max-w-6xl flex-col items-center px-4 pt-8 pb-10 md:pt-10 lg:pt-12">
+      <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pt-8 pb-10 md:pt-10 lg:pt-12">
         {/* Text block */}
         <motion.div
           variants={fadeUpContainer}
@@ -215,36 +216,13 @@ function Hero({ heroRef }: { heroRef: React.RefObject<HTMLDivElement> }) {
             Secure Payments. Right Inside WhatsApp.
           </motion.h1>
 
-          <motion.p
-            variants={fadeUpItem}
-            style={{
-              backgroundImage: `linear-gradient(135deg, #c67ff5ff 0%, #9981e0ff 40%, ${PRIMARY} 100%)`,
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-            className="mt-3 max-w-xl text-white/80 md:text-lg"
-          >
-            ZEND is the easiest way for vendors and buyers in Nigeria to send,
-            receive, and protect payments — all without leaving WhatsApp.
+          <motion.p variants={fadeUpItem} className="mt-3 max-w-xl text-white/80 md:text-lg">
+            ZEND is the easiest way for vendors and buyers in Nigeria to send, receive, and protect payments — all
+            without leaving WhatsApp.
           </motion.p>
 
           <motion.div variants={fadeUpItem} className="mt-6">
-            <a
-              href={WHATSAPP_GROUP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex"
-            >
-              <Button
-                size="lg"
-                className="rounded-full px-6 text-white shadow-lg hover:opacity-95"
-                style={{ backgroundImage: BRAND_GRADIENT }}
-              >
-                Get Early Access
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </a>
+            <LaunchDateButton size="lg" className="px-6" />
           </motion.div>
 
           {/* Quick explainers */}
@@ -252,38 +230,81 @@ function Hero({ heroRef }: { heroRef: React.RefObject<HTMLDivElement> }) {
             variants={fadeUpItem}
             className="mt-6 grid w-full max-w-lg gap-2 text-sm text-white/85 sm:grid-cols-2"
           >
-            <Bullet
-              icon={<ShieldCheck className="h-4 w-4" />}
-              text="No scam, escrow secures money"
-            />
-            <Bullet
-              icon={<MessageSquare className="h-4 w-4" />}
-              text="No switching apps"
-            />
-            <Bullet
-              icon={<Fingerprint className="h-4 w-4" />}
-              text="Biometric confirmations"
-            />
-            <Bullet
-              icon={<Coins className="h-4 w-4" />}
-              text="Stable coin transfers"
-            />
+            <Bullet icon={<ShieldCheck className="h-4 w-4" />} text="Escrow keeps money safe" />
+            <Bullet icon={<MessageSquare className="h-4 w-4" />} text="No switching apps" />
+            <Bullet icon={<Fingerprint className="h-4 w-4" />} text="Biometric confirmations" />
+            <Bullet icon={<Coins className="h-4 w-4" />} text="Stable coin transfers" />
           </motion.ul>
         </motion.div>
       </div>
     </section>
-  );
+  )
+}
+
+function TransactionBg() {
+  const items = [
+    { Icon: Send, y: 18, delay: 0, duration: 14 },
+    { Icon: CreditCard, y: 36, delay: 1.2, duration: 16 },
+    { Icon: ShieldCheck, y: 56, delay: 2.4, duration: 18 },
+    { Icon: Wallet, y: 74, delay: 0.8, duration: 15 },
+    { Icon: CheckCircle2, y: 28, delay: 2.0, duration: 13 },
+  ]
+
+  return (
+    <div className="pointer-events-none absolute inset-0 -z-[4] overflow-hidden">
+      {/* Animated lines */}
+      <motion.div
+        className="absolute left-[-20%] top-[24%] h-px w-[140%] bg-gradient-to-r from-transparent via-white/30 to-transparent"
+        animate={{ x: ["-6%", "6%", "-6%"] }}
+        transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        style={{ filter: "blur(0.2px)" }}
+      />
+      <motion.div
+        className="absolute left-[-20%] top-[48%] h-px w-[140%] bg-gradient-to-r from-transparent via-white/25 to-transparent"
+        animate={{ x: ["6%", "-6%", "6%"] }}
+        transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        style={{ filter: "blur(0.4px)" }}
+      />
+      <motion.div
+        className="absolute left-[-20%] top-[70%] h-px w-[140%] bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        animate={{ x: ["-4%", "4%", "-4%"] }}
+        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        style={{ filter: "blur(0.6px)" }}
+      />
+
+      {/* Moving transaction icons */}
+      {items.map(({ Icon, y, delay, duration }, idx) => (
+        <motion.div
+          key={idx}
+          className="absolute -left-10 flex items-center justify-center"
+          style={{ top: `${y}%` }}
+          initial={{ x: "-120%" }}
+          animate={{ x: "120%" }}
+          transition={{ duration, delay, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+        >
+          <div
+            className="mr-2 h-0.5 w-16"
+            style={{ backgroundImage: `linear-gradient(90deg, transparent, ${hexToRgba(PRIMARY, 0.65)}, transparent)` }}
+          />
+          <div
+            className="grid h-8 w-8 place-items-center rounded-full text-white shadow-lg"
+            style={{ backgroundImage: `linear-gradient(135deg, ${PRIMARY}, ${SECONDARY})` }}
+          >
+            <Icon className="h-4 w-4" />
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
 }
 
 function Bullet({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <li className="flex items-center justify-center gap-2">
-      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10">
-        {icon}
-      </span>
+      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10">{icon}</span>
       {text}
     </li>
-  );
+  )
 }
 
 /* Reusable floating wrapper for equal-height cards with floating shadow */
@@ -299,7 +320,7 @@ function FloatingCard({ children }: { children: React.ReactNode }) {
     >
       {children}
     </motion.div>
-  );
+  )
 }
 
 /* Why ZEND */
@@ -307,14 +328,49 @@ function WhyZend() {
   return (
     <section className="mx-auto max-w-6xl px-4 pb-6 pt-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold">Why use ZEND?</h2>
+        <h2 className="text-2xl font-semibold">Why ZEND?</h2>
         <p className="mt-2 max-w-3xl text-muted-foreground">
-          Buying and selling on WhatsApp should be simple, but trust issues,
-          payment delays, and app switching make it messy. ZEND fixes that.
+          Buying and selling on WhatsApp should be simple — but trust issues, payment delays, and app switching make it
+          messy. ZEND fixes that.
         </p>
       </div>
+      <motion.div
+        variants={fadeUpContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.25 }}
+        className="grid items-stretch gap-3 sm:grid-cols-3"
+      >
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col items-center justify-center p-6">
+              <Pill>
+                <Download className="mr-2 h-4 w-4" /> No app downloads
+              </Pill>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col items-center justify-center p-6">
+              <Pill>
+                <ShieldCheck className="mr-2 h-4 w-4" /> No scams — escrow keeps money safe
+              </Pill>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col items-center justify-center p-6">
+              <Pill>
+                <MessageSquare className="mr-2 h-4 w-4" /> No switching — everything in WhatsApp
+              </Pill>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+      </motion.div>
     </section>
-  );
+  )
 }
 
 /* Explainers — equal height */
@@ -324,10 +380,7 @@ function Explainers() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(243,233,255,0.45) 0%, rgba(243,233,255,0.00) 60%)",
-        }}
+        style={{ background: "linear-gradient(180deg, rgba(243,233,255,0.45) 0%, rgba(243,233,255,0.00) 60%)" }}
       />
       <motion.div
         variants={fadeUpContainer}
@@ -353,7 +406,7 @@ function Explainers() {
         />
       </motion.div>
     </section>
-  );
+  )
 }
 
 /* Features — equal height */
@@ -381,7 +434,7 @@ function Features() {
         <FeatureCard
           icon={<HandCoins className="h-5 w-5" />}
           title="Help Me Pay"
-          desc="Share a payment link and let friends chip in until it’s fully paid."
+          desc="Share a payment link and let friends chip in until it's fully paid."
         />
         <FeatureCard
           icon={<CalendarRange className="h-5 w-5" />}
@@ -396,11 +449,11 @@ function Features() {
         <FeatureCard
           icon={<Coins className="h-5 w-5" />}
           title="Powered by Stable Coin"
-          desc="Fast, stable payments using a naira stable coin."
+          desc="Fast, stable payments using a dollar‑pegged stable coin."
         />
       </motion.div>
     </section>
-  );
+  )
 }
 
 function HowItWorks() {
@@ -415,7 +468,7 @@ function HowItWorks() {
         className="mt-6 grid items-stretch gap-6 md:grid-cols-2"
       >
         <FloatingCard>
-          <Card className="h-full">
+          <Card className="h-full border">
             <CardContent className="flex h-full flex-col p-6">
               <h3 className="font-semibold">For Buyers</h3>
               <ol className="mt-3 space-y-3 text-sm">
@@ -423,7 +476,7 @@ function HowItWorks() {
                   n={1}
                   color={PRIMARY}
                   icon={<Link2 className="h-4 w-4" />}
-                  text="Click the vendor’s ZEND payment link on WhatsApp."
+                  text="Click the vendor's ZEND payment link on WhatsApp."
                 />
                 <Step
                   n={2}
@@ -443,7 +496,7 @@ function HowItWorks() {
         </FloatingCard>
 
         <FloatingCard>
-          <Card className="h-full">
+          <Card className="h-full border">
             <CardContent className="flex h-full flex-col p-6">
               <h3 className="font-semibold">For Vendors</h3>
               <ol className="mt-3 space-y-3 text-sm">
@@ -471,7 +524,7 @@ function HowItWorks() {
         </FloatingCard>
       </motion.div>
     </section>
-  );
+  )
 }
 
 function FeesAndTrust() {
@@ -480,10 +533,7 @@ function FeesAndTrust() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(237,255,245,0.55) 0%, rgba(237,255,245,0.00) 70%)",
-        }}
+        style={{ background: "linear-gradient(180deg, rgba(237,255,245,0.55) 0%, rgba(237,255,245,0.00) 70%)" }}
       />
       <div className="mx-auto max-w-6xl px-4 py-10">
         <motion.div
@@ -494,7 +544,7 @@ function FeesAndTrust() {
           className="grid items-stretch gap-6 md:grid-cols-2"
         >
           <FloatingCard>
-            <Card className="h-full">
+            <Card className="h-full border">
               <CardContent className="flex h-full flex-col p-6">
                 <div
                   className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#F3E9FF] px-3 py-1 text-xs font-medium"
@@ -505,24 +555,15 @@ function FeesAndTrust() {
                 </div>
                 <ul className="mt-2 space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <Fingerprint
-                      className="mt-0.5 h-4 w-4"
-                      style={{ color: PRIMARY }}
-                    />
+                    <Fingerprint className="mt-0.5 h-4 w-4" style={{ color: PRIMARY }} />
                     Biometric authentication confirms every payment.
                   </li>
                   <li className="flex items-start gap-2">
-                    <ShieldCheck
-                      className="mt-0.5 h-4 w-4"
-                      style={{ color: "#25D366" }}
-                    />
+                    <ShieldCheck className="mt-0.5 h-4 w-4" style={{ color: "#25D366" }} />
                     Smart contract escrow holds funds until delivery.
                   </li>
                   <li className="flex items-start gap-2">
-                    <Star
-                      className="mt-0.5 h-4 w-4"
-                      style={{ color: PRIMARY }}
-                    />
+                    <Star className="mt-0.5 h-4 w-4" style={{ color: PRIMARY }} />
                     Powered by Stellar.
                   </li>
                   <li className="flex items-start gap-2">
@@ -535,7 +576,7 @@ function FeesAndTrust() {
           </FloatingCard>
 
           <FloatingCard>
-            <Card className="h-full">
+            <Card className="h-full border">
               <CardContent className="flex h-full flex-col p-6">
                 <div
                   className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#EDFFF5] px-3 py-1 text-xs font-medium"
@@ -546,22 +587,16 @@ function FeesAndTrust() {
                 </div>
                 <ul className="mt-2 space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <BadgeCheck
-                      className="mt-0.5 h-4 w-4"
-                      style={{ color: "#25D366" }}
-                    />
+                    <BadgeCheck className="mt-0.5 h-4 w-4" style={{ color: "#25D366" }} />
                     Sending money to other ZEND users is free.
                   </li>
                   <li className="flex items-start gap-2">
-                    <HandCoins
-                      className="mt-0.5 h-4 w-4"
-                      style={{ color: PRIMARY }}
-                    />
+                    <HandCoins className="mt-0.5 h-4 w-4" style={{ color: PRIMARY }} />
                     Small fees apply for vendor sales and external transfers.
                   </li>
                   <li className="flex items-start gap-2">
                     <Coins className="mt-0.5 h-4 w-4" />
-                    All payments use a naira‑pegged stable coin.
+                    All payments use a dollar‑pegged stable coin.
                   </li>
                 </ul>
               </CardContent>
@@ -570,38 +605,28 @@ function FeesAndTrust() {
         </motion.div>
       </div>
     </section>
-  );
+  )
 }
 
 /* Risk Monitoring */
 function RiskMonitoring() {
-  const gradient = BRAND_GRADIENT;
+  const gradient = BRAND_GRADIENT
   const container = {
     hidden: { opacity: 0, y: 12 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.15 },
-    },
-  };
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.15 } },
+  }
   const item = {
     hidden: { opacity: 0, y: 16 },
     show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
-  };
+  }
 
   return (
     <section id="risk-monitoring" className="mx-auto max-w-6xl px-4 py-12">
       <div className="mb-8 text-center">
-        <div
-          className="mx-auto mb-3 h-1 w-16 rounded-full"
-          style={{ backgroundImage: gradient }}
-        />
-        <h2 className="text-2xl font-semibold">
-          Fraud & Transaction Monitoring
-        </h2>
+        <div className="mx-auto mb-3 h-1 w-16 rounded-full" style={{ backgroundImage: gradient }} />
+        <h2 className="text-2xl font-semibold">Fraud & Transaction Monitoring</h2>
         <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
-          Stay protected and in control with proactive risk checks and real-time
-          activity tracking.
+          Stay protected and in control with proactive risk checks and real-time activity tracking.
         </p>
       </div>
 
@@ -616,17 +641,14 @@ function RiskMonitoring() {
           <motion.div
             {...floatAnim}
             className="relative h-full overflow-hidden rounded-2xl p-6 text-white"
-            style={{
-              backgroundImage: gradient,
-              boxShadow: `0 16px 40px ${hexToRgba(PRIMARY, 0.35)}`,
-            }}
+            style={{ backgroundImage: gradient, boxShadow: `0 16px 40px ${hexToRgba(PRIMARY, 0.35)}` }}
             whileHover={{ y: -6 }}
           >
             <motion.span
               aria-hidden="true"
               className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
               animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
             >
               <ShieldAlert className="h-5 w-5" />
             </motion.span>
@@ -634,8 +656,7 @@ function RiskMonitoring() {
             <div className="relative">
               <h3 className="text-lg font-semibold">Fraud Detection</h3>
               <p className="mt-2 text-sm text-white/85">
-                Advanced fraud monitoring system identifies suspicious
-                activities and notifies you instantly.
+                Advanced fraud monitoring system identifies suspicious activities and notifies you instantly.
               </p>
               <div className="mt-4 flex items-center gap-2 text-xs text-white/85">
                 <Bell className="h-4 w-4" />
@@ -649,21 +670,14 @@ function RiskMonitoring() {
           <motion.div
             {...floatAnim}
             className="relative h-full overflow-hidden rounded-2xl p-6 text-white"
-            style={{
-              backgroundImage: gradient,
-              boxShadow: `0 16px 40px ${hexToRgba(SECONDARY, 0.35)}`,
-            }}
+            style={{ backgroundImage: gradient, boxShadow: `0 16px 40px ${hexToRgba(SECONDARY, 0.35)}` }}
             whileHover={{ y: -6 }}
           >
             <motion.span
               aria-hidden="true"
               className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
               animate={{ rotate: [0, 8, 0] }}
-              transition={{
-                duration: 3.2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+              transition={{ duration: 3.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
             >
               <Activity className="h-5 w-5" />
             </motion.span>
@@ -671,19 +685,14 @@ function RiskMonitoring() {
             <div className="relative">
               <h3 className="text-lg font-semibold">Transaction Monitoring</h3>
               <p className="mt-2 text-sm text-white/85">
-                Real-time visibility into all your payment activities with
-                instant notifications.
+                Real-time visibility into all your payment activities with instant notifications.
               </p>
               <div className="mt-4 grid grid-cols-3 gap-2 text-[11px]">
                 <motion.div
                   className="rounded-lg px-2 py-1 text-center"
                   style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
                   animate={{ opacity: [0.8, 1, 0.8] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
                 >
                   Escrow
                 </motion.div>
@@ -691,12 +700,7 @@ function RiskMonitoring() {
                   className="rounded-lg px-2 py-1 text-center"
                   style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
                   animate={{ opacity: [0.8, 1, 0.8] }}
-                  transition={{
-                    duration: 2.2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.2,
-                  }}
+                  transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.2 }}
                 >
                   Subscriptions
                 </motion.div>
@@ -704,12 +708,7 @@ function RiskMonitoring() {
                   className="rounded-lg px-2 py-1 text-center"
                   style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
                   animate={{ opacity: [0.8, 1, 0.8] }}
-                  transition={{
-                    duration: 2.4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.35,
-                  }}
+                  transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.35 }}
                 >
                   Transfers
                 </motion.div>
@@ -719,7 +718,7 @@ function RiskMonitoring() {
         </motion.div>
       </motion.div>
     </section>
-  );
+  )
 }
 
 function FAQ() {
@@ -730,32 +729,26 @@ function FAQ() {
         <AccordionItem value="safety">
           <AccordionTrigger>Is this safe?</AccordionTrigger>
           <AccordionContent>
-            Yes — all payments are backed by biometric authentication and smart
-            contract escrow.
+            Yes — all payments are backed by biometric authentication and smart contract escrow.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="app">
           <AccordionTrigger>Do I need to install an app?</AccordionTrigger>
-          <AccordionContent>
-            No app needed. Everything works inside WhatsApp with a smart AI bot.
-          </AccordionContent>
+          <AccordionContent>No app needed. Everything works inside WhatsApp with a smart AI bot.</AccordionContent>
         </AccordionItem>
         <AccordionItem value="fees">
           <AccordionTrigger>What does it cost?</AccordionTrigger>
           <AccordionContent>
-            Sending money to other ZEND users is free. Small fees apply for
-            vendor sales and external transfers.
+            Sending money to other ZEND users is free. Small fees apply for vendor sales and external transfers.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="currency">
           <AccordionTrigger>What currency does ZEND use?</AccordionTrigger>
-          <AccordionContent>
-            All payments are powered by a naira stable coin.
-          </AccordionContent>
+          <AccordionContent>All payments are powered by a dollar‑pegged stable coin.</AccordionContent>
         </AccordionItem>
       </Accordion>
     </section>
-  );
+  )
 }
 
 function CTA() {
@@ -768,94 +761,69 @@ function CTA() {
               <div>
                 <h3 className="text-2xl font-semibold">Join the Movement</h3>
                 <p className="mt-2 text-muted-foreground">
-                  ZEND is building the future of social payments in Africa —
-                  starting with Nigeria.
+                  ZEND is building the future of social payments in Africa — starting with Nigeria.
                 </p>
               </div>
               <div className="flex items-center gap-3 md:justify-end">
-                <a
-                  href={WHATSAPP_GROUP_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex"
-                >
-                  <Button
-                    className="rounded-full px-6 text-white shadow-sm hover:opacity-95"
-                    style={{ backgroundImage: BRAND_GRADIENT }}
-                  >
-                    Get Early Access
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
+                <LaunchDateButton className="px-6 shadow-sm" />
               </div>
             </div>
           </CardContent>
         </Card>
       </FloatingCard>
     </section>
-  );
+  )
 }
 
 /* Footer — secondary background, primary text */
 function Footer() {
   return (
-    <footer
-      id="contact"
-      className="mt-8"
-      style={{ backgroundColor: SECONDARY, color: PRIMARY }}
-    >
+    <footer id="contact" className="mt-8" style={{ backgroundColor: SECONDARY, color: PRIMARY }}>
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="ZEND logo" className="h-6 w-6" />
+            <img src="/images/logo-transparent.png" alt="ZEND logo" className="h-6 w-6" />
             <span className="text-sm font-medium">ZEND</span>
-            <Separator
-              orientation="vertical"
-              className="mx-2 hidden h-5 md:inline-flex"
-            />
+            <Separator orientation="vertical" className="mx-2 hidden h-5 md:inline-flex" />
             <span className="text-xs opacity-80">Just ZEND it.</span>
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="https://x.com/ZendIt_Official?t=7V6p0Wj080aMkn18cBhDxg&s=09"
+              href={WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm hover:opacity-90"
+            >
+              <PhoneCall className="h-4 w-4" />
+              WhatsApp
+            </a>
+            <a
+              href={TWITTER_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm hover:opacity-90"
             >
               <Twitter className="h-4 w-4" />
+              X/Twitter
             </a>
           </div>
         </div>
-        <p className="mt-4 text-xs opacity-80">
-          © {new Date().getFullYear()} ZEND. All rights reserved.
-        </p>
+        <p className="mt-4 text-xs opacity-80">© {new Date().getFullYear()} ZEND. All rights reserved.</p>
       </div>
     </footer>
-  );
+  )
 }
 
 /* UI helpers */
 
 function Pill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-full border px-3 py-1 text-sm">
-      {children}
-    </span>
-  );
+  return <span className="inline-flex items-center rounded-full border px-3 py-1 text-sm">{children}</span>
 }
 
-function ExplainCard({
-  title,
-  desc,
-  icon,
-}: {
-  title: string;
-  desc: string;
-  icon: React.ReactNode;
-}) {
+function ExplainCard({ title, desc, icon }: { title: string; desc: string; icon: React.ReactNode }) {
   return (
     <FloatingCard>
-      <Card className="h-full transition-colors">
+      <Card className="h-full transition-colors hover:border-[#7930C8]">
         <CardContent className="flex h-full flex-col p-5">
           <div
             className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg text-white"
@@ -869,21 +837,13 @@ function ExplainCard({
         </CardContent>
       </Card>
     </FloatingCard>
-  );
+  )
 }
 
-function FeatureCard({
-  icon,
-  title,
-  desc,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-}) {
+function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
     <FloatingCard>
-      <Card className="h-full transition-colors ">
+      <Card className="h-full transition-colors hover:border-[#7930C8]">
         <CardContent className="flex h-full flex-col p-5">
           <div
             className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg text-white"
@@ -898,20 +858,10 @@ function FeatureCard({
         </CardContent>
       </Card>
     </FloatingCard>
-  );
+  )
 }
 
-function Step({
-  n,
-  color,
-  icon,
-  text,
-}: {
-  n: number;
-  color: string;
-  icon: React.ReactNode;
-  text: string;
-}) {
+function Step({ n, color, icon, text }: { n: number; color: string; icon: React.ReactNode; text: string }) {
   return (
     <li className="flex items-start gap-3">
       <span
@@ -933,14 +883,14 @@ function Step({
         <p>{text}</p>
       </div>
     </li>
-  );
+  )
 }
 
 function hexToRgba(hex: string, alpha: number) {
-  const clean = hex.replace("#", "");
-  const bigint = parseInt(clean, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  const clean = hex.replace("#", "")
+  const bigint = Number.parseInt(clean, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
