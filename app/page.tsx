@@ -1,11 +1,13 @@
 "use client"
 
 import { AccordionTrigger } from "@/components/ui/accordion"
+import Link from "next/link"
+import { useEffect } from "react"
+import * as gtag from "@/lib/gtag"
 
 import type React from "react"
 
-import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
+import { useRef, useState } from "react"
 import {
   ArrowRight,
   CalendarRange,
@@ -60,19 +62,33 @@ const floatAnim = {
 }
 
 // Social Links
-const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/FKa9Jw5rYfqFyluH23Y"
+const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GJ2HOqbJ0YG2OiSdtWnc8d?mode=ems_copy_t"
 const TWITTER_URL = "https://x.com/ZendIt_Official?t=mr3Cp3Dg64jTMiIXYG2bjg&s=09"
 
 // Launch Date Button Component
 function LaunchDateButton({ className, size = "default" }: { className?: string; size?: "default" | "lg" }) {
+  const handleClick = () => {
+    gtag.event({
+      action: "click",
+      category: "CTA",
+      label: "Try MVP Button",
+    })
+  }
+
   return (
-    <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noopener noreferrer" className="inline-flex">
+    <a
+      href={WHATSAPP_GROUP_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex"
+      onClick={handleClick}
+    >
       <Button
         size={size}
         className={`rounded-full text-white shadow-lg hover:opacity-95 ${className || ""}`}
         style={{ backgroundImage: BRAND_GRADIENT }}
       >
-        Launch Date: Sep 15th
+        Try MVP
         <ArrowRight className={`${size === "lg" ? "ml-3 h-5 w-5" : "ml-2 h-4 w-4"}`} />
       </Button>
     </a>
@@ -82,6 +98,11 @@ function LaunchDateButton({ className, size = "default" }: { className?: string;
 export default function Page() {
   const heroRef = useRef<HTMLDivElement | null>(null)
   const [offHero, setOffHero] = useState(false)
+
+  // Track page view
+  useEffect(() => {
+    gtag.pageview(window.location.pathname)
+  }, [])
 
   // Observe hero visibility to toggle frosted header
   useEffect(() => {
@@ -777,6 +798,14 @@ function CTA() {
 
 /* Footer — secondary background, primary text */
 function Footer() {
+  const handleSocialClick = (platform: string) => {
+    gtag.event({
+      action: "click",
+      category: "Social",
+      label: platform,
+    })
+  }
+
   return (
     <footer id="contact" className="mt-8" style={{ backgroundColor: SECONDARY, color: PRIMARY }}>
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -793,6 +822,7 @@ function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm hover:opacity-90"
+              onClick={() => handleSocialClick("WhatsApp")}
             >
               <PhoneCall className="h-4 w-4" />
               WhatsApp
@@ -802,10 +832,25 @@ function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm hover:opacity-90"
+              onClick={() => handleSocialClick("Twitter")}
             >
               <Twitter className="h-4 w-4" />
               X/Twitter
             </a>
+            <Separator orientation="vertical" className="h-5" />
+            <Link
+              href="/stats"
+              className="text-sm hover:opacity-90"
+              onClick={() => {
+                gtag.event({
+                  action: "click",
+                  category: "Navigation",
+                  label: "Stats Page",
+                })
+              }}
+            >
+              Platform Stats
+            </Link>
           </div>
         </div>
         <p className="mt-4 text-xs opacity-80">© {new Date().getFullYear()} ZEND. All rights reserved.</p>
