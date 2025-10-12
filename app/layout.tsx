@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "ZEND - Secure Payments Right Inside WhatsApp",
   description:
     "ZEND is the easiest way for vendors and buyers in Nigeria to send, receive, and protect payments — all without leaving WhatsApp.",
-    generator: 'v0.app'
+    generator: 'COAT'
 }
 
 export default function RootLayout({
