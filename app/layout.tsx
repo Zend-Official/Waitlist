@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter  } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 import { GA_MEASUREMENT_ID } from "@/lib/gtag"
