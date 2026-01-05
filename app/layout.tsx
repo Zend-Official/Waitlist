@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-       
+       <meta name="facebook-domain-verification" content="asi9lykxtj8gd3mxh1uwh42vsrsv12" />
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EV9V287KK1"></script>
 <script>{`
   window.dataLayer = window.dataLayer || [];
