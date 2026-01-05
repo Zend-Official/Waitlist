@@ -256,6 +256,13 @@ function Hero({ heroRef }: { heroRef: React.RefObject<HTMLDivElement> }) {
             <Bullet icon={<Fingerprint className="h-4 w-4" />} text="Biometric confirmations" />
             <Bullet icon={<Coins className="h-4 w-4" />} text="Stable coin transfers" />
           </motion.ul>
+
+          <motion.p
+            variants={fadeUpItem}
+            className="mt-6 text-xs text-white/60"
+          >
+            Powered by 2G Fields Enterprise
+          </motion.p>
         </motion.div>
       </div>
     </section>
@@ -854,6 +861,7 @@ function Footer() {
           </div>
         </div>
         <p className="mt-4 text-xs opacity-80">© {new Date().getFullYear()} ZEND. All rights reserved.</p>
+        <p className="mt-2 text-xs opacity-60">Powered by 2G Fields Enterprise</p>
       </div>
     </footer>
   )
