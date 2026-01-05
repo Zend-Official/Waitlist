@@ -7,36 +7,31 @@ export const metadata: Metadata = {
   title: 'Zend',
   description: 'Ai powered social media wallet',
   generator: 'COAT',
+  other: {
+    'facebook-domain-verification': 'asi9lykxtj8gd3mxh1uwh42vsrsv12',
+  },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-       <meta name="facebook-domain-verification" content="asi9lykxtj8gd3mxh1uwh42vsrsv12" />
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-EV9V287KK1"></script>
-<script>{`
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-EV9V287KK1');`}
-</script>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/logo.png" />
-        <style>{`
-html {
-  font-family: ${GeistSans.style.fontFamily};
-  --font-sans: ${GeistSans.variable};
-  --font-mono: ${GeistMono.variable};
-}
-        `}</style>
-      </head>
-      <body>{children}</body>
+      <body>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-EV9V287KK1"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EV9V287KK1');
+          `}
+        </Script>
+        {children}
+      </body>
     </html>
   )
 }
+
