@@ -62,7 +62,7 @@ const floatAnim = {
 }
 
 // Social Links
-const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GJ2HOqbJ0YG2OiSdtWnc8d?mode=ems_copy_t"
+const WHATSAPP_GROUP_URL = "https://wa.me/2349018124230?text=Hi%20Zend!"
 const TWITTER_URL = "https://x.com/ZendIt_Official?t=mr3Cp3Dg64jTMiIXYG2bjg&s=09"
 
 // Launch Date Button Component
@@ -88,7 +88,7 @@ function LaunchDateButton({ className, size = "default" }: { className?: string;
         className={`rounded-full text-white shadow-lg hover:opacity-95 ${className || ""}`}
         style={{ backgroundImage: BRAND_GRADIENT }}
       >
-        Try MVP
+        Start Now
         <ArrowRight className={`${size === "lg" ? "ml-3 h-5 w-5" : "ml-2 h-4 w-4"}`} />
       </Button>
     </a>
