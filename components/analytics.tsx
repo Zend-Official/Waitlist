@@ -6,7 +6,7 @@ import { GA_MEASUREMENT_ID } from "@/lib/gtag";
 export default function GoogleAnalytics() {
   return (
     <>
-      <Script 
+      <Script
         strategy="afterInteractive" 
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} 
       />
