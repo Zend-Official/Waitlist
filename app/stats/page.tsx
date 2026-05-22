@@ -160,7 +160,7 @@ export default function StatsPage() {
         setLoading(true)
         setError(null)
 
-        const url = `https://zend-usuz.onrender.com/stats?page=${currentPage}&limit=${itemsPerPage}`
+        const url = `https://app.thezendpay.com/stats?page=${currentPage}&limit=${itemsPerPage}`
         console.log("Fetching from:", url)
 
         const response = await fetch(url, {

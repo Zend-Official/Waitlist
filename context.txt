@@ -1,0 +1,1960 @@
+# CODEBASE CONTEXT
+# Source : C:\xamppv8\htdocs\Zend\Whitelist\app
+# Files  : 4
+# Generated: 2026-05-22T11:23:03.741Z
+
+============================================================
+FILE: globals.css
+============================================================
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+============================================================
+FILE: layout.tsx
+============================================================
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import Script from "next/script"
+import { GA_MEASUREMENT_ID } from "@/lib/gtag"
+
+const geist = Inter({
+  subsets: ["latin"],
+})
+
+export const metadata: Metadata = {
+  title: "ZEND - Secure Payments Right Inside WhatsApp",
+  description:
+    "ZEND is the easiest way for vendors and buyers in Nigeria to send, receive, and protect payments — all without leaving WhatsApp.",
+    generator: 'v0.app'
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <head>
+        {/* Google Analytics */}
+        <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+      </head>
+      <body className={`${geist.className} antialiased`}>{children}</body>
+    </html>
+  )
+}
+
+
+============================================================
+FILE: page.tsx
+============================================================
+"use client"
+
+import { AccordionTrigger } from "@/components/ui/accordion"
+import Link from "next/link"
+import { useEffect } from "react"
+import * as gtag from "@/lib/gtag"
+
+import type React from "react"
+
+import { useRef, useState } from "react"
+import {
+  ArrowRight,
+  CalendarRange,
+  HandCoins,
+  MessageSquare,
+  ShieldCheck,
+  Users,
+  Zap,
+  Twitter,
+  PhoneCall,
+  Fingerprint,
+  Bot,
+  Coins,
+  Link2,
+  Wallet,
+  QrCode,
+  Lock,
+  Download,
+  BadgeCheck,
+  ShieldAlert,
+  Activity,
+  Bell,
+  Star,
+  CheckCircle2,
+  Send,
+  CreditCard,
+} from "lucide-react"
+import { motion } from "framer-motion"
+
+import { Button } from "@/components/ui/button"
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion"
+import { Card, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+
+// Brand
+const PRIMARY = "#7930C8"
+const SECONDARY = "#0D011F"
+const BRAND_GRADIENT = `linear-gradient(135deg, ${PRIMARY} 0%, ${SECONDARY} 100%)`
+
+// Animations
+const fadeUpContainer = {
+  hidden: { opacity: 1 },
+  show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
+}
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+}
+const floatAnim = {
+  animate: { y: [0, -6, 0] },
+  transition: { duration: 6, repeat: Number.POSITIVE_INFINITY as const, ease: "easeInOut" },
+}
+
+// Social Links
+const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GJ2HOqbJ0YG2OiSdtWnc8d?mode=ems_copy_t"
+const TWITTER_URL = "https://x.com/ZendIt_Official?t=mr3Cp3Dg64jTMiIXYG2bjg&s=09"
+
+// Launch Date Button Component
+function LaunchDateButton({ className, size = "default" }: { className?: string; size?: "default" | "lg" }) {
+  const handleClick = () => {
+    gtag.event({
+      action: "click",
+      category: "CTA",
+      label: "Try MVP Button",
+    })
+  }
+
+  return (
+    <a
+      href={WHATSAPP_GROUP_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex"
+      onClick={handleClick}
+    >
+      <Button
+        size={size}
+        className={`rounded-full text-white shadow-lg hover:opacity-95 ${className || ""}`}
+        style={{ backgroundImage: BRAND_GRADIENT }}
+      >
+        Try MVP
+        <ArrowRight className={`${size === "lg" ? "ml-3 h-5 w-5" : "ml-2 h-4 w-4"}`} />
+      </Button>
+    </a>
+  )
+}
+
+export default function Page() {
+  const heroRef = useRef<HTMLDivElement | null>(null)
+  const [offHero, setOffHero] = useState(false)
+
+  // Track page view
+  useEffect(() => {
+    gtag.pageview(window.location.pathname)
+  }, [])
+
+  // Observe hero visibility to toggle frosted header
+  useEffect(() => {
+    if (!heroRef.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setOffHero(!(entry.isIntersecting && entry.intersectionRatio > 0.2)),
+      { root: null, threshold: [0, 0.2, 1] },
+    )
+    observer.observe(heroRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <main className="min-h-screen bg-white text-[#0D011F]">
+      <Header offHero={offHero} />
+      <Hero heroRef={heroRef} />
+      <WhyZend />
+      <Explainers />
+      <Features />
+      <HowItWorks />
+      <FeesAndTrust />
+      <RiskMonitoring />
+      <FAQ />
+      <CTA />
+      <Footer />
+    </main>
+  )
+}
+
+/* Header — transparent on hero with primary-colored nav; frosted + secondary when off hero */
+function Header({ offHero }: { offHero: boolean }) {
+  return (
+    <header
+      className={[
+        "fixed inset-x-0 top-0 z-40 transition-all",
+        offHero ? "border-b bg-white/60 backdrop-blur-md" : "border-transparent bg-transparent",
+      ].join(" ")}
+    >
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+        <Link href="#" className="flex items-center gap-2">
+          <img src="/images/logo-transparent.png" alt="ZEND logo" className="h-7 w-7" />
+          <span className="text-lg font-semibold tracking-tight" style={{ color: PRIMARY }}>
+            ZEND
+          </span>
+        </Link>
+        <nav
+          className={[
+            "hidden items-center gap-6 text-sm md:flex transition-colors",
+            offHero ? "text-[#0D011F]" : "text-[color:var(--primary)]",
+          ].join(" ")}
+          style={{ ["--primary" as any]: PRIMARY }}
+        >
+          <a href="#features" className="hover:opacity-90">
+            Features
+          </a>
+          <a href="#how-it-works" className="hover:opacity-90">
+            How it works
+          </a>
+          <a href="#faq" className="hover:opacity-90">
+            FAQ
+          </a>
+          <a href="#contact" className="hover:opacity-90">
+            Contact
+          </a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <LaunchDateButton
+            className={`h-9 px-4 text-sm shadow-sm ${offHero ? "" : "ring-1 ring-[color:var(--primary)]/30"}`}
+          />
+        </div>
+      </div>
+    </header>
+  )
+}
+
+/* HERO — center text and image; image sits under text; entrance animation on text */
+function Hero({ heroRef }: { heroRef: React.RefObject<HTMLDivElement> }) {
+  return (
+    <section ref={heroRef} id="hero" className="relative overflow-hidden bg-[#0D011F] text-white">
+      {/* Spacer for fixed header */}
+      <div className="h-14" aria-hidden="true" />
+
+      {/* Subtle brand glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: `radial-gradient(65% 45% at 50% 5%, ${hexToRgba(PRIMARY, 0.22)} 0%, ${hexToRgba(PRIMARY, 0)} 60%)`,
+        }}
+      />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ zIndex: -5 }}>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, rgba(13,1,31,0.00) 0%, rgba(13,1,31,0.35) 60%, rgba(13,1,31,0.65) 100%), url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Aug%207%2C%202025%2C%2010_27_59%20PM-KiemQn4JG2mxw8NcWfs1kUD2qq9l4j.png")`,
+            backgroundRepeat: "no-repeat, no-repeat",
+            backgroundSize: "cover, min(720px, 92vw)",
+            backgroundPosition: "center, center 75%",
+            filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.45))",
+            opacity: 1,
+          }}
+        />
+      </div>
+      <TransactionBg />
+
+      <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pt-8 pb-10 md:pt-10 lg:pt-12">
+        {/* Text block */}
+        <motion.div
+          variants={fadeUpContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.6 }}
+          className="flex max-w-3xl flex-col items-center text-center"
+        >
+          <motion.span
+            variants={fadeUpItem}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/85"
+          >
+            Just ZEND it.
+          </motion.span>
+
+          <motion.h1
+            variants={fadeUpItem}
+            className="mt-4 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl"
+            style={{
+              backgroundImage: `linear-gradient(135deg, #FFFFFF 0%, #E7DFFF 40%, ${PRIMARY} 100%)`,
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            Secure Payments. Right Inside WhatsApp.
+          </motion.h1>
+
+          <motion.p variants={fadeUpItem} className="mt-3 max-w-xl text-white/80 md:text-lg">
+            ZEND is the easiest way for vendors and buyers in Nigeria to send, receive, and protect payments — all
+            without leaving WhatsApp.
+          </motion.p>
+
+          <motion.div variants={fadeUpItem} className="mt-6">
+            <LaunchDateButton size="lg" className="px-6" />
+          </motion.div>
+
+          {/* Quick explainers */}
+          <motion.ul
+            variants={fadeUpItem}
+            className="mt-6 grid w-full max-w-lg gap-2 text-sm text-white/85 sm:grid-cols-2"
+          >
+            <Bullet icon={<ShieldCheck className="h-4 w-4" />} text="Escrow keeps money safe" />
+            <Bullet icon={<MessageSquare className="h-4 w-4" />} text="No switching apps" />
+            <Bullet icon={<Fingerprint className="h-4 w-4" />} text="Biometric confirmations" />
+            <Bullet icon={<Coins className="h-4 w-4" />} text="Stable coin transfers" />
+          </motion.ul>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function TransactionBg() {
+  const items = [
+    { Icon: Send, y: 18, delay: 0, duration: 14 },
+    { Icon: CreditCard, y: 36, delay: 1.2, duration: 16 },
+    { Icon: ShieldCheck, y: 56, delay: 2.4, duration: 18 },
+    { Icon: Wallet, y: 74, delay: 0.8, duration: 15 },
+    { Icon: CheckCircle2, y: 28, delay: 2.0, duration: 13 },
+  ]
+
+  return (
+    <div className="pointer-events-none absolute inset-0 -z-[4] overflow-hidden">
+      {/* Animated lines */}
+      <motion.div
+        className="absolute left-[-20%] top-[24%] h-px w-[140%] bg-gradient-to-r from-transparent via-white/30 to-transparent"
+        animate={{ x: ["-6%", "6%", "-6%"] }}
+        transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        style={{ filter: "blur(0.2px)" }}
+      />
+      <motion.div
+        className="absolute left-[-20%] top-[48%] h-px w-[140%] bg-gradient-to-r from-transparent via-white/25 to-transparent"
+        animate={{ x: ["6%", "-6%", "6%"] }}
+        transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        style={{ filter: "blur(0.4px)" }}
+      />
+      <motion.div
+        className="absolute left-[-20%] top-[70%] h-px w-[140%] bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        animate={{ x: ["-4%", "4%", "-4%"] }}
+        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        style={{ filter: "blur(0.6px)" }}
+      />
+
+      {/* Moving transaction icons */}
+      {items.map(({ Icon, y, delay, duration }, idx) => (
+        <motion.div
+          key={idx}
+          className="absolute -left-10 flex items-center justify-center"
+          style={{ top: `${y}%` }}
+          initial={{ x: "-120%" }}
+          animate={{ x: "120%" }}
+          transition={{ duration, delay, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+        >
+          <div
+            className="mr-2 h-0.5 w-16"
+            style={{ backgroundImage: `linear-gradient(90deg, transparent, ${hexToRgba(PRIMARY, 0.65)}, transparent)` }}
+          />
+          <div
+            className="grid h-8 w-8 place-items-center rounded-full text-white shadow-lg"
+            style={{ backgroundImage: `linear-gradient(135deg, ${PRIMARY}, ${SECONDARY})` }}
+          >
+            <Icon className="h-4 w-4" />
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+function Bullet({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <li className="flex items-center justify-center gap-2">
+      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10">{icon}</span>
+      {text}
+    </li>
+  )
+}
+
+/* Reusable floating wrapper for equal-height cards with floating shadow */
+function FloatingCard({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      variants={fadeUpItem}
+      {...floatAnim}
+      whileHover={{ y: -8 }}
+      transition={{ ...floatAnim.transition, type: "tween" }}
+      className="h-full"
+      style={{ filter: "drop-shadow(0 14px 30px rgba(121,48,200,0.18))" }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/* Why ZEND */
+function WhyZend() {
+  return (
+    <section className="mx-auto max-w-6xl px-4 pb-6 pt-8">
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold">Why ZEND?</h2>
+        <p className="mt-2 max-w-3xl text-muted-foreground">
+          Buying and selling on WhatsApp should be simple — but trust issues, payment delays, and app switching make it
+          messy. ZEND fixes that.
+        </p>
+      </div>
+      <motion.div
+        variants={fadeUpContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.25 }}
+        className="grid items-stretch gap-3 sm:grid-cols-3"
+      >
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col items-center justify-center p-6">
+              <Pill>
+                <Download className="mr-2 h-4 w-4" /> No app downloads
+              </Pill>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col items-center justify-center p-6">
+              <Pill>
+                <ShieldCheck className="mr-2 h-4 w-4" /> No scams — escrow keeps money safe
+              </Pill>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col items-center justify-center p-6">
+              <Pill>
+                <MessageSquare className="mr-2 h-4 w-4" /> No switching — everything in WhatsApp
+              </Pill>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+      </motion.div>
+    </section>
+  )
+}
+
+/* Explainers — equal height */
+function Explainers() {
+  return (
+    <section className="relative">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{ background: "linear-gradient(180deg, rgba(243,233,255,0.45) 0%, rgba(243,233,255,0.00) 60%)" }}
+      />
+      <motion.div
+        variants={fadeUpContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.25 }}
+        className="mx-auto grid max-w-6xl items-stretch gap-4 px-4 py-10 sm:grid-cols-3"
+      >
+        <ExplainCard
+          title="What is ZEND?"
+          desc="A WhatsApp-based payment layer for informal vendors and buyers. Create links, hold funds in escrow, release on delivery."
+          icon={<Link2 className="h-5 w-5" />}
+        />
+        <ExplainCard
+          title="Who is it for?"
+          desc="WhatsApp vendors, small shops, and buyers who want simple, safe payments without leaving chat."
+          icon={<Users className="h-5 w-5" />}
+        />
+        <ExplainCard
+          title="Why now?"
+          desc="Payments are already social. ZEND brings trust, automation, and speed to the chat you already use."
+          icon={<Zap className="h-5 w-5" />}
+        />
+      </motion.div>
+    </section>
+  )
+}
+
+/* Features — equal height */
+function Features() {
+  return (
+    <section id="features" className="mx-auto max-w-6xl px-4 py-12">
+      <h2 className="text-2xl font-semibold">Core Features</h2>
+      <motion.div
+        variants={fadeUpContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.15 }}
+        className="mt-6 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        <FeatureCard
+          icon={<ShieldCheck className="h-5 w-5" />}
+          title="Instant & Escrow Payments"
+          desc="Buyers pay securely. Vendors get paid only when delivery is confirmed."
+        />
+        <FeatureCard
+          icon={<Users className="h-5 w-5" />}
+          title="Group Payments"
+          desc="Offer discounts when a target number of people join a purchase."
+        />
+        <FeatureCard
+          icon={<HandCoins className="h-5 w-5" />}
+          title="Help Me Pay"
+          desc="Share a payment link and let friends chip in until it's fully paid."
+        />
+        <FeatureCard
+          icon={<CalendarRange className="h-5 w-5" />}
+          title="Vendor Subscriptions"
+          desc="Set up recurring billing for digital goods, classes, or services."
+        />
+        <FeatureCard
+          icon={<Bot className="h-5 w-5" />}
+          title="AI Money Assistant"
+          desc="Chat with your money inside WhatsApp. Track spending. Get smart tips."
+        />
+        <FeatureCard
+          icon={<Coins className="h-5 w-5" />}
+          title="Powered by Stable Coin"
+          desc="Fast, stable payments using a dollar‑pegged stable coin."
+        />
+      </motion.div>
+    </section>
+  )
+}
+
+function HowItWorks() {
+  return (
+    <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-12">
+      <h2 className="text-2xl font-semibold">How It Works</h2>
+      <motion.div
+        variants={fadeUpContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="mt-6 grid items-stretch gap-6 md:grid-cols-2"
+      >
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col p-6">
+              <h3 className="font-semibold">For Buyers</h3>
+              <ol className="mt-3 space-y-3 text-sm">
+                <Step
+                  n={1}
+                  color={PRIMARY}
+                  icon={<Link2 className="h-4 w-4" />}
+                  text="Click the vendor's ZEND payment link on WhatsApp."
+                />
+                <Step
+                  n={2}
+                  color={PRIMARY}
+                  icon={<Fingerprint className="h-4 w-4" />}
+                  text="View order details and confirm with your fingerprint."
+                />
+                <Step
+                  n={3}
+                  color={PRIMARY}
+                  icon={<ShieldCheck className="h-4 w-4" />}
+                  text="Your payment is secured in escrow until delivery."
+                />
+              </ol>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+
+        <FloatingCard>
+          <Card className="h-full border">
+            <CardContent className="flex h-full flex-col p-6">
+              <h3 className="font-semibold">For Vendors</h3>
+              <ol className="mt-3 space-y-3 text-sm">
+                <Step
+                  n={1}
+                  color={PRIMARY}
+                  icon={<QrCode className="h-4 w-4" />}
+                  text="Generate a payment or group payment link in seconds."
+                />
+                <Step
+                  n={2}
+                  color={PRIMARY}
+                  icon={<MessageSquare className="h-4 w-4" />}
+                  text="Share it with your buyers on WhatsApp."
+                />
+                <Step
+                  n={3}
+                  color={PRIMARY}
+                  icon={<Wallet className="h-4 w-4" />}
+                  text="Get paid instantly once delivery is confirmed."
+                />
+              </ol>
+            </CardContent>
+          </Card>
+        </FloatingCard>
+      </motion.div>
+    </section>
+  )
+}
+
+function FeesAndTrust() {
+  return (
+    <section className="relative">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{ background: "linear-gradient(180deg, rgba(237,255,245,0.55) 0%, rgba(237,255,245,0.00) 70%)" }}
+      />
+      <div className="mx-auto max-w-6xl px-4 py-10">
+        <motion.div
+          variants={fadeUpContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          className="grid items-stretch gap-6 md:grid-cols-2"
+        >
+          <FloatingCard>
+            <Card className="h-full border">
+              <CardContent className="flex h-full flex-col p-6">
+                <div
+                  className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#F3E9FF] px-3 py-1 text-xs font-medium"
+                  style={{ color: PRIMARY }}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Trust & Security
+                </div>
+                <ul className="mt-2 space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <Fingerprint className="mt-0.5 h-4 w-4" style={{ color: PRIMARY }} />
+                    Biometric authentication confirms every payment.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ShieldCheck className="mt-0.5 h-4 w-4" style={{ color: "#25D366" }} />
+                    Smart contract escrow holds funds until delivery.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Star className="mt-0.5 h-4 w-4" style={{ color: PRIMARY }} />
+                    Powered by Stellar.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Lock className="mt-0.5 h-4 w-4" />
+                    Disputes and refunds handled right in WhatsApp.
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </FloatingCard>
+
+          <FloatingCard>
+            <Card className="h-full border">
+              <CardContent className="flex h-full flex-col p-6">
+                <div
+                  className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#EDFFF5] px-3 py-1 text-xs font-medium"
+                  style={{ color: "#25D366" }}
+                >
+                  <Wallet className="h-4 w-4" />
+                  Fees & Currency
+                </div>
+                <ul className="mt-2 space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <BadgeCheck className="mt-0.5 h-4 w-4" style={{ color: "#25D366" }} />
+                    Sending money to other ZEND users is free.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <HandCoins className="mt-0.5 h-4 w-4" style={{ color: PRIMARY }} />
+                    Small fees apply for vendor sales and external transfers.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Coins className="mt-0.5 h-4 w-4" />
+                    All payments use a dollar‑pegged stable coin.
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </FloatingCard>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+/* Risk Monitoring */
+function RiskMonitoring() {
+  const gradient = BRAND_GRADIENT
+  const container = {
+    hidden: { opacity: 0, y: 12 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.15 } },
+  }
+  const item = {
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+  }
+
+  return (
+    <section id="risk-monitoring" className="mx-auto max-w-6xl px-4 py-12">
+      <div className="mb-8 text-center">
+        <div className="mx-auto mb-3 h-1 w-16 rounded-full" style={{ backgroundImage: gradient }} />
+        <h2 className="text-2xl font-semibold">Fraud & Transaction Monitoring</h2>
+        <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
+          Stay protected and in control with proactive risk checks and real-time activity tracking.
+        </p>
+      </div>
+
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.25 }}
+        className="grid items-stretch gap-4 md:grid-cols-2"
+      >
+        <motion.div variants={item}>
+          <motion.div
+            {...floatAnim}
+            className="relative h-full overflow-hidden rounded-2xl p-6 text-white"
+            style={{ backgroundImage: gradient, boxShadow: `0 16px 40px ${hexToRgba(PRIMARY, 0.35)}` }}
+            whileHover={{ y: -6 }}
+          >
+            <motion.span
+              aria-hidden="true"
+              className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+            >
+              <ShieldAlert className="h-5 w-5" />
+            </motion.span>
+
+            <div className="relative">
+              <h3 className="text-lg font-semibold">Fraud Detection</h3>
+              <p className="mt-2 text-sm text-white/85">
+                Advanced fraud monitoring system identifies suspicious activities and notifies you instantly.
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-xs text-white/85">
+                <Bell className="h-4 w-4" />
+                Instant alerts, right in WhatsApp.
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div variants={item}>
+          <motion.div
+            {...floatAnim}
+            className="relative h-full overflow-hidden rounded-2xl p-6 text-white"
+            style={{ backgroundImage: gradient, boxShadow: `0 16px 40px ${hexToRgba(SECONDARY, 0.35)}` }}
+            whileHover={{ y: -6 }}
+          >
+            <motion.span
+              aria-hidden="true"
+              className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
+              animate={{ rotate: [0, 8, 0] }}
+              transition={{ duration: 3.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+            >
+              <Activity className="h-5 w-5" />
+            </motion.span>
+
+            <div className="relative">
+              <h3 className="text-lg font-semibold">Transaction Monitoring</h3>
+              <p className="mt-2 text-sm text-white/85">
+                Real-time visibility into all your payment activities with instant notifications.
+              </p>
+              <div className="mt-4 grid grid-cols-3 gap-2 text-[11px]">
+                <motion.div
+                  className="rounded-lg px-2 py-1 text-center"
+                  style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
+                  animate={{ opacity: [0.8, 1, 0.8] }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                >
+                  Escrow
+                </motion.div>
+                <motion.div
+                  className="rounded-lg px-2 py-1 text-center"
+                  style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
+                  animate={{ opacity: [0.8, 1, 0.8] }}
+                  transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.2 }}
+                >
+                  Subscriptions
+                </motion.div>
+                <motion.div
+                  className="rounded-lg px-2 py-1 text-center"
+                  style={{ backgroundColor: "rgba(255,255,255,0.10)" }}
+                  animate={{ opacity: [0.8, 1, 0.8] }}
+                  transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.35 }}
+                >
+                  Transfers
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </section>
+  )
+}
+
+function FAQ() {
+  return (
+    <section id="faq" className="mx-auto max-w-3xl px-4 py-12">
+      <h2 className="text-2xl font-semibold">FAQ</h2>
+      <Accordion type="single" collapsible className="mt-6">
+        <AccordionItem value="safety">
+          <AccordionTrigger>Is this safe?</AccordionTrigger>
+          <AccordionContent>
+            Yes — all payments are backed by biometric authentication and smart contract escrow.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="app">
+          <AccordionTrigger>Do I need to install an app?</AccordionTrigger>
+          <AccordionContent>No app needed. Everything works inside WhatsApp with a smart AI bot.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="fees">
+          <AccordionTrigger>What does it cost?</AccordionTrigger>
+          <AccordionContent>
+            Sending money to other ZEND users is free. Small fees apply for vendor sales and external transfers.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="currency">
+          <AccordionTrigger>What currency does ZEND use?</AccordionTrigger>
+          <AccordionContent>All payments are powered by a dollar‑pegged stable coin.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </section>
+  )
+}
+
+function CTA() {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-12">
+      <FloatingCard>
+        <Card className="h-full border">
+          <CardContent className="flex h-full flex-col p-8 md:p-10">
+            <div className="grid items-center gap-6 md:grid-cols-2">
+              <div>
+                <h3 className="text-2xl font-semibold">Join the Movement</h3>
+                <p className="mt-2 text-muted-foreground">
+                  ZEND is building the future of social payments in Africa — starting with Nigeria.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 md:justify-end">
+                <LaunchDateButton className="px-6 shadow-sm" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </FloatingCard>
+    </section>
+  )
+}
+
+/* Footer — secondary background, primary text */
+function Footer() {
+  const handleSocialClick = (platform: string) => {
+    gtag.event({
+      action: "click",
+      category: "Social",
+      label: platform,
+    })
+  }
+
+  return (
+    <footer id="contact" className="mt-8" style={{ backgroundColor: SECONDARY, color: PRIMARY }}>
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div className="flex items-center gap-2">
+            <img src="/images/logo-transparent.png" alt="ZEND logo" className="h-6 w-6" />
+            <span className="text-sm font-medium">ZEND</span>
+            <Separator orientation="vertical" className="mx-2 hidden h-5 md:inline-flex" />
+            <span className="text-xs opacity-80">Just ZEND it.</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <a
+              href={WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm hover:opacity-90"
+              onClick={() => handleSocialClick("WhatsApp")}
+            >
+              <PhoneCall className="h-4 w-4" />
+              WhatsApp
+            </a>
+            <a
+              href={TWITTER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm hover:opacity-90"
+              onClick={() => handleSocialClick("Twitter")}
+            >
+              <Twitter className="h-4 w-4" />
+              X/Twitter
+            </a>
+            <Separator orientation="vertical" className="h-5" />
+            <Link
+              href="/stats"
+              className="text-sm hover:opacity-90"
+              onClick={() => {
+                gtag.event({
+                  action: "click",
+                  category: "Navigation",
+                  label: "Stats Page",
+                })
+              }}
+            >
+              Platform Stats
+            </Link>
+          </div>
+        </div>
+        <p className="mt-4 text-xs opacity-80">© {new Date().getFullYear()} ZEND. All rights reserved.</p>
+      </div>
+    </footer>
+  )
+}
+
+/* UI helpers */
+
+function Pill({ children }: { children: React.ReactNode }) {
+  return <span className="inline-flex items-center rounded-full border px-3 py-1 text-sm">{children}</span>
+}
+
+function ExplainCard({ title, desc, icon }: { title: string; desc: string; icon: React.ReactNode }) {
+  return (
+    <FloatingCard>
+      <Card className="h-full transition-colors hover:border-[#7930C8]">
+        <CardContent className="flex h-full flex-col p-5">
+          <div
+            className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg text-white"
+            style={{ backgroundColor: PRIMARY }}
+          >
+            {icon}
+          </div>
+          <h3 className="text-sm font-semibold">{title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+          <div className="mt-auto" />
+        </CardContent>
+      </Card>
+    </FloatingCard>
+  )
+}
+
+function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+  return (
+    <FloatingCard>
+      <Card className="h-full transition-colors hover:border-[#7930C8]">
+        <CardContent className="flex h-full flex-col p-5">
+          <div
+            className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg text-white"
+            style={{ backgroundColor: PRIMARY }}
+            aria-hidden="true"
+          >
+            {icon}
+          </div>
+          <h3 className="text-sm font-semibold">{title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+          <div className="mt-auto" />
+        </CardContent>
+      </Card>
+    </FloatingCard>
+  )
+}
+
+function Step({ n, color, icon, text }: { n: number; color: string; icon: React.ReactNode; text: string }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span
+        className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+        style={{ backgroundColor: color }}
+      >
+        {n}
+      </span>
+      <div className="flex-1">
+        <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+          <span
+            className="inline-flex h-5 w-5 items-center justify-center rounded-md"
+            style={{ backgroundColor: `${color}22` }}
+          >
+            {icon}
+          </span>
+          <span className="font-medium">Step {n}</span>
+        </div>
+        <p>{text}</p>
+      </div>
+    </li>
+  )
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const clean = hex.replace("#", "")
+  const bigint = Number.parseInt(clean, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+
+============================================================
+FILE: stats\page.tsx
+============================================================
+"use client"
+
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import {
+  ArrowLeft,
+  Users,
+  ArrowRightLeft,
+  DollarSign,
+  TrendingUp,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Activity,
+  PieChartIcon,
+  BarChart3,
+  Loader2,
+  RefreshCw,
+} from "lucide-react"
+import { motion } from "framer-motion"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from "recharts"
+import * as gtag from "@/lib/gtag"
+
+// Brand colors
+const PRIMARY = "#7930C8"
+const SECONDARY = "#0D011F"
+const CHART_COLORS = [PRIMARY, "#9B59D0", "#B87FD8", "#D4A5E0", "#25D366", "#FFA500", "#FF6B6B", "#4ECDC4"]
+
+// API Types
+interface StatsOverview {
+  totalUsers: string
+  totalTransactions: string
+  volumeUSD: string
+  volumeNGN: string
+}
+
+interface Transaction {
+  id: string
+  date: string
+  type: string
+  from: string
+  to: string
+  amount: string
+  status: string
+  hash: string
+}
+
+interface ChartDataPoint {
+  date: string
+  label: string
+  usd?: number
+  ngn?: number
+  transactions?: number
+  newUsers?: number
+  cumulativeUsers?: number
+  growthRate?: number
+}
+
+interface TypeDistribution {
+  type: string
+  count: number
+  percentage: string
+}
+
+interface StatusDistribution {
+  status: string
+  count: number
+  percentage: string
+}
+
+interface ApiResponse {
+  overview: StatsOverview
+  recentTransactions: {
+    data: Transaction[]
+    pagination: {
+      currentPage: number
+      totalPages: number
+      totalItems: number
+      itemsPerPage: number
+    }
+  }
+  charts: {
+    dailyVolume: {
+      title: string
+      data: ChartDataPoint[]
+    }
+    monthlyVolume: {
+      title: string
+      data: ChartDataPoint[]
+    }
+    userGrowth: {
+      title: string
+      data: ChartDataPoint[]
+    }
+    transactionTypes: {
+      title: string
+      data: TypeDistribution[]
+    }
+    statusDistribution: {
+      title: string
+      data: StatusDistribution[]
+    }
+  }
+}
+
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+}
+
+const staggerContainer = {
+  hidden: { opacity: 1 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+export default function StatsPage() {
+  const [data, setData] = useState<ApiResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [retrying, setRetrying] = useState(false)
+
+  // Track page view
+  useEffect(() => {
+    gtag.pageview("/stats")
+  }, [])
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const url = `https://app.thezendpay.com/stats?page=${currentPage}&limit=${itemsPerPage}`
+        console.log("Fetching from:", url)
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        console.log("Response status:", response.status)
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const jsonData = await response.json()
+        console.log("Data received successfully")
+        setData(jsonData)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to connect to server"
+        console.error("Error fetching stats:", err)
+        setError(errorMessage)
+      } finally {
+        setLoading(false)
+        setRetrying(false)
+      }
+    }
+
+    fetchStats()
+  }, [currentPage, itemsPerPage])
+
+  const handleRetry = () => {
+    setRetrying(true)
+    setCurrentPage(1)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    gtag.event({
+      action: "page_change",
+      category: "Stats",
+      label: `Page ${page}`,
+    })
+  }
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(Number(value))
+    setCurrentPage(1)
+    gtag.event({
+      action: "items_per_page_change",
+      category: "Stats",
+      label: value,
+    })
+  }
+
+  const handleHashClick = (txId: string) => {
+    gtag.event({
+      action: "hash_click",
+      category: "Stats",
+      label: txId,
+    })
+  }
+
+  const truncateHash = (hash: string) => {
+    return `${hash.slice(0, 6)}...${hash.slice(-4)}`
+  }
+
+  const truncateAddress = (address: string) => {
+    if (address.length <= 20) return address
+    return `${address.slice(0, 10)}...${address.slice(-6)}`
+  }
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-white via-purple-50/30 to-white">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin" style={{ color: PRIMARY }} />
+          <p className="text-sm text-muted-foreground">
+            {retrying ? "Retrying connection..." : "Loading ZEND stats..."}
+          </p>
+          <p className="text-xs text-muted-foreground">This may take a moment...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-white via-purple-50/30 to-white">
+        <Card className="max-w-md">
+          <CardContent className="flex flex-col items-center gap-4 p-8">
+            <div className="rounded-full bg-red-100 p-3">
+              <Activity className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold">Unable to Load Stats</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{error || "Failed to load statistics"}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleRetry} style={{ backgroundColor: PRIMARY }} className="text-white">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Retry
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/">Back to Home</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    )
+  }
+
+  const { overview, recentTransactions, charts } = data
+  const totalPages = recentTransactions.pagination.totalPages
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-white via-purple-50/30 to-white">
+      {/* Header */}
+      <header className="border-b bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+          <Link href="/" className="flex items-center gap-2 text-sm hover:opacity-80">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
+          <div className="flex items-center gap-2">
+            <img src="/images/logo-transparent.png" alt="ZEND logo" className="h-6 w-6" />
+            <span className="text-lg font-semibold" style={{ color: PRIMARY }}>
+              ZEND Stats
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRetry}
+            className="flex items-center gap-2"
+            disabled={loading || retrying}
+          >
+            <RefreshCw className={`h-4 w-4 ${retrying ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        {/* Overview Stats Cards */}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <motion.div variants={fadeUpItem}>
+            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
+                  {overview.totalUsers}
+                </div>
+                <p className="text-xs text-muted-foreground">Active on platform</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div variants={fadeUpItem}>
+            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
+                <ArrowRightLeft className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
+                  {overview.totalTransactions}
+                </div>
+                <p className="text-xs text-muted-foreground">All time</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div variants={fadeUpItem}>
+            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Volume (USD)</CardTitle>
+                <DollarSign className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
+                  {overview.volumeUSD}
+                </div>
+                <p className="text-xs text-muted-foreground">Total transferred</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div variants={fadeUpItem}>
+            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Volume (NGN)</CardTitle>
+                <TrendingUp className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
+                  {overview.volumeNGN}
+                </div>
+                <p className="text-xs text-muted-foreground">Total transferred</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
+
+        {/* Charts Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="mt-8"
+        >
+          <Tabs defaultValue="volume" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-4">
+              <TabsTrigger value="volume">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Volume
+              </TabsTrigger>
+              <TabsTrigger value="growth">
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Growth
+              </TabsTrigger>
+              <TabsTrigger value="types">
+                <PieChartIcon className="mr-2 h-4 w-4" />
+                Types
+              </TabsTrigger>
+              <TabsTrigger value="status">
+                <Activity className="mr-2 h-4 w-4" />
+                Status
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Daily/Monthly Volume Charts */}
+            <TabsContent value="volume" className="space-y-4">
+              {/* Daily Volume */}
+              <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>{charts.dailyVolume.title}</CardTitle>
+                  <CardDescription>Transaction volume over the past 30 days</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={charts.dailyVolume.data}>
+                      <defs>
+                        <linearGradient id="colorNgn" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={PRIMARY} stopOpacity={0.8} />
+                          <stop offset="95%" stopColor={PRIMARY} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="label" stroke="#888" fontSize={12} />
+                      <YAxis stroke="#888" fontSize={12} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="ngn"
+                        stroke={PRIMARY}
+                        fillOpacity={1}
+                        fill="url(#colorNgn)"
+                        name="NGN Volume"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Monthly Volume */}
+              <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>{charts.monthlyVolume.title}</CardTitle>
+                  <CardDescription>Transaction volume over the past 12 months</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={charts.monthlyVolume.data}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="label" stroke="#888" fontSize={12} />
+                      <YAxis stroke="#888" fontSize={12} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Legend />
+                      <Bar dataKey="ngn" fill={PRIMARY} name="NGN Volume" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="transactions" fill={CHART_COLORS[4]} name="Transactions" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* User Growth */}
+            <TabsContent value="growth">
+              <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>{charts.userGrowth.title}</CardTitle>
+                  <CardDescription>Platform user growth over time</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <LineChart data={charts.userGrowth.data}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="label" stroke="#888" fontSize={12} />
+                      <YAxis stroke="#888" fontSize={12} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="newUsers"
+                        stroke={CHART_COLORS[4]}
+                        strokeWidth={2}
+                        name="New Users"
+                        dot={{ fill: CHART_COLORS[4] }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="cumulativeUsers"
+                        stroke={PRIMARY}
+                        strokeWidth={3}
+                        name="Total Users"
+                        dot={{ fill: PRIMARY }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Transaction Types */}
+            <TabsContent value="types">
+              <div className="grid gap-4 md:grid-cols-2">
+                <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle>{charts.transactionTypes.title}</CardTitle>
+                    <CardDescription>Distribution by transaction type</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={charts.transactionTypes.data}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ type, percentage }) => `${type}: ${percentage}%`}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="count"
+                        >
+                          {charts.transactionTypes.data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle>Type Breakdown</CardTitle>
+                    <CardDescription>Detailed transaction type statistics</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {charts.transactionTypes.data.map((item, index) => (
+                        <div key={item.type} className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="h-4 w-4 rounded"
+                              style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                            />
+                            <span className="text-sm font-medium">{item.type}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-muted-foreground">{item.count} txns</span>
+                            <Badge variant="secondary">{item.percentage}%</Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Status Distribution */}
+            <TabsContent value="status">
+              <div className="grid gap-4 md:grid-cols-2">
+                <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle>{charts.statusDistribution.title}</CardTitle>
+                    <CardDescription>Transaction completion status</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={charts.statusDistribution.data}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          paddingAngle={5}
+                          dataKey="count"
+                          label={({ status, percentage }) => `${status}: ${percentage}%`}
+                        >
+                          {charts.statusDistribution.data.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={entry.status.toLowerCase() === "completed" ? CHART_COLORS[4] : CHART_COLORS[5]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle>Status Summary</CardTitle>
+                    <CardDescription>Current transaction status breakdown</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {charts.statusDistribution.data.map((item) => (
+                        <div key={item.status} className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="h-4 w-4 rounded-full"
+                              style={{
+                                backgroundColor:
+                                  item.status.toLowerCase() === "completed" ? CHART_COLORS[4] : CHART_COLORS[5],
+                              }}
+                            />
+                            <span className="text-sm font-medium">{item.status}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-muted-foreground">{item.count} txns</span>
+                            <Badge
+                              variant={item.status.toLowerCase() === "completed" ? "default" : "secondary"}
+                              className={
+                                item.status.toLowerCase() === "completed"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                              }
+                            >
+                              {item.percentage}%
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+
+        {/* Transactions Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="mt-8"
+        >
+          <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Recent Transactions</CardTitle>
+                  <p className="text-sm text-muted-foreground">Latest payment activities on the platform</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Rows per page:</span>
+                  <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="5">5</SelectItem>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Transaction ID</TableHead>
+                      <TableHead>Date & Time</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>From</TableHead>
+                      <TableHead>To</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Hash</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentTransactions.data.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center text-muted-foreground">
+                          No transactions found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      recentTransactions.data.map((tx) => (
+                        <TableRow key={tx.id} className="hover:bg-purple-50/50">
+                          <TableCell className="font-mono text-sm">{tx.id.slice(-8)}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{tx.date}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs">
+                              {tx.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">{truncateAddress(tx.from)}</TableCell>
+                          <TableCell className="font-mono text-xs">{truncateAddress(tx.to)}</TableCell>
+                          <TableCell className="text-right font-semibold">{tx.amount}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={tx.status === "completed" ? "default" : "secondary"}
+                              className={
+                                tx.status === "completed"
+                                  ? "bg-green-100 text-green-700 hover:bg-green-100"
+                                  : "bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
+                              }
+                            >
+                              {tx.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <a
+                              href={`https://stellar.expert/explorer/public/tx/${tx.hash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-mono text-xs transition-colors hover:text-purple-600"
+                              style={{ color: PRIMARY }}
+                              onClick={() => handleHashClick(tx.id)}
+                            >
+                              {truncateHash(tx.hash)}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-4 flex items-center justify-between border-t pt-4">
+                  <div className="text-sm text-muted-foreground">
+                    Showing page {recentTransactions.pagination.currentPage} of {totalPages} (
+                    {recentTransactions.pagination.totalItems} total transactions)
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter((page) => {
+                          return (
+                            page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)
+                          )
+                        })
+                        .map((page, index, array) => (
+                          <div key={page} className="flex items-center gap-1">
+                            {index > 0 && array[index - 1] !== page - 1 && (
+                              <span className="px-2 text-muted-foreground">...</span>
+                            )}
+                            <Button
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => handlePageChange(page)}
+                              className="h-8 w-8 p-0"
+                              style={currentPage === page ? { backgroundColor: PRIMARY, borderColor: PRIMARY } : {}}
+                            >
+                              {page}
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Info Note */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          className="mt-8 text-center"
+        >
+          <p className="text-sm text-muted-foreground">
+            All user identities are anonymized for privacy. Transaction data is updated in real-time.
+          </p>
+        </motion.div>
+      </div>
+    </main>
+  )
+}
+
