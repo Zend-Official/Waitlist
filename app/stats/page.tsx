@@ -168,6 +168,7 @@ export default function StatsPage() {
           headers: {
             "Content-Type": "application/json",
           },
+          cache: "no-store",
         })
 
         console.log("Response status:", response.status)
@@ -190,7 +191,7 @@ export default function StatsPage() {
     }
 
     fetchStats()
-  }, [currentPage, itemsPerPage])
+  }, [currentPage, itemsPerPage, retrying])
 
   const handleRetry = () => {
     setRetrying(true)
