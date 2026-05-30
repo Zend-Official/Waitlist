@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import {
   ArrowLeft,
@@ -17,7 +17,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, type Variants } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -48,7 +48,17 @@ const PRIMARY = "#7930C8"
 const SECONDARY = "#0D011F"
 const CHART_COLORS = [PRIMARY, "#9B59D0", "#B87FD8", "#D4A5E0", "#25D366", "#FFA500", "#FF6B6B", "#4ECDC4"]
 
-// API Types
+const STATUS_COLORS: Record<string, string> = {
+  completed: "#25D366",  // green
+  pending:   "#FFA500",  // orange
+  failed:    "#FF6B6B",  // red
+}
+
+const getStatusColor = (status: string) =>
+  STATUS_COLORS[status.toLowerCase()] ?? "#94a3b8"
+
+// ─── API Types ────────────────────────────────────────────────────────────────
+
 interface StatsOverview {
   totalUsers: string
   totalTransactions: string
@@ -75,7 +85,7 @@ interface ChartDataPoint {
   transactions?: number
   newUsers?: number
   cumulativeUsers?: number
-  growthRate?: number
+  growthRate?: string | number
 }
 
 interface TypeDistribution {
@@ -125,20 +135,40 @@ interface ApiResponse {
   }
 }
 
-const fadeUpItem = {
+// ─── Animation variants ───────────────────────────────────────────────────────
+
+const fadeUpItem: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 }
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 1 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } },
 }
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const truncateHash = (hash?: string) => {
+  if (!hash || hash.length < 10) return hash ?? "—"
+  return `${hash.slice(0, 6)}...${hash.slice(-4)}`
+}
+
+const truncateAddress = (address?: string) => {
+  if (!address) return "—"
+  if (address.length <= 20) return address
+  return `${address.slice(0, 10)}...${address.slice(-6)}`
+}
+
+const statusBadgeClass = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "completed": return "bg-green-100 text-green-700 hover:bg-green-100"
+    case "failed":    return "bg-red-100 text-red-700 hover:bg-red-100"
+    default:          return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
+  }
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function StatsPage() {
   const [data, setData] = useState<ApiResponse | null>(null)
@@ -146,94 +176,74 @@ export default function StatsPage() {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [retrying, setRetrying] = useState(false)
+  // A plain counter bump triggers a re-fetch without the double-fire that the
+  // old `retrying` boolean caused (it was both a flag AND a dep).
+  const [fetchTick, setFetchTick] = useState(0)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Track page view
   useEffect(() => {
     gtag.pageview("/stats")
   }, [])
 
-  // Fetch data from API
+  // Fetch data — depends on page, limit, and fetchTick only
   useEffect(() => {
+    let cancelled = false
+
     const fetchStats = async () => {
       try {
         setLoading(true)
         setError(null)
 
         const url = `https://app.thezendpay.com/stats?page=${currentPage}&limit=${itemsPerPage}`
-        console.log("Fetching from:", url)
-
         const response = await fetch(url, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           cache: "no-store",
         })
 
-        console.log("Response status:", response.status)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const jsonData = await response.json()
-        console.log("Data received successfully")
-        setData(jsonData)
+        const jsonData: ApiResponse = await response.json()
+        if (!cancelled) setData(jsonData)
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to connect to server"
-        console.error("Error fetching stats:", err)
-        setError(errorMessage)
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to connect to server")
       } finally {
-        setLoading(false)
-        setRetrying(false)
+        if (!cancelled) {
+          setLoading(false)
+          setIsRefreshing(false)
+        }
       }
     }
 
     fetchStats()
-  }, [currentPage, itemsPerPage, retrying])
+    return () => { cancelled = true }
+  }, [currentPage, itemsPerPage, fetchTick])
 
-  const handleRetry = () => {
-    setRetrying(true)
+  const handleRetry = useCallback(() => {
+    setIsRefreshing(true)
     setCurrentPage(1)
-  }
+    setFetchTick(t => t + 1)
+  }, [])
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: "smooth" })
-    gtag.event({
-      action: "page_change",
-      category: "Stats",
-      label: `Page ${page}`,
-    })
+    gtag.event({ action: "page_change", category: "Stats", label: `Page ${page}` })
   }
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value))
     setCurrentPage(1)
-    gtag.event({
-      action: "items_per_page_change",
-      category: "Stats",
-      label: value,
-    })
+    gtag.event({ action: "items_per_page_change", category: "Stats", label: value })
   }
 
   const handleHashClick = (txId: string) => {
-    gtag.event({
-      action: "hash_click",
-      category: "Stats",
-      label: txId,
-    })
+    gtag.event({ action: "hash_click", category: "Stats", label: txId })
   }
 
-  const truncateHash = (hash: string) => {
-    return `${hash.slice(0, 6)}...${hash.slice(-4)}`
-  }
-
-  const truncateAddress = (address: string) => {
-    if (address.length <= 20) return address
-    return `${address.slice(0, 10)}...${address.slice(-6)}`
-  }
+  // ── Loading ──────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -241,13 +251,15 @@ export default function StatsPage() {
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-12 w-12 animate-spin" style={{ color: PRIMARY }} />
           <p className="text-sm text-muted-foreground">
-            {retrying ? "Retrying connection..." : "Loading ZEND stats..."}
+            {isRefreshing ? "Retrying connection..." : "Loading ZEND stats..."}
           </p>
-          <p className="text-xs text-muted-foreground">This may take a moment...</p>
+          <p className="text-xs text-muted-foreground">This may take a moment…</p>
         </div>
       </main>
     )
   }
+
+  // ── Error ────────────────────────────────────────────────────────────────────
 
   if (error || !data) {
     return (
@@ -259,7 +271,7 @@ export default function StatsPage() {
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">Unable to Load Stats</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{error || "Failed to load statistics"}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{error ?? "Failed to load statistics"}</p>
             </div>
             <div className="flex gap-2">
               <Button onClick={handleRetry} style={{ backgroundColor: PRIMARY }} className="text-white">
@@ -276,8 +288,11 @@ export default function StatsPage() {
     )
   }
 
+  // ── Happy path ───────────────────────────────────────────────────────────────
+
   const { overview, recentTransactions, charts } = data
-  const totalPages = recentTransactions.pagination.totalPages
+  const { pagination } = recentTransactions
+  const totalPages = pagination.totalPages
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-purple-50/30 to-white">
@@ -299,9 +314,9 @@ export default function StatsPage() {
             size="sm"
             onClick={handleRetry}
             className="flex items-center gap-2"
-            disabled={loading || retrying}
+            disabled={loading || isRefreshing}
           >
-            <RefreshCw className={`h-4 w-4 ${retrying ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh
           </Button>
         </div>
@@ -309,75 +324,36 @@ export default function StatsPage() {
 
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 py-8">
-        {/* Overview Stats Cards */}
+
+        {/* Overview Cards */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="show"
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
         >
-          <motion.div variants={fadeUpItem}>
-            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                <Users className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
-                  {overview.totalUsers}
-                </div>
-                <p className="text-xs text-muted-foreground">Active on platform</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeUpItem}>
-            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
-                <ArrowRightLeft className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
-                  {overview.totalTransactions}
-                </div>
-                <p className="text-xs text-muted-foreground">All time</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeUpItem}>
-            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Volume (USD)</CardTitle>
-                <DollarSign className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
-                  {overview.volumeUSD}
-                </div>
-                <p className="text-xs text-muted-foreground">Total transferred</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeUpItem}>
-            <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Volume (NGN)</CardTitle>
-                <TrendingUp className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold" style={{ color: PRIMARY }}>
-                  {overview.volumeNGN}
-                </div>
-                <p className="text-xs text-muted-foreground">Total transferred</p>
-              </CardContent>
-            </Card>
-          </motion.div>
+          {[
+            { title: "Total Users",       value: overview.totalUsers,       sub: "Active on platform",  Icon: Users },
+            { title: "Total Transactions",value: overview.totalTransactions, sub: "All time",           Icon: ArrowRightLeft },
+            { title: "Volume (USD)",       value: overview.volumeUSD,        sub: "Total transferred",  Icon: DollarSign },
+            { title: "Volume (NGN)",       value: overview.volumeNGN,        sub: "Total transferred",  Icon: TrendingUp },
+          ].map(({ title, value, sub, Icon }) => (
+            <motion.div key={title} variants={fadeUpItem}>
+              <Card className="border-purple-100 bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                  <Icon className="h-4 w-4 text-purple-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold" style={{ color: PRIMARY }}>{value}</div>
+                  <p className="text-xs text-muted-foreground">{sub}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </motion.div>
 
-        {/* Charts Section */}
+        {/* Charts */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -386,27 +362,15 @@ export default function StatsPage() {
         >
           <Tabs defaultValue="volume" className="w-full">
             <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-4">
-              <TabsTrigger value="volume">
-                <BarChart3 className="mr-2 h-4 w-4" />
-                Volume
-              </TabsTrigger>
-              <TabsTrigger value="growth">
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Growth
-              </TabsTrigger>
-              <TabsTrigger value="types">
-                <PieChartIcon className="mr-2 h-4 w-4" />
-                Types
-              </TabsTrigger>
-              <TabsTrigger value="status">
-                <Activity className="mr-2 h-4 w-4" />
-                Status
-              </TabsTrigger>
+              <TabsTrigger value="volume"><BarChart3 className="mr-2 h-4 w-4" />Volume</TabsTrigger>
+              <TabsTrigger value="growth"><TrendingUp className="mr-2 h-4 w-4" />Growth</TabsTrigger>
+              <TabsTrigger value="types"><PieChartIcon className="mr-2 h-4 w-4" />Types</TabsTrigger>
+              <TabsTrigger value="status"><Activity className="mr-2 h-4 w-4" />Status</TabsTrigger>
             </TabsList>
 
-            {/* Daily/Monthly Volume Charts */}
+            {/* ── Volume tab ──────────────────────────────────────────────────── */}
             <TabsContent value="volume" className="space-y-4">
-              {/* Daily Volume */}
+              {/* Daily — shows both USD and NGN */}
               <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>{charts.dailyVolume.title}</CardTitle>
@@ -420,17 +384,22 @@ export default function StatsPage() {
                           <stop offset="5%" stopColor={PRIMARY} stopOpacity={0.8} />
                           <stop offset="95%" stopColor={PRIMARY} stopOpacity={0} />
                         </linearGradient>
+                        <linearGradient id="colorUsd" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={CHART_COLORS[4]} stopOpacity={0.8} />
+                          <stop offset="95%" stopColor={CHART_COLORS[4]} stopOpacity={0} />
+                        </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="label" stroke="#888" fontSize={12} />
                       <YAxis stroke="#888" fontSize={12} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          backgroundColor: "rgba(255,255,255,0.95)",
                           border: "1px solid #e5e7eb",
                           borderRadius: "8px",
                         }}
                       />
+                      <Legend />
                       <Area
                         type="monotone"
                         dataKey="ngn"
@@ -439,12 +408,20 @@ export default function StatsPage() {
                         fill="url(#colorNgn)"
                         name="NGN Volume"
                       />
+                      <Area
+                        type="monotone"
+                        dataKey="usd"
+                        stroke={CHART_COLORS[4]}
+                        fillOpacity={1}
+                        fill="url(#colorUsd)"
+                        name="USD Volume"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
-              {/* Monthly Volume */}
+              {/* Monthly — NGN volume + transaction count */}
               <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>{charts.monthlyVolume.title}</CardTitle>
@@ -458,21 +435,22 @@ export default function StatsPage() {
                       <YAxis stroke="#888" fontSize={12} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          backgroundColor: "rgba(255,255,255,0.95)",
                           border: "1px solid #e5e7eb",
                           borderRadius: "8px",
                         }}
                       />
                       <Legend />
-                      <Bar dataKey="ngn" fill={PRIMARY} name="NGN Volume" radius={[8, 8, 0, 0]} />
-                      <Bar dataKey="transactions" fill={CHART_COLORS[4]} name="Transactions" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="ngn" fill={PRIMARY}           name="NGN Volume"   radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="usd" fill={CHART_COLORS[4]}   name="USD Volume"   radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="transactions" fill={CHART_COLORS[5]} name="Transactions" radius={[8, 8, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* User Growth */}
+            {/* ── Growth tab ──────────────────────────────────────────────────── */}
             <TabsContent value="growth">
               <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
                 <CardHeader>
@@ -487,7 +465,7 @@ export default function StatsPage() {
                       <YAxis stroke="#888" fontSize={12} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          backgroundColor: "rgba(255,255,255,0.95)",
                           border: "1px solid #e5e7eb",
                           borderRadius: "8px",
                         }}
@@ -515,7 +493,7 @@ export default function StatsPage() {
               </Card>
             </TabsContent>
 
-            {/* Transaction Types */}
+            {/* ── Types tab ───────────────────────────────────────────────────── */}
             <TabsContent value="types">
               <div className="grid gap-4 md:grid-cols-2">
                 <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
@@ -533,11 +511,10 @@ export default function StatsPage() {
                           labelLine={false}
                           label={({ type, percentage }) => `${type}: ${percentage}%`}
                           outerRadius={100}
-                          fill="#8884d8"
                           dataKey="count"
                         >
-                          {charts.transactionTypes.data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                          {charts.transactionTypes.data.map((_, index) => (
+                            <Cell key={`cell-type-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -574,7 +551,7 @@ export default function StatsPage() {
               </div>
             </TabsContent>
 
-            {/* Status Distribution */}
+            {/* ── Status tab ──────────────────────────────────────────────────── */}
             <TabsContent value="status">
               <div className="grid gap-4 md:grid-cols-2">
                 <Card className="border-purple-100 bg-white/60 backdrop-blur-sm">
@@ -591,15 +568,14 @@ export default function StatsPage() {
                           cy="50%"
                           innerRadius={60}
                           outerRadius={100}
-                          fill="#8884d8"
                           paddingAngle={5}
                           dataKey="count"
                           label={({ status, percentage }) => `${status}: ${percentage}%`}
                         >
                           {charts.statusDistribution.data.map((entry, index) => (
                             <Cell
-                              key={`cell-${index}`}
-                              fill={entry.status.toLowerCase() === "completed" ? CHART_COLORS[4] : CHART_COLORS[5]}
+                              key={`cell-status-${index}`}
+                              fill={getStatusColor(entry.status)}
                             />
                           ))}
                         </Pie>
@@ -621,23 +597,13 @@ export default function StatsPage() {
                           <div className="flex items-center gap-3">
                             <div
                               className="h-4 w-4 rounded-full"
-                              style={{
-                                backgroundColor:
-                                  item.status.toLowerCase() === "completed" ? CHART_COLORS[4] : CHART_COLORS[5],
-                              }}
+                              style={{ backgroundColor: getStatusColor(item.status) }}
                             />
                             <span className="text-sm font-medium">{item.status}</span>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-sm text-muted-foreground">{item.count} txns</span>
-                            <Badge
-                              variant={item.status.toLowerCase() === "completed" ? "default" : "secondary"}
-                              className={
-                                item.status.toLowerCase() === "completed"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                              }
-                            >
+                            <Badge className={statusBadgeClass(item.status)}>
                               {item.percentage}%
                             </Badge>
                           </div>
@@ -687,7 +653,7 @@ export default function StatsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Transaction ID</TableHead>
-                      <TableHead>Date & Time</TableHead>
+                      <TableHead>Date &amp; Time</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>From</TableHead>
                       <TableHead>To</TableHead>
@@ -709,9 +675,7 @@ export default function StatsPage() {
                           <TableCell className="font-mono text-sm">{tx.id.slice(-8)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">{tx.date}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {tx.type}
-                            </Badge>
+                            <Badge variant="outline" className="text-xs">{tx.type}</Badge>
                           </TableCell>
                           <TableCell className="font-mono text-xs">{truncateAddress(tx.from)}</TableCell>
                           <TableCell className="font-mono text-xs">{truncateAddress(tx.to)}</TableCell>
@@ -719,27 +683,27 @@ export default function StatsPage() {
                           <TableCell>
                             <Badge
                               variant={tx.status === "completed" ? "default" : "secondary"}
-                              className={
-                                tx.status === "completed"
-                                  ? "bg-green-100 text-green-700 hover:bg-green-100"
-                                  : "bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
-                              }
+                              className={statusBadgeClass(tx.status)}
                             >
                               {tx.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <a
-                              href={`https://stellar.expert/explorer/public/tx/${tx.hash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 font-mono text-xs transition-colors hover:text-purple-600"
-                              style={{ color: PRIMARY }}
-                              onClick={() => handleHashClick(tx.id)}
-                            >
-                              {truncateHash(tx.hash)}
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
+                            {tx.hash ? (
+                              <a
+                                href={`https://stellar.expert/explorer/public/tx/${tx.hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 font-mono text-xs transition-colors hover:text-purple-600"
+                                style={{ color: PRIMARY }}
+                                onClick={() => handleHashClick(tx.id)}
+                              >
+                                {truncateHash(tx.hash)}
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))
@@ -748,12 +712,11 @@ export default function StatsPage() {
                 </Table>
               </div>
 
-              {/* Pagination Controls */}
+              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
                   <div className="text-sm text-muted-foreground">
-                    Showing page {recentTransactions.pagination.currentPage} of {totalPages} (
-                    {recentTransactions.pagination.totalItems} total transactions)
+                    Page {pagination.currentPage} of {totalPages} ({pagination.totalItems} total transactions)
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -768,15 +731,15 @@ export default function StatsPage() {
 
                     <div className="flex items-center gap-1">
                       {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter((page) => {
-                          return (
-                            page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)
-                          )
-                        })
+                        .filter(page =>
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        )
                         .map((page, index, array) => (
                           <div key={page} className="flex items-center gap-1">
                             {index > 0 && array[index - 1] !== page - 1 && (
-                              <span className="px-2 text-muted-foreground">...</span>
+                              <span className="px-2 text-muted-foreground">…</span>
                             )}
                             <Button
                               variant={currentPage === page ? "default" : "outline"}
@@ -807,7 +770,7 @@ export default function StatsPage() {
           </Card>
         </motion.div>
 
-        {/* Info Note */}
+        {/* Footer note */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
