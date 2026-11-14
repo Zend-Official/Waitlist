@@ -179,9 +179,15 @@ const scenes = [
 </section>
 
 <style>
+  /* The stage fills the screen even when a phone's address bar slides away
+     (100lvh = the tallest the screen gets), while everything on it is laid
+     out for the screen with the bar showing (.hero__stage, 100svh), so
+     nothing moves when the bar comes and goes; the extra strip just shows
+     more background and shapes. */
   .hero {
     position: relative;
     height: 100svh;
+    height: 100lvh;
     overflow: hidden;
     background: var(--c-bg);
     color: var(--c-on-shape);
@@ -199,7 +205,10 @@ const scenes = [
      opens up between the text and the girl. */
   .hero__stage {
     position: absolute;
-    inset: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 100svh;
     pointer-events: none; /* only the buttons inside take clicks (see .btn) */
   }
   .copy :global(.pos) {

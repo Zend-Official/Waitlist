@@ -164,13 +164,16 @@ export function addSecurity({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cl
       .set(barCta, { autoAlpha: 0 }, S + 0.5)
       .set(secCta, { autoAlpha: 1 }, S + 0.5);
   } else if (!desktop) {
-    // Moves under the new subtitle (28 units below it, never under 22px; left
-    // edge lined up).
-    tl.to(
-      mobileCta,
-      { x: () => home(secText).left - home(mobileCta).left, y: () => home(secBody).bottom + Math.max(28 * unit(), 22) - home(mobileCta).top, duration: 0.35, ease: 'power2.inOut' },
-      S + 0.2,
-    );
+    // Goes under the new subtitle (28 units below it, never under 22px; left
+    // edge lined up). It fades out, moves while hidden, and fades back in
+    // there: sliding across, it would pass behind the growing phone.
+    tl.to(mobileCta, { autoAlpha: 0, duration: 0.1, ease: 'power1.in' }, S)
+      .set(
+        mobileCta,
+        { x: () => home(secText).left - home(mobileCta).left, y: () => home(secBody).bottom + Math.max(28 * unit(), 22) - home(mobileCta).top },
+        S + 0.3,
+      )
+      .fromTo(mobileCta, { scale: 0.85, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.2, ease: 'back.out(2)', immediateRender: false }, S + 0.45);
   }
 
   // ---------- The shield pops in ----------

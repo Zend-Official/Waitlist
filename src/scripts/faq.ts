@@ -115,9 +115,24 @@ export function addFaq({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cleanup
     );
 
   // ---------- Heading, chips, Talk to us ----------
-  tl.fromTo(title, { y: () => 170 * unit(), autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35, ease: 'power2.out', immediateRender: false }, S + 0.2)
-    .fromTo(items, { y: () => 24 * unit(), autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.04, duration: 0.2, ease: 'power2.out', immediateRender: false }, S + 0.4)
-    .fromTo(talk, { scale: 0.85, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.2, ease: 'back.out(2)', immediateRender: false }, S + 0.5);
+  tl.fromTo(title, { y: () => 170 * unit(), autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35, ease: 'power2.out', immediateRender: false }, S + 0.2);
+
+  // The questions and Talk to us come out in one go once the card is open,
+  // on their own clock (not tied to scrolling): on a phone the swipe that
+  // lands on the card could otherwise stop the page halfway through them.
+  // Scrolling back before this point puts them away, ready to come out again.
+  const list = faq.querySelector<HTMLElement>('.faq-list')!;
+  const showChips = () => {
+    list.setAttribute('data-ready', '');
+    if (reduce) return void gsap.set([...items, talk], { autoAlpha: 1, y: 0, scale: 1 });
+    gsap.fromTo(items, { y: 24 * unit(), autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.06, duration: 0.4, ease: 'power2.out', overwrite: true });
+    gsap.fromTo(talk, { scale: 0.85, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.4, delay: 0.25, ease: 'back.out(2)', overwrite: true });
+  };
+  const hideChips = () => {
+    list.removeAttribute('data-ready');
+    gsap.to([...items, talk], { autoAlpha: 0, duration: 0.15, overwrite: true, onComplete: () => void (list.scrollTop = 0) });
+  };
+  tl.to({}, { duration: 0.01, onStart: showChips, onReverseComplete: hideChips }, S + 0.4);
 
   return {
     cleanup: () => {

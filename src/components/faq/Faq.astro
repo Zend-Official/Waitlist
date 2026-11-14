@@ -127,8 +127,17 @@ const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${df
     align-items: flex-start;
     gap: calc(40 * var(--u));
     /* Faded edges where there's more to scroll (faq.ts sets the sizes). */
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
-    mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+    /* --clear: the strip under the camera notch stays empty, so scrolled
+       text fades out before it reaches the notch. */
+    --clear: calc(50 * var(--u));
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent var(--clear), #000 calc(var(--clear) + var(--fade-top)), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, transparent var(--clear), #000 calc(var(--clear) + var(--fade-top)), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+  }
+  /* Until the questions have come out, the card ignores swipes: the page
+     scrolls on (the hidden list would otherwise take the swipe). */
+  .faq-list:not([data-ready]) {
+    overflow: hidden;
+    pointer-events: none;
   }
   .faq-list::-webkit-scrollbar {
     width: 8px;
@@ -276,6 +285,7 @@ const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${df
       top: calc(9 * var(--u));
     }
     .faq-list {
+      --clear: calc(25 * var(--u));
       padding: calc(40 * var(--u)) calc(22 * var(--u)) calc(40 * var(--u));
       gap: calc(22 * var(--u));
     }
