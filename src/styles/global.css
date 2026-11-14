@@ -1,0 +1,412 @@
+@import "tailwindcss";
+
+/* ---------- Fonts (subset WOFF2, see public/fonts) ---------- */
+@font-face {
+  font-family: "Archivo Black";
+  src: url("/fonts/archivo-black.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-var.woff2") format("woff2");
+  font-weight: 300 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Design tokens ---------- */
+:root {
+  --c-bg: #ffffff;
+  --c-white: #ffffff;
+  --c-ink: #140027;        /* dark text */
+  --c-shape: #320262;      /* hero arrow shape, nav icons */
+  --c-lilac: #b163fe;      /* accent words, hero buttons */
+  --c-violet: #8000ff;     /* header button (later scenes), pattern */
+  --c-chip-box: #e1c9f8;   /* chip icon box */
+  --c-success: #1ab705;    /* paid tick */
+  --c-nav-active: #320262; /* mobile nav: selected icon (same as the label) */
+  --c-nav-idle: #000000;   /* mobile nav: other icons (from the mobile frame) */
+
+  /* Role colours: what components use. Night values are set below. */
+  --c-text: #140027;        /* text sitting on the page background */
+  --c-on-shape: #ffffff;    /* text/logo sitting on the dark arrow */
+  --c-hdr-on-bg: #320262;   /* header logo/label when over the page background */
+  --c-accent: #b163fe;      /* accent words, Join waitlist button */
+  --c-btn-text: #ffffff;
+  --c-pattern: #8000ff;     /* background pattern (drawn at 5%) */
+  --c-chip-bg: #ffffff;
+  --c-chip-text: #140027;
+  --c-chip-icon: #320262;
+  --c-rail-bg: #ffffff;
+  --c-rail-icon: #320262;
+  --c-rail-active-bg: #320262;
+  --c-rail-active-icon: #ffffff;
+  --c-pill-bg: #ffffff;
+  /* Day/night toggle box (desktop header). Day: faint lilac (#C38FF8 at
+     20%) with the label's purple icon; on Hero 2 it sits on the arrow, so
+     the icon turns white like the label. */
+  --c-toggle-bg: rgb(195 143 248 / 0.2);
+  --c-toggle-icon: #320262;
+  --c-toggle-bg-swap: rgb(195 143 248 / 0.2);
+  --c-toggle-icon-swap: #ffffff;
+  /* How it works (buyer steps) */
+  --c-hiw-shape: #140027;   /* dark shape on the right edge */
+  --c-phone: #320262;       /* phone frame, notch, step badges, trail */
+  --c-badge-text: #ffffff;
+  --c-hiw-head: #320262;    /* step titles, chat names */
+  --c-screen: #f9f9f9;
+  --c-screen-head: #ffffff;
+  --c-card-bg: #ffffff;
+  --c-card-border: #c9a8ec;
+  --c-wall: #ffffff;        /* phone chat wallpaper (day: white, doodles on top) */
+  --c-wall-logo: rgb(50 2 98 / 0.14);
+  --c-link: #320262;
+  --c-bubble-name: #8000ff; /* sender name in seller chat bubbles */
+  /* FAQ card (chips = question, ans = reply bubble) */
+  --c-faq-card: #f8f8f8;
+  --c-faq-chip: #b163fe;
+  --c-faq-chip-text: #ffffff;
+  --c-faq-ans: #ffffff;
+  --c-faq-ans-text: #320262;
+  --c-faq-btn: #8000ff;
+  --c-faq-btn-text: #ffffff;
+  --c-scroll-thumb: #140027; /* scrollbars: the dark shape's colour */
+  /* Footer */
+  --c-foot-title: #320262;
+  --c-foot-text: #320262;
+  --c-foot-link: #320262;
+  --c-foot-icon: #320262;
+  --c-foot-btn: #8000ff;
+  --c-foot-btn-text: #ffffff;
+  --c-foot-outline: rgb(50 2 98 / 0.12);
+  --c-foot-glow: rgb(195 143 248 / 0.45); /* bottom glow (lilac) */
+  --c-foot-glow-soft: rgb(225 201 248 / 0.35);
+  --c-bar-bg: #ffffff;      /* desktop top bar + square rail (from How it works) */
+  --c-bar-active: #320262;
+  --rail-shadow: 0 calc(4 * var(--u)) calc(16 * var(--u)) rgb(20 0 39 / 0.1);
+  color-scheme: light;
+
+  --font-display: "Archivo Black", "Arial Black", system-ui, sans-serif;
+  --font-body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* One design unit = 1 Figma px, scaled so the 1728x1117 frame fits the viewport */
+  --u: min(calc(100vw / 1728), calc(100svh / 1117));
+  --stage-w: 1728;
+  --stage-h: 1117;
+}
+
+/* ---------- Night mode (hex codes from the user, 2026-11-13) ----------
+   data-theme is set before first paint in Base.astro (saved choice, else the
+   device setting). The arrow (#320262), the text on it, and the tick stay. */
+:root[data-theme="dark"] {
+  --c-bg: #0b0015;
+  --c-text: #c38ff8;
+  --c-hdr-on-bg: #ffffff;
+  --c-accent: #c38ff8;
+  --c-btn-text: #10001f;
+  --c-pattern: #c38ff8;
+  --c-chip-bg: #140027;
+  --c-chip-text: #ffffff;
+  --c-chip-box: #c38ff8;
+  --c-chip-icon: #10001f;
+  --c-rail-bg: #140027;
+  --c-rail-icon: #c38ff8;
+  --c-rail-active-bg: #c38ff8;
+  --c-rail-active-icon: #ffffff;
+  --c-pill-bg: #0b0015; /* same as the night page bg */
+  --c-bar-bg: #140027;
+  --c-bar-active: #c38ff8;
+  --c-hiw-shape: #320262;
+  --c-phone: #c38ff8;
+  --c-badge-text: #10001f;
+  --c-hiw-head: #ffffff;
+  --c-screen: #1e1e1e;
+  --c-screen-head: #140027;
+  --c-card-bg: #140027;
+  --c-card-border: rgb(195 143 248 / 0.4);
+  --c-wall: #080010;
+  --c-wall-logo: rgb(255 255 255 / 0.08); /* faint white doodles, like WhatsApp dark */
+  --c-link: #c38ff8;
+  --c-bubble-name: #c38ff8;
+  --c-scroll-thumb: #320262;
+  --c-foot-title: #ffffff;
+  --c-foot-text: rgb(255 255 255 / 0.72); /* off-white: all footer text that isn't a heading */
+  --c-foot-link: rgb(255 255 255 / 0.72); /* faint white */
+  --c-foot-icon: #c38ff8;
+  --c-foot-btn: #c38ff8;
+  --c-foot-btn-text: #10001f;
+  --c-foot-outline: rgb(195 143 248 / 0.18);
+  --c-foot-glow: rgb(128 0 255 / 0.32);
+  --c-foot-glow-soft: rgb(50 2 98 / 0.35);
+  --c-faq-card: #140027;
+  --c-faq-chip: #c38ff8;
+  --c-faq-chip-text: #10001f;
+  --c-faq-ans: #0b0015;
+  --c-faq-ans-text: #ffffff;
+  --c-faq-btn: #c38ff8;
+  --c-faq-btn-text: #10001f;
+  /* Night: #320262 box, white icon (the user's reference image). On Hero 2
+     the box sits on the #320262 arrow, so it lightens to the faint lilac. */
+  --c-toggle-bg: #ffffff14; /* faint white over the bar (8%) */
+  --c-toggle-icon: #ffffff;
+  --c-toggle-bg-swap: #ffffff14;
+  --c-toggle-icon-swap: #ffffff;
+  /* A dark drop shadow vanishes on #10001F: a soft lilac glow plus a deep
+     shadow lifts the buttons off the page instead. */
+  --rail-shadow: 0 calc(12 * var(--u)) calc(24 * var(--u)) rgb(0 0 0 / 0.4), 0 calc(6 * var(--u)) calc(18 * var(--u)) rgb(195 143 248 / 0.12);
+  --c-nav-idle: #c38ff8;
+  --c-nav-active: #ffffff;
+  color-scheme: dark;
+}
+
+/* Portrait and near-square screens (phones, tablets upright, narrow windows)
+   use the 402x874 mobile frames */
+@media (max-aspect-ratio: 5/4) {
+  :root {
+    --u: min(calc(100vw / 402), calc(100svh / 874));
+    --stage-w: 402;
+    --stage-h: 874;
+  }
+}
+
+html {
+  /* Slim scrollbars site-wide; the thumb is the dark shape's colour. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-scroll-thumb) transparent;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+/* Mouse devices: the page scrollbar is our own floating thumb (scrollbar.ts),
+   so the native one is hidden; no track, the page shows through. */
+/* Waitlist open: the page underneath doesn't scroll. */
+html.wl-open {
+  overflow: hidden;
+}
+html.own-scrollbar {
+  scrollbar-width: none;
+}
+html.own-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.page-thumb {
+  position: fixed;
+  top: 0;
+  right: 3px;
+  z-index: 60;
+  width: 6px;
+  border-radius: 999px;
+  background: var(--c-scroll-thumb);
+  opacity: 0.75;
+  cursor: grab;
+  transition: width 0.15s, opacity 0.15s;
+}
+.page-thumb:hover,
+.page-thumb.is-drag {
+  width: 9px;
+  opacity: 1;
+}
+.page-thumb.is-drag {
+  cursor: grabbing;
+}
+/* Safari / older Chromium: the same slim scrollbar. */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-scroll-thumb);
+  border-radius: 999px;
+}
+body {
+  margin: 0;
+  overflow-x: clip;
+}
+
+/* ---------- Design-unit positioning helpers ----------
+   Elements set --dx/--dy/--dw/--dh (desktop) and --mx/--my/--mw/--mh (mobile)
+   in Figma pixels; these helpers turn them into scaled lengths.
+
+   The stage is always the full screen. The frame (1728x1117 or 402x874) is
+   scaled to fit (--u) and each piece is pinned to an edge, so any screen
+   shape keeps the frame's relationships:
+     horizontal: left (default) | .dr/.mr right | .dc/.mc centre
+     vertical:   centred (default) | .db/.mb bottom | .dt/.mt top
+   d* = desktop layout, m* = mobile/portrait layout. */
+.pos {
+  --x: var(--dx);
+  --y: var(--dy);
+  --w: var(--dw);
+  --h: var(--dh);
+  --offx: 0px;
+  --offy: calc((100% - var(--stage-h) * var(--u)) / 2);
+  position: absolute;
+  left: calc(var(--offx) + var(--x) * var(--u));
+  top: calc(var(--offy) + var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+}
+@media not all and (max-aspect-ratio: 5/4) {
+  /* max(0px, …): never shift left of the frame position (the scrollbar makes
+     the page a few px narrower than the 100vw used for --u). */
+  .pos.dr { --offx: max(0px, calc(100% - var(--stage-w) * var(--u))); }
+  .pos.dc { --offx: max(0px, calc((100% - var(--stage-w) * var(--u)) / 2)); }
+  .pos.db { --offy: calc(100% - var(--stage-h) * var(--u)); }
+  .pos.dt { --offy: 0px; }
+  /* Hero 2 copy on wide screens: halfway between following Hero 2's arrow
+     (stretched sideways from its tip at frame x 257:
+     257u + (x - 257) / 1471 * (width - 257u)) and pinning right with the arrow
+     (x * u + width - 1728u). On screens no wider than the frame both equal
+     plain x * u. */
+  .pos.d-tip {
+    left: max(
+      calc(var(--x) * var(--u)),
+      calc(
+        (257 * var(--u) + (var(--x) - 257) / 1471 * (100% - 257 * var(--u)) + var(--x) * var(--u) + 100% - var(--stage-w) * var(--u)) / 2
+      )
+    );
+  }
+}
+
+/* Type: scales with the frame (--u) but never above --fs-max (set per element
+   to industry-standard sizes). Line height keeps the frame's ratio. */
+.fs {
+  --fs: var(--dfs);
+  --lh: var(--dlh);
+  font-size: min(calc(var(--fs) * var(--u)), var(--fs-max, 1000px));
+  line-height: calc(var(--lh) / var(--fs));
+}
+/* Subtitles (body text under headings) breathe a little more than the
+   frames' line height (the user, 2026-11-14). */
+.fs:is(.body, .hiw-body, .sell-body, .sec-body, .foot-sub, .foot-tag) {
+  line-height: calc(var(--lh) / var(--fs) * 1.15);
+}
+
+@media (max-aspect-ratio: 5/4) {
+  .pos {
+    --x: var(--mx);
+    --y: var(--my);
+    --w: var(--mw);
+    --h: var(--mh);
+  }
+  .pos.mr { --offx: max(0px, calc(100% - var(--stage-w) * var(--u))); }
+  .pos.mc { --offx: max(0px, calc((100% - var(--stage-w) * var(--u)) / 2)); }
+  .pos.mb { --offy: calc(100% - var(--stage-h) * var(--u)); }
+  .pos.mt { --offy: 0px; }
+  .fs {
+    --fs: var(--mfs);
+    --lh: var(--mlh);
+  }
+}
+
+.only-desktop { display: block; }
+.only-mobile { display: none; }
+@media (max-aspect-ratio: 5/4) {
+  .only-desktop { display: none; }
+  .only-mobile { display: block; }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Buttons: colour changes ease; the press "scale in / spring out" is driven
+   by src/scripts/press.ts so it always plays fully, even on a quick click. */
+:where(.btn, .rail__btn) {
+  transition: background-color 0.3s, color 0.3s, filter 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-violet);
+  outline-offset: 3px;
+}
+
+/* Day/night switch: a gentle crossfade of the whole page (theme.ts uses the
+   View Transitions API where supported; skipped in lite / reduced motion). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: ease;
+}
+
+/* ---------- Buttons (Join waitlist), shared by every scene ----------
+   Sizes itself from its text: padding is the frame's padding in em, so it
+   shrinks with the capped text. */
+.btn {
+  --fs-max: 18px; /* standard button text (desktop) */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em; /* room for the chevron after "Join waitlist" */
+  padding: 0.7em 1.09em; /* >= 44px tall: standard minimum tap target */
+  border-radius: 999px;
+  background: var(--c-accent);
+  color: var(--c-btn-text);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+.btn:hover {
+  filter: brightness(1.06);
+}
+/* Chevron after the label: sized to the text, nudges right on hover. */
+.btn__icon {
+  flex: none;
+  width: auto;
+  height: 0.8em;
+  overflow: visible;
+  transition: translate 0.25s ease;
+}
+.btn:hover .btn__icon {
+  translate: 0.15em 0;
+}
+@media (max-aspect-ratio: 5/4) {
+  .btn {
+    --fs-max: 16px; /* standard button text (mobile) */
+    padding: 0.85em 1.1em;
+  }
+}
+
+/* ---------- Page-to-page wave (page-wave.ts) ----------
+   Same wave as Join waitlist: the page background sweeps out from the tapped
+   link, led by a soft lilac ring; the next page rises in from blank. */
+.page-wave {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--c-bg);
+  clip-path: circle(0px at 50% 50%);
+  pointer-events: none;
+}
+.page-wave__ring {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 3px solid var(--c-accent);
+  box-shadow: 0 0 40px 8px rgb(195 143 248 / 0.35);
+}
+/* Arriving after the wave: the page starts blank (the wave's colour) until
+   it rises in (set before first paint in Base.astro). */
+html.wave-in body > * {
+  opacity: 0;
+}

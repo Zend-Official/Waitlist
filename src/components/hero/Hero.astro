@@ -1,0 +1,590 @@
+---
+import SmartPicture from '../SmartPicture.astro';
+import Pattern from '../Pattern.astro';
+import Logo from '../../assets/icons/logo.svg';
+import Bag from '../../assets/icons/bag.svg';
+import DoubleCheck from '../../assets/icons/double-check.svg';
+import Chevron from '../../assets/icons/chevron-right.svg';
+import UserIcon from '../../assets/icons/user.svg';
+import girlWorried from '../../assets/hero/girl-worried.png';
+import girlHappy from '../../assets/hero/girl-happy.png';
+import { SHAPES, GIRL, CHIP } from '../../data/hero';
+import PARTS from '../../data/hero-girl-parts.json';
+// Face/hand overlays for the idle animation (blink, frown, typing), cut from
+// the user's edited pictures by comparing them with the originals.
+const partFiles = import.meta.glob<{ default: ImageMetadata }>('../../assets/hero/parts/*.webp', { eager: true });
+const parts = (pose: 'worried' | 'happy') =>
+  Object.entries(PARTS)
+    .filter(([name]) => name.startsWith(`girl-${pose}-`))
+    .map(([name, g]) => ({
+      kind: name.replace(`girl-${pose}-`, ''),
+      src: partFiles[`../../assets/hero/parts/${name}.webp`].default,
+      style: `left:${(g.x / g.W) * 100}%;top:${(g.y / g.H) * 100}%;width:${(g.w / g.W) * 100}%;height:${(g.h / g.H) * 100}%`,
+    }));
+
+// Inline style helper: desktop + mobile frame values (Figma px).
+const box = (d: readonly number[], m: readonly number[]) =>
+  [
+    `--dx:${d[0]};--dy:${d[1]}`,
+    d[2] !== undefined ? `--dw:${d[2]}` : '',
+    d[3] !== undefined ? `--dh:${d[3]}` : '',
+    `--mx:${m[0]};--my:${m[1]}`,
+    m[2] !== undefined ? `--mw:${m[2]}` : '',
+    m[3] !== undefined ? `--mh:${m[3]}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+const type = (dfs: number, dlh: number, mfs: number, mlh: number) =>
+  `--dfs:${dfs};--dlh:${dlh};--mfs:${mfs};--mlh:${mlh}`;
+// Girl width = 434 (mobile) or 1157 (desktop) design units; one unit is
+// min(vw/402, vh/874) or min(vw/1728, vh/1117).
+const girlSizes = '(max-aspect-ratio: 5/4) min(108vw, 50vh), min(67vw, 104vh)';
+// Pins (see .pos in global.css). On screens taller than the frame the arrow,
+// header and text stay at the top like the design, and the girl + chip sit on
+// the bottom edge. Desktop Hero 1 girl is on the right, Hero 2 on the left; on
+// mobile both hug the right. Desktop Hero 2's chip stays with the text (top) so
+// it never runs into "Pay without switching…".
+const scenes = [
+  { key: 'h1', shape: SHAPES.h1, girl: GIRL.worried, chip: CHIP.h1, img: girlWorried, widths: [480, 800, 1200, 1600, 2314],
+    girlPin: 'dr db mr mb', chipPin: 'dr db mr mb', alt: 'A young woman frowning at her phone, worried about paying a seller online' },
+  { key: 'h2', shape: SHAPES.h2, girl: GIRL.happy, chip: CHIP.h2, img: girlHappy, widths: [480, 800, 1200, 1600, 2064],
+    girlPin: 'db mr mb', chipPin: 'dt mr mb', alt: 'The same woman smiling at her phone after paying safely in chat' },
+] as const;
+---
+
+<section id="home" class="hero" data-nav="home" data-label="Home" aria-labelledby="hero-title">
+  <!-- Background pattern: Hero 1 fades right->left, Hero 2 left->right -->
+  <div class="hero__bg">
+    <Pattern id="pat-h1" mirror class="pattern--h1" />
+    <Pattern id="pat-h2" class="pattern--h2" />
+  </div>
+
+  <div class="hero__stage">
+    {
+      scenes.map((s) => (
+        <div class={`scene scene--${s.key}`}>
+          {/* The dark arrow stretches to the screen width, so it always meets the
+              side edges and its tip still reaches the girl. It stays at the top
+              of the screen like the frame. */}
+          <div class="shape-box">
+            <svg class="shape only-desktop" viewBox="0 0 1728 1117" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path d={s.shape.desktop.d} />
+            </svg>
+            <svg class="shape only-mobile" viewBox="0 0 402 874" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path d={s.shape.mobile.d} />
+            </svg>
+          </div>
+
+          {/* The girl */}
+          <div class={`girl girl--${s.key} pos ${s.girlPin}`} style={box(s.girl.desktop, s.girl.mobile)}>
+            <div class="girl__art">
+            <div class="girl__flip">
+            <SmartPicture
+              src={s.img}
+              widths={[...s.widths]}
+              sizes={girlSizes}
+              mobileMax={940}
+              alt={s.alt}
+              loading="eager"
+              fetchpriority={s.key === 'h1' ? 'high' : 'auto'}
+            />
+              {parts(s.key === 'h1' ? 'worried' : 'happy').map((pt) => (
+                <img class={`girl__part girl__part--${pt.kind}`} data-defer="idle" data-src={pt.src.src} style={pt.style} alt="" aria-hidden="true" decoding="async" />
+              ))}
+            </div>
+            </div>
+          </div>
+
+          {/* Price chip: travels with the girl; Hero 2's turns from bag to green
+              double tick. Sized by its content (equal top/bottom padding). */}
+          <div class={`chip pos ${s.chipPin}`} style={`${box(s.chip.desktop.slice(0, 2), s.chip.mobile.slice(0, 2))};--tilt-d:${CHIP.tilt.desktop}deg;--tilt-m:${CHIP.tilt.mobile}deg`}>
+            <div class="chip__card">
+              <div class="chip__box">
+                <Bag class="chip__bag" aria-hidden="true" />
+                {s.key === 'h2' && <DoubleCheck class="chip__tick" aria-hidden="true" />}
+              </div>
+              <p class="chip__text">
+                <span class="chip__name">Vox bag</span>
+                <span class="chip__price">N150,000</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+
+    <!-- Copy: heading, subtitle and button stack inside one positioned block,
+         spaced with the frame's gaps (design units). Text sizes are capped at
+         industry-standard maxima (see .body / .btn / .fs). -->
+
+    <!-- Hero 1 copy: on wide desktops it moves halfway toward the girl (.dc) -->
+    <div class="copy copy--h1">
+      <div class="copy-block pos dc" style={box([90, 270, 910], [30, 157, 350])}>
+        <h1 id="hero-title" class="headline fs" style={type(130, 141, 50, 54)}>
+          <span class="line"><span class="li">Buying on</span></span>
+          <span class="line line--accent"><span class="li">Social Media</span></span>
+        </h1>
+        <p class="body fs" style={`${type(45, 49, 21, 30.45)};--dmt:40;--mmt:95;--dbw:906;--mbw:342`}>
+          <span class="li">We protect you from paying for something that never comes. <br />The seller only gets paid after you receive your order.</span>
+        </p>
+        <a class="btn fs" href="#" data-waitlist style={`${type(35, 38, 20, 22)};--dmt:47;--mmt:29`}>
+          <span class="li">Join waitlist</span>
+          <Chevron class="btn__icon" aria-hidden="true" />
+        </a>
+        <p class="joined" data-joined hidden>
+          <span class="joined__faces" aria-hidden="true">{Array.from({ length: 3 }, (_, i) => <span class={`joined__face joined__face--${i % 3}`} hidden={i >= 3}><UserIcon /></span>)}</span>
+          <span><b class="joined__n">50+</b><span class="sr-only joined__rest"> people have joined Zend</span></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Hero 2 copy: on wide desktops halfway between its arrow and the girl (.d-tip); mobile: left -->
+    <div class="copy copy--h2">
+      <div class="copy-block pos d-tip" style={box([561, 197, 916], [30, 210, 342])}>
+        <h2 class="headline fs" style={type(130, 141, 50, 54)}>
+          <span class="line"><span class="li">Pay in</span></span>
+          <span class="line line--accent"><span class="li">Chat</span></span>
+        </h2>
+        <p class="body fs" style={`${type(45, 49, 21, 30.45)};--dmt:33;--mmt:45;--dml:10;--dbw:906;--mbw:342`}>
+          <span class="li">Pay without switching between apps. <br />Talk to the seller and pay in the same place.</span>
+        </p>
+        <a class="btn fs" href="#" data-waitlist style={`${type(35, 38, 20, 22)};--dmt:60;--mmt:30;--dml:530`}>
+          <span class="li">Join waitlist</span>
+          <Chevron class="btn__icon" aria-hidden="true" />
+        </a>
+        <p class="joined" data-joined hidden>
+          <span class="joined__faces" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <span class={`joined__face joined__face--${i % 3}`} hidden={i >= 3}><UserIcon /></span>)}</span>
+          <span><b class="joined__n">50+</b><span class="sr-only joined__rest"> people have joined Zend</span></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Next scenes in the same pinned stage (How it works). -->
+    <slot />
+  </div>
+
+  <!-- Page-load intro: the whole screen is the arrow's dark colour with the
+       white logo in the middle. The dark cover then reshapes into Hero 1's
+       arrow (same box as the real arrow, so the hand-off is seamless) while
+       the logo glides to the header. The path is set by intro.ts. -->
+  <div class="intro-cover" aria-hidden="true">
+    <!-- Drawn full-screen from the very first paint (intro.ts then takes over
+         the path), so the page never shows its own background first. -->
+    <svg class="only-desktop" viewBox="0 0 1728 1117" preserveAspectRatio="none" focusable="false"><path d="M-1728 -800L3456 -800L3456 4000L-1728 4000Z" /></svg>
+    <svg class="only-mobile" viewBox="0 0 402 874" preserveAspectRatio="none" focusable="false"><path d="M-402 -800L804 -800L804 3000L-402 3000Z" /></svg>
+  </div>
+  <div class="intro-logo" aria-hidden="true">
+    <Logo />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--c-bg);
+    color: var(--c-on-shape);
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+  }
+  .pattern--h2 {
+    opacity: 0;
+  }
+
+  /* The stage is the whole screen; pieces pin to its edges (see .pos). Copy
+     sits at the top like the arrow and header; spare height on tall screens
+     opens up between the text and the girl. */
+  .hero__stage {
+    position: absolute;
+    inset: 0;
+    pointer-events: none; /* only the buttons inside take clicks (see .btn) */
+  }
+  .copy :global(.pos) {
+    --offy: 0px;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    pointer-events: none; /* artwork only: never blocks clicks/taps */
+  }
+  .scene--h2 {
+    visibility: hidden; /* shown by the scroll script */
+  }
+
+  /* ---------- Arrow ---------- */
+  /* Arrow: full screen width (stretched sideways only), frame height, at the
+     top like the design. Extra height below shows more of the arrow's real
+     shape (it overhangs the frame), so nothing is distorted. */
+  .shape-box {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(var(--stage-h) * var(--u));
+    pointer-events: none;
+  }
+  .shape {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: var(--c-shape);
+  }
+  /* Hero 2's arrow stretches from its tip (frame x 257, behind her head), so
+     the tip stays on the girl while the arrow still reaches the right edge:
+     the box keeps the tip at 257 units and spans to the right screen edge.
+     1.17471 = 1728 / (1728 - 257). hero.ts mirrors this for the morph. */
+  /* Hero 1's arrow becomes How it works' dark shape and takes on its colour
+     (--hiw-mix 0 -> 1, set by hiw.ts). */
+  .scene--h1 .shape {
+    fill: var(--c-shape);
+    fill: color-mix(in srgb, var(--c-hiw-shape) calc(var(--hiw-mix, 0) * 100%), var(--c-shape));
+  }
+  .scene--h2 .shape.only-desktop {
+    left: auto;
+    right: 0;
+    width: calc((100% - 257 * var(--u)) * 1.17471);
+  }
+
+  /* ---------- Girl ---------- */
+  .girl :global(picture),
+  .girl :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .girl__art,
+  .girl__flip {
+    position: absolute;
+    inset: 0;
+  }
+  /* Overlays (blink, frown, typing thumbs): hidden until hero-girl.ts shows
+     them for a moment. */
+  .girl .girl__part {
+    position: absolute;
+    max-width: none;
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (max-aspect-ratio: 5/4) {
+    /* The mobile frame shows her facing the other way: flip the picture and
+       its overlays together (one wrapper), so the blink/typing patches stay
+       on her eyes and hands. */
+    .girl--h2 .girl__flip {
+      transform: scaleX(-1);
+    }
+  }
+
+  /* ---------- Chip ---------- */
+  .chip {
+    transform-origin: 0 0;
+    transform: rotate(var(--tilt-d));
+  }
+  /* Card sizes itself from its content with equal top and bottom padding
+     (the tallest item, the text, sets the height; the icon box centres). */
+  .chip__card {
+    display: flex;
+    align-items: center;
+    gap: calc(18.4 * var(--u));
+    padding: calc(20 * var(--u)) calc(34 * var(--u)) calc(20 * var(--u)) calc(30 * var(--u));
+    border-radius: calc(32 * var(--u));
+    background: var(--c-chip-bg);
+    box-shadow: 0 calc(10 * var(--u)) calc(30 * var(--u)) rgb(20 0 39 / 0.14);
+    color: var(--c-chip-text);
+    white-space: nowrap;
+    /* Subtle float. Uses the separate `translate` property so it never fights
+       GSAP's scale pop on `transform`. Both chips share the same phase, so the
+       hand-off from Hero 1's chip to Hero 2's is seamless. */
+    animation: chip-float 3.2s ease-in-out infinite alternate;
+  }
+  @keyframes chip-float {
+    from {
+      translate: 0 calc(4 * var(--u));
+    }
+    to {
+      translate: 0 calc(-4 * var(--u));
+    }
+  }
+  :global(html.reduce-motion) .chip__card,
+  :global(html.lite) .chip__card {
+    animation: none;
+  }
+  .chip__box {
+    flex: none;
+    width: calc(66.585 * var(--u));
+    height: calc(66.585 * var(--u));
+    border-radius: calc(14 * var(--u));
+    background: var(--c-chip-box);
+    display: grid;
+    place-items: center;
+    color: var(--c-chip-icon);
+  }
+  .chip__bag,
+  .chip__tick {
+    grid-area: 1 / 1;
+    overflow: visible;
+  }
+  .chip__bag {
+    width: calc(44 * var(--u));
+    height: calc(42 * var(--u));
+  }
+  .chip__tick {
+    width: calc(60 * var(--u));
+    height: calc(40 * var(--u));
+    color: var(--c-white);
+    opacity: 0;
+  }
+  .chip__tick :global(path) {
+    stroke-width: 3;
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+  }
+  .chip__text {
+    margin: 0;
+  }
+  .chip__name {
+    display: block;
+    font-weight: 300;
+    font-size: calc(20 * var(--u));
+    line-height: calc(29.9 * var(--u));
+  }
+  .chip__price {
+    display: block;
+    margin-top: calc(2.1 * var(--u));
+    font-weight: 500;
+    font-size: calc(26 * var(--u));
+    line-height: calc(40 * var(--u));
+  }
+
+  /* ---------- Copy ---------- */
+  .copy {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .copy .btn {
+    pointer-events: auto;
+  }
+  .headline {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--c-on-shape);
+  }
+  .line {
+    display: block;
+    white-space: nowrap;
+  }
+  .li {
+    display: inline-block;
+  }
+  .line--accent {
+    color: var(--c-accent);
+  }
+  /* Heading -> subtitle -> button stack. Gaps (--dmt/--mmt) and indents
+     (--dml/--mml) are the frame's spacing in design units. */
+  /* "50+ people have joined Zend" under Join waitlist (count from the
+     waitlist sheet, waitlist.ts; hidden until there's a number worth showing). */
+  .joined {
+    --fs: 16px;
+    display: flex;
+    align-items: center;
+    gap: 2px; /* the number sits close to the faces */
+    margin: calc(26 * var(--u)) 0 0;
+    font-size: clamp(13px, calc(22 * var(--u)), 16px);
+    color: rgb(255 255 255 / 0.82);
+    white-space: nowrap;
+  }
+  .joined[hidden] {
+    display: none;
+  }
+  .joined__n {
+    font-weight: 400;
+    color: #fff;
+  }
+  .joined__faces {
+    display: flex;
+  }
+  .joined__face {
+    display: grid;
+    place-items: center;
+    width: 1.6em;
+    height: 1.6em;
+    margin-left: -0.9em; /* faces tuck well into each other */
+    border-radius: 50%;
+    border: 2px solid var(--c-shape);
+    color: #320262;
+    overflow: hidden;
+  }
+  .joined__face:first-child {
+    margin-left: 0;
+  }
+  .joined__face[hidden] {
+    display: none;
+  }
+  .joined__face--0 {
+    background: #c38ff8;
+  }
+  .joined__face--1 {
+    background: #b163fe;
+  }
+  .joined__face--2 {
+    background: #e1c9f8;
+  }
+  .joined__face :global(svg) {
+    width: 66%;
+    height: 66%;
+  }
+  .copy--h2 .joined {
+    margin-left: calc(530 * var(--u)); /* under Hero 2's button (its --dml) */
+  }
+  @media (max-aspect-ratio: 5/4) {
+    .joined {
+      margin-top: 16px;
+      font-size: 14px;
+    }
+    .copy--h2 .joined {
+      margin-left: 0;
+    }
+  }
+
+  .copy-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .copy-block > .body,
+  .copy-block > .btn {
+    --mt: var(--dmt, 0);
+    --ml: var(--dml, 0);
+    margin: calc(var(--mt) * var(--u)) 0 0 calc(var(--ml) * var(--u));
+  }
+  .body {
+    --bw: var(--dbw);
+    --fs-max: 22px; /* industry-standard hero subtitle size (desktop) */
+    /* Frame width, but at least wide enough (28em) that each sentence fits on
+       one line at the capped size, so nothing wraps into an orphan word. */
+    width: max(calc(var(--bw) * var(--u)), 28em);
+    max-width: 100vw;
+    font-weight: 400;
+    color: var(--c-on-shape);
+  }
+  .body .li {
+    display: block;
+  }
+  @media (max-aspect-ratio: 5/4) {
+    .copy-block > .body,
+    .copy-block > .btn {
+      --mt: var(--mmt, 0);
+      --ml: var(--mml, 0);
+    }
+    .body {
+      --bw: var(--mbw);
+      --fs-max: 18px; /* standard hero subtitle (mobile) */
+      /* Phones: 342 units wide (equal 30-unit margins both sides) and the two
+         sentences flow together (no forced break) for about 3 lines; line
+         height 1.45 for breathing room. */
+      width: calc(var(--bw) * var(--u));
+    }
+    .body :global(br) {
+      display: none;
+    }
+  }
+  .copy--h2 {
+    visibility: hidden;
+  }
+
+  /* ---------- Intro ---------- */
+  /* Loading screen: fixed to the screen (intro.ts moves both to <body> so a
+     reload can resume below the hero behind them). */
+  .intro-logo {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: calc(200 * var(--u));
+    color: var(--c-white);
+    transform: translate(-50%, -50%);
+    z-index: 5;
+  }
+  /* Same box as Hero 1's arrow (.shape-box), above everything else. */
+  .intro-cover {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(var(--stage-h) * var(--u));
+    z-index: 4;
+    pointer-events: none;
+  }
+  .intro-cover svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: var(--c-shape);
+  }
+  :global(html.intro) .intro-cover {
+    display: block;
+  }
+  .intro-logo :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  :global(html.intro) .intro-logo {
+    display: block;
+  }
+  /* The hero itself draws underneath the intro cover from the start (the
+     cover hides it completely), so its picture counts as shown straight away;
+     the header and nav wait for the intro. */
+  :global(html.intro .site-header),
+  :global(html.intro .rail) {
+    visibility: hidden;
+  }
+
+  /* ---------- Mobile frame values ---------- */
+  @media (max-aspect-ratio: 5/4) {
+    .chip {
+      transform: rotate(var(--tilt-m));
+    }
+    .chip__card {
+      gap: calc(6.7 * var(--u));
+      padding: calc(11.67 * var(--u)) calc(18 * var(--u)) calc(11.67 * var(--u)) calc(20 * var(--u));
+      border-radius: calc(17 * var(--u));
+    }
+    .chip__box {
+      width: calc(33.29 * var(--u));
+      height: calc(33.29 * var(--u));
+      border-radius: calc(7 * var(--u));
+    }
+    .chip__bag {
+      width: calc(22 * var(--u));
+      height: calc(21 * var(--u));
+    }
+    .chip__tick {
+      width: calc(30 * var(--u));
+      height: calc(20 * var(--u));
+    }
+    .chip__name {
+      font-size: calc(10 * var(--u));
+      line-height: calc(15 * var(--u));
+    }
+    .chip__price {
+      margin-top: calc(1 * var(--u));
+      font-size: calc(15.6 * var(--u));
+      line-height: calc(23.8 * var(--u));
+    }
+    .intro-logo {
+      width: calc(110 * var(--u));
+    }
+  }
+</style>

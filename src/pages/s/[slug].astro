@@ -1,0 +1,45 @@
+---
+// Share links: each shows its own link-preview image, then sends the visitor
+// straight on to the site. Post /s/sellers to sellers, /s/chat in WhatsApp
+// groups and status, /s/zend in bios; the home page itself uses /og/buyers.jpg.
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  return [
+    {
+      params: { slug: 'sellers' },
+      props: {
+        image: '/og/sellers.jpg',
+        to: '/#for-sellers',
+        title: 'Zend · Sell on social media, get paid without doubt',
+        description: 'Buyers trust Zend, so they trust you. Once they confirm their order, the money is yours.',
+      },
+    },
+    {
+      params: { slug: 'chat' },
+      props: {
+        image: '/og/chat.jpg',
+        to: '/',
+        title: 'Zend · Just Zend It',
+        description: 'Pay sellers on WhatsApp without the fear of being scammed. Zend holds the money until you receive your order.',
+      },
+    },
+    {
+      params: { slug: 'zend' },
+      props: {
+        image: '/og/zend.jpg',
+        to: '/',
+        title: 'Zend · Safe payments on social media',
+        description: 'Zend is coming soon to WhatsApp. Buy and sell on social media without fear.',
+      },
+    },
+  ];
+}
+const { image, to, title, description } = Astro.props;
+---
+
+<Base page="page" title={title} description={description} image={image} noindex>
+  <meta http-equiv="refresh" content={`0; url=${to}`} />
+  <script is:inline define:vars={{ to }}>location.replace(to);</script>
+  <p style="padding:24px;font-family:system-ui"><a href={to}>Continue to Zend</a></p>
+</Base>

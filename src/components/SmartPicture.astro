@@ -1,0 +1,70 @@
+---
+// One <picture> for the whole site, tuned for low-end phones:
+//  - AVIF, then WebP, then a WebP <img> fallback (no heavy PNGs anywhere).
+//  - Phones get their own sources capped at 2x sharpness (`mobileMax`, in
+//    image pixels). 3x screens can't show the difference at these sizes, and
+//    each step down saves a lot of memory once the image is decoded.
+//  - `defer`: the browser doesn't fetch it until images.ts swaps data-srcset
+//    into srcset. Used for scenes further down the story: they all sit in the
+//    one pinned stage, so plain loading="lazy" would fetch them at once.
+//    "scroll" = when the visitor first scrolls (or a few seconds after load);
+//    "idle" = once the page has settled.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  /** Desktop widths (image pixels). */
+  widths: number[];
+  /** sizes for the whole page; a phone-only part can be given in mobileSizes. */
+  sizes: string;
+  /** Largest image width phones may load (about 2x their biggest slot). */
+  mobileMax?: number;
+  defer?: 'scroll' | 'idle';
+  alt?: string;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const { src, widths, sizes, mobileMax, defer, alt = '', class: cls, loading = 'lazy', fetchpriority } = Astro.props;
+const MQ = '(max-aspect-ratio: 5/4)';
+const clamp = (ws: number[]) => [...new Set(ws.map((w) => Math.min(w, src.width)))].sort((a, b) => a - b);
+const desktopW = clamp(widths);
+const mobileW = mobileMax ? clamp([...desktopW.filter((w) => w < mobileMax), mobileMax]) : [];
+
+const srcset = async (ws: number[], format: 'avif' | 'webp') =>
+  (await Promise.all(ws.map(async (w) => `${(await getImage({ src, width: w, format })).src} ${w}w`))).join(', ');
+
+const sources = [
+  ...(mobileW.length
+    ? [
+        { media: MQ, type: 'image/avif', srcset: await srcset(mobileW, 'avif') },
+        { media: MQ, type: 'image/webp', srcset: await srcset(mobileW, 'webp') },
+      ]
+    : []),
+  { type: 'image/avif', srcset: await srcset(desktopW, 'avif') },
+  { type: 'image/webp', srcset: await srcset(desktopW, 'webp') },
+];
+const mid = desktopW[Math.min(1, desktopW.length - 1)];
+const fallback = await getImage({ src, width: mid, format: 'webp' });
+const ratio = src.height / src.width;
+// Attribute names: deferred images keep their URLs in data-* until loaded.
+const S = defer ? 'data-srcset' : 'srcset';
+const I = defer ? 'data-src' : 'src';
+---
+
+<picture>
+  {sources.map((s) => <source media={s.media} type={s.type} {...{ [S]: s.srcset }} sizes={sizes} />)}
+  <img
+    class={cls}
+    {...{ [I]: fallback.src }}
+    data-defer={defer}
+    alt={alt}
+    width={mid}
+    height={Math.round(mid * ratio)}
+    loading={loading}
+    decoding="async"
+    fetchpriority={fetchpriority}
+  />
+</picture>

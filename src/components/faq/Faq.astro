@@ -1,0 +1,300 @@
+---
+// FAQ ("Got any questions?"). Rendered in the hero's pinned stage after
+// Security: the phone's screen widens into this card (faq.ts). Questions are
+// chat chips; tapping one shows the answer like a chat reply. One open at a time.
+import { FAQ } from '../../data/faq';
+
+const box = (d: readonly number[], m: readonly number[]) =>
+  [
+    `--dx:${d[0]};--dy:${d[1]}`,
+    d[2] !== undefined ? `--dw:${d[2]}` : '',
+    d[3] !== undefined ? `--dh:${d[3]}` : '',
+    `--mx:${m[0]};--my:${m[1]}`,
+    m[2] !== undefined ? `--mw:${m[2]}` : '',
+    m[3] !== undefined ? `--mh:${m[3]}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${dfs};--dlh:${dlh};--mfs:${mfs};--mlh:${mlh}`;
+---
+
+<div class="faq" id="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title" class="faq-title fs pos dc dt mc mt" style={`${box([87, 176], [25, 124, 300])};${type(76, 77, 38, 40)}`}>
+    Got any <br class="only-mobile-br" />questions?
+  </h2>
+
+  <!-- The card: the phone's screen widens into it. Its list scrolls inside,
+       with faded edges while there's more above or below. -->
+  <div class="faq-card pos dc dt mc mt" style={box([226, 322, 1340, 678], [21, 236, 360, 553])}>
+    <span class="faq-notch" aria-hidden="true"></span>
+    <div class="faq-list" data-lenis-prevent>
+      {
+        FAQ.map((item, i) => (
+          <div class="faq-item" data-open={i === 0 ? '' : undefined}>
+            <button class="faq-q fs" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`faq-a-${i}`} style={type(28, 34, 16, 20)}>
+              <span>{item.q}</span>
+              <svg class="faq-q__icon faq-q__icon--open" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+              <svg class="faq-q__icon faq-q__icon--close" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+            <div class="faq-a-wrap" id={`faq-a-${i}`}>
+              <div class="faq-typing" aria-hidden="true"><i></i><i></i><i></i></div>
+              <p class="faq-a fs" style={type(28, 34, 16, 20)}>{item.a}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Opens the Contact us page. -->
+  <a class="faq-talk fs pos dc dt mc mt" href="/contact" data-contact style={`${box([226, 1021, 1340, 78], [21, 808, 360, 52])};${type(34, 40, 18, 22)}`}>
+    Have any more questions? Talk to us
+  </a>
+</div>
+
+<style>
+  .faq {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    visibility: hidden; /* shown by faq.ts when the story reaches it */
+  }
+  .faq-title {
+    width: auto;
+    height: auto;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--c-hiw-head);
+    white-space: nowrap;
+  }
+  .only-mobile-br {
+    display: none;
+  }
+
+  /* ---------- Card ---------- */
+  /* The card is a wide phone: same bezel and notch as the phone it grows out
+     of. faq.ts animates --gl/--gt/--gw/--gh/--gr (the phone's box -> 0) so
+     it ends exactly on its own layout, whatever the screen size. */
+  .faq-card {
+    left: calc(var(--offx) + var(--x) * var(--u) + var(--gl, 0px));
+    top: calc(var(--offy) + var(--y) * var(--u) + var(--gt, 0px));
+    width: calc(var(--w) * var(--u) + var(--gw, 0px));
+    height: calc(var(--h) * var(--u) + var(--gh, 0px));
+    box-sizing: border-box;
+    border: calc(13 * var(--u)) solid var(--c-phone);
+    border-radius: calc(90 * var(--u) + var(--gr, 0px));
+    background: var(--c-faq-card);
+    overflow: hidden;
+    pointer-events: auto;
+  }
+  .faq-notch {
+    position: absolute;
+    left: 50%;
+    top: calc(21 * var(--u));
+    width: calc(140 * var(--u));
+    height: calc(26 * var(--u));
+    translate: -50% 0;
+    border-radius: 999px;
+    background: var(--c-phone);
+    z-index: 2;
+  }
+  /* Android and others: a round punch-hole camera (like the phone). */
+  :global(html:not(.apple)) .faq-notch {
+    width: calc(30 * var(--u));
+    height: calc(30 * var(--u));
+    top: calc(19 * var(--u));
+    border-radius: 50%;
+  }
+  .faq-list {
+    --fade-top: 0px;
+    --fade-bottom: 0px;
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    /* A slim scrollbar; the thumb is the dark shape's colour (day and night). */
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-scroll-thumb) transparent;
+    padding: calc(70 * var(--u)) calc(57 * var(--u)) calc(60 * var(--u));
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(40 * var(--u));
+    /* Faded edges where there's more to scroll (faq.ts sets the sizes). */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+  }
+  .faq-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .faq-list::-webkit-scrollbar-track {
+    background: transparent;
+    margin: calc(60 * var(--u)) 0;
+  }
+  .faq-list::-webkit-scrollbar-thumb {
+    background: var(--c-scroll-thumb);
+    border-radius: 999px;
+  }
+  .faq-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(12 * var(--u));
+    max-width: 62%;
+  }
+
+  /* Question chip: lilac, rounded, with a sharp bottom-left corner like a
+     chat bubble. › when closed, ✕ when open. */
+  .faq-q {
+    --fs-max: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.55em 0.75em;
+    border: 0;
+    border-radius: 0.75em 0.75em 0.75em 0.2em;
+    background: var(--c-faq-chip);
+    color: var(--c-faq-chip-text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+    transition: filter 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .faq-q:hover {
+    filter: brightness(1.06);
+  }
+  .faq-q__icon {
+    flex: none;
+    width: 0.85em;
+    height: 0.85em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .faq-q__icon--close,
+  .faq-item[data-open] .faq-q__icon--open {
+    display: none;
+  }
+  .faq-item[data-open] .faq-q__icon--close {
+    display: block;
+  }
+
+  /* Answer: a white reply bubble under the question (sharp top-left corner). */
+  .faq-a-wrap {
+    display: none;
+    position: relative;
+  }
+  .faq-item[data-open] .faq-a-wrap {
+    display: block;
+  }
+  .faq-a {
+    --fs-max: 20px;
+    margin: 0;
+    padding: 0.55em 0.75em;
+    border-radius: 0.2em 0.75em 0.75em 0.75em;
+    background: var(--c-faq-ans);
+    color: var(--c-faq-ans-text);
+  }
+  /* Typing dots, shown for a moment before the answer arrives. */
+  .faq-typing {
+    display: none;
+    gap: 5px;
+    padding: 12px 14px;
+    border-radius: 4px 14px 14px 14px;
+    background: var(--c-faq-ans);
+    width: max-content;
+  }
+  .faq-item[data-typing] .faq-typing {
+    display: flex;
+  }
+  .faq-item[data-typing] .faq-a {
+    display: none;
+  }
+  .faq-typing i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c-faq-ans-text);
+    opacity: 0.35;
+    animation: faq-dot 0.9s infinite ease-in-out;
+  }
+  .faq-typing i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .faq-typing i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes faq-dot {
+    0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+    30% { opacity: 0.9; transform: translateY(-3px); }
+  }
+
+  /* ---------- Talk to us ---------- */
+  .faq-talk {
+    --fs-max: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--c-faq-btn);
+    color: var(--c-faq-btn-text);
+    font-weight: 500;
+    text-decoration: none;
+    pointer-events: auto;
+    transition: filter 0.2s;
+  }
+  .faq-talk:hover {
+    filter: brightness(1.08);
+  }
+
+  @media (max-aspect-ratio: 5/4) {
+    .only-mobile-br {
+      display: inline;
+    }
+    .faq-card {
+      border-width: calc(8 * var(--u));
+      border-radius: calc(46 * var(--u) + var(--gr, 0px));
+    }
+    .faq-notch {
+      top: calc(10 * var(--u));
+      width: calc(62 * var(--u));
+      height: calc(10 * var(--u));
+    }
+    :global(html:not(.apple)) .faq-notch {
+      width: calc(13 * var(--u));
+      height: calc(13 * var(--u));
+      top: calc(9 * var(--u));
+    }
+    .faq-list {
+      padding: calc(40 * var(--u)) calc(22 * var(--u)) calc(40 * var(--u));
+      gap: calc(22 * var(--u));
+    }
+    .faq-item {
+      max-width: 88%;
+      gap: calc(6 * var(--u));
+    }
+    .faq-q,
+    .faq-a {
+      --fs-max: 16px;
+    }
+    .faq-talk {
+      --fs-max: 17px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-typing i {
+      animation: none;
+    }
+  }
+</style>

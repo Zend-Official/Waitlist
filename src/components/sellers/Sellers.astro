@@ -1,0 +1,433 @@
+---
+// How it works — for sellers (frames 4-7). Rendered in the hero's pinned
+// stage after the buyer steps, so step 3 turns straight into it (sellers.ts).
+// The boy is built from animation layers (head, arms, eyes…) so he can move a
+// little while idle; chat bubbles pop out of his phone.
+import SmartPicture from '../SmartPicture.astro';
+import type { ImageMetadata } from 'astro';
+import Check from '../../assets/icons/double-check.svg';
+import { POSE_LAYERS, SELLER_FRAMES, SELLER_SHAPE, type PoseKey } from '../../data/sellers';
+import partsJson from '../../data/boy-parts.json';
+
+// Only the layers a pose actually uses are imported (a lazy glob), so unused
+// cut-outs never end up in the build.
+const files = import.meta.glob<ImageMetadata>('../../assets/sellers/parts/*.png', { import: 'default' });
+const fullFiles = import.meta.glob<ImageMetadata>('../../assets/sellers/boy-*.png', { import: 'default' });
+const pathOf = (name: string) =>
+  name.endsWith('-full') ? `../../assets/sellers/${name.replace('-full', '')}.png` : `../../assets/sellers/parts/${name}.png`;
+const loaded: Record<string, ImageMetadata> = {};
+for (const [pose, layers] of Object.entries(POSE_LAYERS)) {
+  for (const layer of layers) {
+    const name = `boy-${pose}-${layer}`;
+    const path = pathOf(name);
+    loaded[name] = await (name.endsWith('-full') ? fullFiles : files)[path]();
+  }
+}
+const src = (name: string) => loaded[name];
+const PARTS = partsJson.parts as Record<string, { x: number; y: number; w: number; h: number }>;
+const C = partsJson.canvas;
+const pct = (v: number) => `${((v / C) * 100).toFixed(3)}%`;
+
+// The boy's canvas is 726 units wide on desktop, 403 on mobile; one unit is
+// min(vw/1728, vh/1117) or min(vw/402, vh/874).
+const sizesFor = (w: number) => {
+  const f = (w / C).toFixed(3);
+  return `(max-aspect-ratio: 5/4) calc(${f} * min(100vw, 46vh)), calc(${f} * min(42vw, 65vh))`;
+};
+// Phones: at most 2x their slot (the boy is at most ~440px wide on a phone).
+const mobileMaxFor = (w: number) => Math.round((w / C) * 440 * 2);
+const widthsFor = (w: number) => [...new Set([Math.round(w / 4), Math.round(w / 2), w].filter((n) => n >= 24))];
+
+const box = (d: readonly number[], m: readonly number[]) =>
+  [
+    `--dx:${d[0]};--dy:${d[1]}`,
+    d[2] !== undefined ? `--dw:${d[2]}` : '',
+    d[3] !== undefined ? `--dh:${d[3]}` : '',
+    `--mx:${m[0]};--my:${m[1]}`,
+    m[2] !== undefined ? `--mw:${m[2]}` : '',
+    m[3] !== undefined ? `--mh:${m[3]}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${dfs};--dlh:${dlh};--mfs:${mfs};--mlh:${mlh}`;
+const poses = Object.keys(POSE_LAYERS) as PoseKey[];
+---
+
+<div class="sell" aria-labelledby="sell-title">
+  <h2 id="sell-title" class="sr-only">How it works for sellers</h2>
+
+  <!-- Fallback copy of the dark shape (reduced motion); normally the arrow morphs into it. -->
+  <div class="sell-shape" aria-hidden="true">
+    <svg class="only-desktop" viewBox="0 0 1728 1117" preserveAspectRatio="none" focusable="false">
+      <path data-sell-shape="desktop" d={SELLER_SHAPE.desktop.d} transform={`translate(${SELLER_SHAPE.desktop.offset.join(' ')})`} />
+    </svg>
+    <svg class="only-mobile" viewBox="0 0 402 874" preserveAspectRatio="none" focusable="false">
+      <path data-sell-shape="mobile" d={SELLER_SHAPE.mobile.d} transform={`translate(${SELLER_SHAPE.mobile.offset.join(' ')})`} />
+    </svg>
+  </div>
+
+  <!-- Heading + subtitle: they rise through this window (fading in at the
+       bottom and out at the top). -->
+  <div class="sell-window pos dc dt mc mt" style={box([60, 130, 820, 520], [20, 116, 362, 236])}>
+    {
+      SELLER_FRAMES.map((f, i) => (
+        <div class={`sell-text sell-text--${i + 1}`}>
+          <h3 class="sell-title fs" style={type(76, 77, 36, 38)}>
+            {f.title.map((line, j) => (
+              <>
+                {j > 0 && <br />}
+                {line}
+              </>
+            ))}
+          </h3>
+          <p class="sell-body fs" style={type(28, 33, 18, 20)}>
+            {f.body.split('\n').map((line, j) => (
+              <>
+                {j > 0 && <br />}
+                {line}
+              </>
+            ))}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Mobile pager: four dots -->
+  <div class="sell-pager pos mc mt only-mobile" style={box([0, 0], [173, 104, 56, 12])} aria-hidden="true">
+    <span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span>
+  </div>
+
+  <!-- The boy, in his own 1452px canvas (726 units desktop, 403 mobile). -->
+  <div class="boy-box pos dc dt mc mt" style={box([500, 367, 726, 726], [0, 413, 403, 403])} aria-hidden="true">
+    <!-- He slides in from behind an invisible edge (not the screen edge). -->
+    <div class="boy-clip">
+      <div class="boy">
+        {
+          poses.map((pose) => (
+            <div class={`pose pose--${pose}`} data-pose={pose}>
+              {POSE_LAYERS[pose].map((layer) => {
+                const key = `boy-${pose}-${layer}`;
+                const p = layer === 'full' ? { x: 0, y: 0, w: C, h: C } : PARTS[key];
+                return (
+                  <div class={`part part--${layer}`} data-part={`${pose}-${layer}`} style={`left:${pct(p.x)};top:${pct(p.y)};width:${pct(p.w)}`}>
+                    <SmartPicture src={src(key)} widths={widthsFor(p.w)} sizes={sizesFor(p.w)} mobileMax={mobileMaxFor(p.w)} defer="scroll" />
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Chat bubbles for each frame; they pop out of his phone. -->
+    {
+      SELLER_FRAMES.map((f, i) => (
+        <div class={`bubbles bubbles--${i + 1}`} style={`--by:${f.bubbles[0].my ?? f.bubbles[0].y}%`}>
+          {f.bubbles.map((b) => (
+            <div class={`bub bub--${b.kind}${'green' in b && b.green ? ' bub--green' : ''}${b.x >= 70 ? ' bub--edge' : ''}`} style={`--x:${b.x}%`}>
+              <span class="bub__who">{b.who}</span>
+              {b.kind === 'you-card' ? (
+                <>
+                  {b.lines.map((l, j) => (
+                    <span class={j === 1 ? 'bub__price' : 'bub__text'}>{l}</span>
+                  ))}
+                  <span class="bub__button">{b.button}</span>
+                </>
+              ) : (
+                <span class="bub__text">
+                  {b.kind === 'zend' && (
+                    <span class="bub__tick">
+                      <Check />
+                    </span>
+                  )}
+                  {b.text}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .sell {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    visibility: hidden; /* shown by sellers.ts when the story reaches it */
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Same box as the hero arrow (top-aligned, frame height, full width). */
+  .sell-shape {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(var(--stage-h) * var(--u));
+    visibility: hidden;
+  }
+  .sell-shape svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: var(--c-hiw-shape);
+  }
+
+  /* ---------- Heading + subtitle window ---------- */
+  .sell-window {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(40 * var(--u)), #000 calc(100% - 50 * var(--u)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 calc(40 * var(--u)), #000 calc(100% - 50 * var(--u)), transparent 100%);
+  }
+  .sell-text {
+    position: absolute;
+    left: calc(26 * var(--u));
+    top: calc(81 * var(--u)); /* frame: heading at y 211 */
+    display: flex;
+    flex-direction: column;
+    gap: calc(70 * var(--u));
+  }
+  .sell-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--c-hiw-head);
+    white-space: nowrap;
+  }
+  .sell-body {
+    --fs-max: 22px;
+    margin: 0;
+    width: 20.7em; /* the frame's line breaks at any (capped) size */
+    font-weight: 400;
+    color: var(--c-text);
+  }
+
+  /* ---------- Mobile pager ---------- */
+  @media not all and (max-aspect-ratio: 5/4) {
+    .sell-pager {
+      display: none !important; /* mobile only */
+    }
+  }
+  .sell-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(8 * var(--u));
+  }
+  .sell-pager span {
+    position: relative;
+    width: calc(6 * var(--u));
+    height: calc(6 * var(--u));
+    border-radius: 50%;
+    border: 1px solid var(--c-hiw-head);
+    box-sizing: border-box;
+  }
+  .sell-pager i {
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background: var(--c-hiw-head);
+    opacity: 0;
+  }
+
+  /* ---------- The boy ---------- */
+  .boy-box {
+    /* canvas px -> screen: bubbles use this for their type size */
+    --canvas: calc(var(--w) * var(--u));
+  }
+  .boy-clip {
+    position: absolute;
+    inset: 0;
+    /* The invisible edge he slides in from: just past his right side, well
+       inside the screen; generous room on the other sides. */
+    clip-path: inset(-40% 7% -10% -40%);
+  }
+  .boy,
+  .pose {
+    position: absolute;
+    inset: 0;
+  }
+  .part {
+    position: absolute;
+  }
+  .part :global(picture),
+  .part :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .part--eyes {
+    visibility: hidden; /* blinks (sellers.ts) */
+  }
+  .pose:not(.pose--worried) {
+    visibility: hidden;
+  }
+
+  /* ---------- Chat bubbles ---------- */
+  /* Each frame's bubbles flow under each other, each at its own left spot
+     from the frame, with a gap tied to the text size, so they can never
+     touch whatever the screen height (the text has a minimum size, his
+     picture doesn't). Padding % is of the square canvas, so --by works as y. */
+  .bubbles {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6em;
+    padding-top: max(0%, var(--by)); /* (a negative y would void the rule) */
+    box-sizing: border-box;
+    /* 19px at the frame's 726-unit canvas, never below 11px */
+    font-size: max(11px, calc(var(--canvas) * 0.026));
+  }
+  .bub {
+    position: relative;
+    margin-left: var(--x);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+    width: max-content; /* size to the text, not to the space left in his canvas */
+    max-width: 45%;
+    box-sizing: border-box;
+    padding: 0.75em 0.9em;
+    border-radius: 0.55em;
+    background: var(--c-card-bg);
+    color: var(--c-chip-text);
+    box-shadow: 0 0.5em 1.6em rgb(20 0 39 / 0.1);
+    line-height: 1.25;
+    visibility: hidden;
+    /* Message tail on the bottom-left, pointing toward him. */
+    border-bottom-left-radius: 0;
+  }
+  .bub::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -0.55em;
+    width: 0.6em;
+    height: 0.8em;
+    background: inherit;
+    clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  }
+  .bub__who {
+    font-size: 0.74em;
+    color: var(--c-bubble-name);
+  }
+  .bub__text {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35em;
+  }
+  .bub--you {
+    background: var(--c-accent);
+    color: var(--c-btn-text);
+  }
+  .bub--you .bub__who {
+    color: inherit;
+    opacity: 0.85;
+  }
+  .bub--you-card {
+    background: var(--c-accent);
+    color: var(--c-btn-text);
+    max-width: 26%;
+  }
+  .bub--you-card .bub__who {
+    color: inherit;
+    opacity: 0.85;
+  }
+  .bub__price {
+    font-weight: 500;
+  }
+  .bub__button {
+    margin-top: 0.4em;
+    padding: 0.35em 0.8em;
+    border-radius: 999px;
+    background: var(--c-shape);
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .bub--green {
+    background: var(--c-success);
+    color: #fff;
+    max-width: 46%;
+  }
+  .bub--green .bub__who {
+    color: inherit;
+    opacity: 0.85;
+  }
+  .bub--zend {
+    max-width: 46%;
+  }
+  .bub__tick {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.05em;
+    height: 1.05em;
+    margin-top: 0.08em;
+    border-radius: 50%;
+    background: var(--c-success);
+    color: #fff;
+  }
+  .bub--green .bub__tick {
+    background: #fff;
+    color: var(--c-success);
+  }
+  .bub__tick :global(svg) {
+    width: 70%;
+    height: 70%;
+  }
+
+  /* ---------- Mobile frame values ---------- */
+  @media (max-aspect-ratio: 5/4) {
+    /* Mobile frame 4: heading at y 160, subtitle 23 below it; Join waitlist
+       follows 28 below the subtitle (sellers.ts), so longer subtitles push
+       it down instead of crowding it. */
+    .sell-text {
+      left: calc(20 * var(--u));
+      top: calc(44 * var(--u));
+      gap: calc(22 * var(--u));
+    }
+    .sell-body {
+      --fs-max: 18px;
+      width: calc(320 * var(--u));
+    }
+    .sell-window {
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(14 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0, #000 calc(14 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
+    }
+    /* On phones the bubbles stack against the right screen edge with a small
+       even gap (text wraps differently on each phone, so fixed spots leave
+       uneven gaps). Padding % is of the square canvas, so --by works as y. */
+    /* On phones they hug the right screen edge instead. */
+    .bubbles {
+      align-items: flex-end;
+      padding-right: 3%;
+    }
+    .bub {
+      margin-left: 0;
+    }
+    .boy-clip {
+      clip-path: inset(-40% 4% -10% -40%);
+    }
+    .bub {
+      max-width: 44%;
+    }
+  }
+</style>

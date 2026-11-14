@@ -1,0 +1,31 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+---
+
+<PageLayout title="Page not found" description="This page doesn't exist on Zend.">
+  <p>Sorry, we couldn't find that page. It may have moved, or the link may have a typo.</p>
+  <p class="nf-links">
+    <a class="btn nf-home" href="/">Go to the home page</a>
+    <a href="/contact">Contact us</a>
+  </p>
+</PageLayout>
+
+<style>
+  .nf-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    margin-top: 28px;
+  }
+  .nf-home {
+    font-size: 17px;
+    text-decoration: none;
+  }
+  /* The site's buttons keep their own colours (not the page's link colour). */
+  :global(.pg-main) .nf-home,
+  :global([data-theme='dark'] .pg-main) .nf-home {
+    color: var(--c-btn-text);
+    text-decoration: none;
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+// Short footer for the inner pages: brand, the link columns and the legal
+// line (no "Just Zend It" scene).
+import Logo from '../../assets/icons/logo.svg';
+import Instagram from '../../assets/icons/instagram.svg';
+import X from '../../assets/icons/x.svg';
+import Mail from '../../assets/icons/mail.svg';
+import { CONTACT_EMAIL, SOCIALS } from '../../data/contact';
+import { FOOTER_COLUMNS } from '../../data/footer';
+
+const here = Astro.url.pathname.replace(/\/$/, '');
+---
+
+<footer class="sf">
+  <div class="sf__top">
+    <div class="sf__brand">
+      <a class="sf__logo" href="/" aria-label="Zend home">
+        <Logo aria-hidden="true" />
+        <span>Zend</span>
+      </a>
+      <p class="sf__tag">Safe payment for things<br />you buy and sell on social media</p>
+      <ul class="sf__social" aria-label="Zend on social media">
+        <li><a href={SOCIALS.instagram.url} target="_blank" rel="noopener" aria-label="Zend on Instagram"><Instagram aria-hidden="true" /></a></li>
+        <li><a href={SOCIALS.x.url} target="_blank" rel="noopener" aria-label="Zend on X"><X aria-hidden="true" /></a></li>
+        <li><a href={`mailto:${CONTACT_EMAIL}`} aria-label={`Email Zend: ${CONTACT_EMAIL}`}><Mail aria-hidden="true" /></a></li>
+      </ul>
+    </div>
+    <div class="sf__cols">
+      {
+        FOOTER_COLUMNS.map((col) => (
+          <nav aria-label={col.title}>
+            <h2 class="sf__title">{col.title}</h2>
+            <ul>
+              {col.links.map((l) => (
+                <li>
+                  <a href={l.href} aria-current={l.href === here ? 'page' : undefined}>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+  </div>
+  <div class="sf__legal">
+    <p>© 2026 Zend. All rights reserved.</p>
+    <p>In partnership with Stellar</p>
+  </div>
+</footer>
+
+<style>
+  .sf {
+    width: min(1525px, calc(100% - 2 * max(20px, 6vw)));
+    margin: 96px auto 0;
+    padding: 48px 0 32px;
+    border-top: 1px solid var(--c-card-border);
+    color: var(--c-foot-text);
+  }
+  .sf__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 48px;
+  }
+  .sf__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--c-foot-title);
+    font-size: 24px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .sf__logo :global(svg) {
+    width: 44px;
+    height: 33px;
+  }
+  .sf__tag {
+    margin: 16px 0 0;
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  .sf__social {
+    display: flex;
+    gap: 10px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sf__social a {
+    display: grid;
+    color: var(--c-foot-icon);
+  }
+  .sf__social :global(svg) {
+    width: 26px;
+    height: 26px;
+  }
+  .sf__cols {
+    display: flex;
+    gap: clamp(32px, 6vw, 110px);
+  }
+  .sf__cols ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sf__title {
+    margin: 0 0 10px;
+    font-family: var(--font-body);
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--c-foot-title);
+  }
+  .sf__cols a {
+    display: inline-block;
+    padding: 5px 0;
+    font-size: 16px;
+    color: var(--c-foot-link);
+    text-decoration: none;
+  }
+  .sf__cols a:hover,
+  .sf__cols a[aria-current='page'] {
+    color: var(--c-foot-btn);
+  }
+  /* Night: lilac is only for what's selected; everything else is off-white. */
+  :global([data-theme='dark']) .sf__social a {
+    color: var(--c-foot-text);
+  }
+  :global([data-theme='dark']) .sf__social a:hover {
+    color: var(--c-foot-btn);
+  }
+  .sf__legal {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 40px;
+    font-size: 15px;
+  }
+  .sf__legal p {
+    margin: 0;
+  }
+
+  @media (max-aspect-ratio: 5/4) {
+    .sf {
+      margin-top: 64px;
+      padding-top: 36px;
+    }
+    .sf__top {
+      flex-direction: column;
+      gap: 32px;
+    }
+    .sf__cols {
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .sf__legal {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+</style>

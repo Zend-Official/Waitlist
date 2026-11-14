@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteNav from '../components/SiteNav.astro';
+import Hero from '../components/hero/Hero.astro';
+import HowItWorks from '../components/hiw/HowItWorks.astro';
+import Sellers from '../components/sellers/Sellers.astro';
+import Security from '../components/security/Security.astro';
+import Faq from '../components/faq/Faq.astro';
+import Footer from '../components/footer/Footer.astro';
+import Waitlist from '../components/Waitlist.astro';
+---
+
+<Base>
+  <SiteNav />
+  <main>
+    <!-- Hero and How it works share one pinned stage (one story). -->
+    <Hero>
+      <HowItWorks />
+      <Sellers />
+      <Security />
+      <Faq />
+    </Hero>
+
+    <Footer />
+  </main>
+  <Waitlist />
+</Base>
+
+<script>
+  import { initApp } from '../scripts/app';
+  initApp();
+</script>

@@ -1,0 +1,192 @@
+---
+// Top bar for the inner pages (privacy, terms, partners, contact).
+// Desktop: a floating pill (logo + "Zend", day/night toggle, Join waitlist)
+// with the page heading below it. Mobile: one row of icons only, with the
+// page heading as the only text: logo (home) | toggle | join | heading (right).
+import Logo from '../../assets/icons/logo.svg';
+import Sun from '../../assets/icons/sun.svg';
+import Moon from '../../assets/icons/moon.svg';
+import Chevron from '../../assets/icons/chevron-right.svg';
+import UserPlus from '../../assets/icons/user-plus.svg';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<header class="pg-head">
+  <div class="pg-bar">
+    <a class="pg-brand" href="/" aria-label="Zend home">
+      <Logo class="pg-brand__mark" aria-hidden="true" />
+      <span class="pg-brand__word" aria-hidden="true">Zend</span>
+    </a>
+    <div class="pg-actions">
+      <button class="pg-icon pg-theme" type="button" data-theme-toggle aria-label="Switch to night mode" aria-pressed="false">
+        <Moon class="pg-icon__svg theme-icon theme-icon--moon" aria-hidden="true" />
+        <Sun class="pg-icon__svg theme-icon theme-icon--sun" aria-hidden="true" />
+      </button>
+      <a class="btn pg-cta" href="/" data-waitlist>
+        <span class="li">Join waitlist</span>
+        <Chevron class="btn__icon" aria-hidden="true" />
+      </a>
+      <a class="pg-icon pg-cta-icon" href="/" data-waitlist aria-label="Join waitlist">
+        <UserPlus class="pg-icon__svg" aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+  <h1 class="pg-title">{title}</h1>
+</header>
+
+<style>
+  .pg-head {
+    padding: 24px 0 0;
+  }
+  /* ---------- Desktop: floating pill ---------- */
+  .pg-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    width: min(745px, calc(100% - 32px));
+    height: 64px;
+    margin: 0 auto;
+    padding: 0 12px 0 28px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: var(--c-bar-bg);
+    box-shadow: 0 10px 30px rgb(20 0 39 / 0.08);
+  }
+  .pg-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--c-hdr-on-bg);
+    text-decoration: none;
+  }
+  .pg-brand__mark {
+    width: 40px;
+    height: 30px;
+    overflow: visible;
+  }
+  .pg-brand__word {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  .pg-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pg-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: var(--c-toggle-bg);
+    color: var(--c-toggle-icon);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pg-icon__svg {
+    width: 20px;
+    height: 20px;
+    overflow: visible;
+  }
+  .theme-icon--sun,
+  :global([data-theme='dark']) .theme-icon--moon {
+    display: none;
+  }
+  :global([data-theme='dark']) .theme-icon--sun {
+    display: block;
+  }
+  .pg-cta {
+    --fs-max: 16px;
+    font-size: 16px;
+    padding: 0.75em 1.2em;
+  }
+  .pg-cta-icon {
+    display: none;
+  }
+  .pg-title {
+    margin: 56px auto 0;
+    width: min(1525px, calc(100% - 2 * max(20px, 6vw)));
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: clamp(36px, 3.7vw, 64px);
+    line-height: 1.1;
+    color: var(--c-hiw-head);
+  }
+
+  /* ---------- Mobile: icons only, the heading is the only text ---------- */
+  @media (max-aspect-ratio: 5/4) {
+    .pg-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px 0;
+    }
+    .pg-bar {
+      display: contents;
+    }
+    .pg-brand {
+      order: 1;
+    }
+    .pg-brand__mark {
+      width: 36px;
+      height: 27px;
+    }
+    .pg-brand__word,
+    .pg-cta {
+      display: none;
+    }
+    /* Mobile frame: icons on the left, the page heading on the right. */
+    .pg-title {
+      order: 3;
+      flex: 1;
+      width: auto;
+      margin: 0;
+      text-align: right;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pg-actions {
+      order: 2;
+      gap: 8px;
+    }
+    .pg-cta-icon {
+      display: grid;
+      background: var(--c-accent);
+      color: var(--c-btn-text);
+    }
+    /* Same height as the logo (27px); the tap area stays a full 44px. */
+    .pg-icon {
+      position: relative;
+      width: 27px;
+      height: 27px;
+      border-radius: 7px;
+    }
+    .pg-icon::before {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: 44px;
+      height: 44px;
+      translate: -50% -50%;
+    }
+    .pg-icon__svg {
+      width: 15px;
+      height: 15px;
+    }
+    .pg-actions {
+      gap: 12px;
+    }
+  }
+</style>

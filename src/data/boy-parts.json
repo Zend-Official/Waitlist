@@ -1,0 +1,125 @@
+{
+  "canvas": 1452,
+  "parts": {
+    "boy-packing-arms-bag": {
+      "x": 148,
+      "y": 438,
+      "w": 1086,
+      "h": 498
+    },
+    "boy-packing-body": {
+      "x": 104,
+      "y": 381,
+      "w": 1179,
+      "h": 1071
+    },
+    "boy-packing-box-front": {
+      "x": 310,
+      "y": 843,
+      "w": 739,
+      "h": 309
+    },
+    "boy-packing-eyes": {
+      "x": 582,
+      "y": 259,
+      "w": 176,
+      "h": 67
+    },
+    "boy-packing-head": {
+      "x": 423,
+      "y": 4,
+      "w": 416,
+      "h": 511
+    },
+    "boy-packing-phone": {
+      "x": 1101,
+      "y": 1293,
+      "w": 222,
+      "h": 139
+    },
+    "boy-peace-arm-peace": {
+      "x": 269,
+      "y": 266,
+      "w": 277,
+      "h": 629
+    },
+    "boy-peace-arm-phone": {
+      "x": 902,
+      "y": 375,
+      "w": 350,
+      "h": 599
+    },
+    "boy-peace-body": {
+      "x": 167,
+      "y": 421,
+      "w": 1118,
+      "h": 1031
+    },
+    "boy-peace-eyes": {
+      "x": 644,
+      "y": 239,
+      "w": 185,
+      "h": 55
+    },
+    "boy-peace-head": {
+      "x": 503,
+      "y": 0,
+      "w": 430,
+      "h": 525
+    },
+    "boy-wink-arm-phone": {
+      "x": 158,
+      "y": 293,
+      "w": 354,
+      "h": 629
+    },
+    "boy-wink-body": {
+      "x": 122,
+      "y": 407,
+      "w": 1212,
+      "h": 1044
+    },
+    "boy-wink-eyes": {
+      "x": 543,
+      "y": 271,
+      "w": 75,
+      "h": 35
+    },
+    "boy-wink-head": {
+      "x": 385,
+      "y": 0,
+      "w": 428,
+      "h": 536
+    },
+    "boy-worried-arm-forehead": {
+      "x": 176,
+      "y": 149,
+      "w": 428,
+      "h": 749
+    },
+    "boy-worried-arm-phone": {
+      "x": 877,
+      "y": 578,
+      "w": 373,
+      "h": 400
+    },
+    "boy-worried-body": {
+      "x": 131,
+      "y": 373,
+      "w": 1193,
+      "h": 1079
+    },
+    "boy-worried-eyes": {
+      "x": 539,
+      "y": 263,
+      "w": 178,
+      "h": 73
+    },
+    "boy-worried-head": {
+      "x": 384,
+      "y": 4,
+      "w": 426,
+      "h": 535
+    }
+  }
+}

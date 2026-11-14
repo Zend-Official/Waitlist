@@ -1,0 +1,329 @@
+---
+// Join waitlist form. Every [data-waitlist] button opens it (waitlist.ts):
+// a wave starts from the tapped button and sweeps over the screen, turning
+// it to the page background; the form appears plainly in the middle. On
+// submit everything squeezes into a point that opens into the thank-you
+// message. ✕ reverses it all back to the page.
+---
+
+<div class="wl" id="waitlist" role="dialog" aria-modal="true" aria-labelledby="wl-title" hidden>
+  <div class="wl-wave" aria-hidden="true"></div>
+  <div class="wl-ring" aria-hidden="true"></div>
+
+  <button class="wl-close" type="button" aria-label="Close">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+  </button>
+
+  <form class="wl-form" novalidate>
+    <h2 id="wl-title" class="wl-title wl-in">No more ‘I sent the money, but no goods’</h2>
+    <p class="wl-sub wl-in">
+      Leave your name and your phone number or email. We'll tell you the moment you can start buying and selling without fear.
+    </p>
+
+    <label class="wl-field wl-in">
+      <span class="wl-label">Your name</span>
+      <input class="wl-input" name="name" type="text" autocomplete="name" placeholder="e.g. Treasure" maxlength="80" />
+    </label>
+
+    <div class="wl-switch wl-in" role="radiogroup" aria-label="How should we reach you?">
+      <button type="button" role="radio" aria-checked="true" data-mode="phone">Phone</button>
+      <button type="button" role="radio" aria-checked="false" data-mode="email">Email</button>
+    </div>
+
+    <label class="wl-field wl-field--phone wl-in">
+      <span class="wl-label">Phone number</span>
+      <span class="wl-phone">
+        <span class="wl-cc" aria-hidden="true">+234</span>
+        <input class="wl-input" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="0801 234 5678" maxlength="16" />
+      </span>
+    </label>
+    <label class="wl-field wl-field--email wl-in" hidden>
+      <span class="wl-label">Email</span>
+      <input class="wl-input" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" maxlength="120" />
+    </label>
+
+    <!-- Bots fill this; people never see it. -->
+    <input class="wl-hp" name="zx_hp_field" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <p class="wl-error" role="alert"></p>
+    <button class="btn wl-submit wl-in" type="submit">
+      <span class="wl-submit__text">Join waitlist</span>
+      <span class="wl-spinner" aria-hidden="true"></span>
+    </button>
+  </form>
+
+  <!-- The point everything squeezes into, which opens into the thank-you. -->
+  <div class="wl-dot" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+  </div>
+  <div class="wl-done" role="status">
+    <h2 class="wl-done__title">You're in!</h2>
+    <p class="wl-done__text">We'll inform you when Zend is ready.</p>
+  </div>
+</div>
+
+<style>
+  .wl {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 84px 24px 40px; /* clear of the ✕ */
+    overflow-y: auto;
+    color: var(--c-text);
+  }
+  .wl[hidden] {
+    display: none;
+  }
+  /* The wave: the page background, revealed in a growing circle from the
+     button (clip-path set by waitlist.ts). */
+  .wl-wave {
+    position: fixed;
+    inset: 0;
+    background: var(--c-bg);
+    clip-path: circle(0px at 50% 50%);
+  }
+  /* Its leading edge: a soft lilac ring running just ahead of the wave. */
+  .wl-ring {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 3px solid var(--c-accent);
+    box-shadow: 0 0 40px 8px rgb(195 143 248 / 0.35);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .wl-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--c-toggle-bg);
+    color: var(--c-hiw-head);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wl-close svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  /* The form: plain, in the middle. */
+  .wl-form {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: min(460px, 100%);
+  }
+  .wl-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 42px);
+    line-height: 1.12;
+    color: var(--c-hiw-head);
+  }
+  .wl-sub {
+    margin: 0 0 6px;
+    font-size: clamp(16px, 1.3vw, 18px);
+    line-height: 1.55;
+    color: var(--c-text);
+  }
+  .wl-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wl-field[hidden] {
+    display: none;
+  }
+  .wl-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--c-hiw-head);
+  }
+  .wl-input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 52px;
+    padding: 0 16px;
+    border: 1.5px solid var(--c-card-border);
+    border-radius: 14px;
+    background: var(--c-card-bg);
+    color: var(--c-text);
+    font: inherit;
+    font-size: 16px; /* 16px stops phones zooming in */
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .wl-input::placeholder {
+    color: currentColor;
+    opacity: 0.45;
+  }
+  .wl-input:focus {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 4px rgb(195 143 248 / 0.25);
+  }
+  .wl-input[aria-invalid='true'] {
+    border-color: #e5484d;
+  }
+  /* +234 sits inside the phone box */
+  .wl-phone {
+    position: relative;
+    display: block;
+  }
+  .wl-cc {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    translate: 0 -50%;
+    font-weight: 500;
+    color: var(--c-hiw-head);
+    pointer-events: none;
+  }
+  .wl-phone .wl-input {
+    padding-left: 66px;
+  }
+
+  /* Phone | Email switch */
+  .wl-switch {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--c-toggle-bg);
+  }
+  .wl-switch button {
+    min-width: 84px;
+    height: 36px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--c-hiw-head);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.25s, color 0.25s;
+  }
+  .wl-switch button[aria-checked='true'] {
+    background: var(--c-accent);
+    color: var(--c-btn-text);
+  }
+
+  .wl-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .wl-error {
+    min-height: 1.4em;
+    margin: -6px 0 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #e5484d;
+  }
+  .wl-submit {
+    position: relative;
+    align-self: stretch;
+    border: 0;
+    font: inherit;
+    font-size: 17px;
+    height: 52px;
+    cursor: pointer;
+  }
+  .wl-spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: wl-spin 0.7s linear infinite;
+  }
+  .wl-submit[aria-busy='true'] .wl-spinner {
+    display: inline-block;
+  }
+  .wl-submit[aria-busy='true'] .wl-submit__text {
+    opacity: 0.7;
+  }
+  @keyframes wl-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  /* The point, then the tick badge */
+  .wl-dot {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 88px;
+    height: 88px;
+    margin: -44px 0 0 -44px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    color: var(--c-btn-text);
+    opacity: 0; /* (scale is set by waitlist.ts) */
+    pointer-events: none;
+  }
+  .wl-dot svg {
+    width: 44px;
+    height: 44px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+  }
+  .wl-done {
+    position: fixed;
+    left: 50%;
+    top: calc(50% + 68px);
+    z-index: 1;
+    width: min(420px, calc(100% - 48px));
+    translate: -50% 0;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .wl-done__title {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 3vw, 38px);
+    color: var(--c-hiw-head);
+  }
+  .wl-done__text {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--c-text);
+  }
+</style>

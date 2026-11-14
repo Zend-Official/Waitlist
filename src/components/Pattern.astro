@@ -1,0 +1,84 @@
+---
+// Brand background: the Zend arrow outline repeated on a 36.7° grid
+// (rebuilt from assets/svgs/BG.svg: 70 masked copies -> one repeating tile).
+// `mirror` flips the layer, which also flips its fade, so the pattern can
+// follow the direction of the hero arrow.
+interface Props {
+  id: string;
+  mirror?: boolean;
+  class?: string;
+}
+const { id, mirror = false, class: cls = '' } = Astro.props;
+
+const TILE =
+  'M0 0L126.27 -2.56C138.21 -2.8 144.83 11.17 137.09 20.26L49.08 123.48C46.45 126.57 42.6 128.34 38.54 128.34L0.28 128.34C-7.37 128.34 -13.56 122.15 -13.56 114.5L-13.56 100.41C-13.56 96 -11.46 91.84 -7.89 89.24L59.82 39.73L4.73 58.44C-4.25 61.49 -13.56 54.81 -13.56 45.33L-13.56 13.84C-13.56 6.31 -7.54 0.15 0 0Z';
+const W = 167.687;
+const H = 140.277;
+// 3x3 copies so arrows that overflow the cell wrap into neighbours.
+const copies = [-1, 0, 1].flatMap((i) => [-1, 0, 1].map((j) => [i * W, j * H]));
+
+const layouts = [
+  { key: 'd', cls: 'only-desktop', viewBox: '0 0 1728 1117', transform: 'translate(232.186 -174.837) rotate(36.6998)' },
+  { key: 'm', cls: 'only-mobile', viewBox: '0 0 402 874', transform: 'translate(60 -40) rotate(36.6998) scale(0.383)' },
+];
+---
+
+<div class:list={['pattern', mirror && 'pattern--mirror', cls]} aria-hidden="true">
+  {
+    layouts.map((l) => {
+      const p = `${id}-${l.key}`;
+      return (
+        <svg class={l.cls} viewBox={l.viewBox} preserveAspectRatio="xMidYMid slice" focusable="false">
+          <defs>
+            <clipPath id={`${p}-clip`}>
+              <path id={`${p}-tile`} d={TILE} />
+            </clipPath>
+            <g id={`${p}-arrow`}>
+              <use href={`#${p}-tile`} clip-path={`url(#${p}-clip)`} />
+            </g>
+            <pattern id={`${p}-pat`} patternUnits="userSpaceOnUse" width={W} height={H} patternTransform={l.transform}>
+              {copies.map(([x, y]) => (
+                <use href={`#${p}-arrow`} x={x} y={y} />
+              ))}
+            </pattern>
+          </defs>
+          <rect x="-2000" y="-2000" width="6000" height="6000" fill={`url(#${p}-pat)`} />
+        </svg>
+      );
+    })
+  }
+</div>
+
+<style>
+  .pattern {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Two fades, both applied: hidden toward one corner, visible toward the
+       other (matches BG.svg); and nothing in the top 20% of the screen, the
+       pattern fading in from there downwards. */
+    -webkit-mask-image:
+      linear-gradient(234deg, transparent 36%, #000 100%),
+      linear-gradient(to bottom, transparent 20%, #000 38%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(234deg, transparent 36%, #000 100%),
+      linear-gradient(to bottom, transparent 20%, #000 38%);
+    mask-composite: intersect;
+  }
+  .pattern--mirror {
+    transform: scaleX(-1);
+  }
+  .pattern svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .pattern :global(use) {
+    fill: none;
+    stroke: var(--c-pattern);
+    stroke-opacity: 0.05;
+    stroke-width: 10; /* clipped to the inside -> 5px visible, like the Figma inner stroke */
+  }
+</style>

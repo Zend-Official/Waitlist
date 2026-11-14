@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 340">
+  <g id="ring-a">
+    <ellipse cx="235" cy="170" rx="211" ry="66" transform="rotate(18 235 170)" fill="none" stroke="#B57CF7" stroke-width="5.5"/>
+  </g>
+  <g id="ring-b">
+    <ellipse cx="235" cy="170" rx="211" ry="66" transform="rotate(-18 235 170)" fill="none" stroke="#B57CF7" stroke-width="5.5"/>
+  </g>
+  <g id="dots-a" fill="#7303FB">
+    <circle cx="24" cy="170" r="11.5" transform="rotate(18 235 170)"/>
+    <circle cx="446" cy="170" r="11.5" transform="rotate(18 235 170)"/>
+  </g>
+  <g id="dots-b" fill="#7303FB">
+    <circle cx="24" cy="170" r="11.5" transform="rotate(-18 235 170)"/>
+    <circle cx="446" cy="170" r="11.5" transform="rotate(-18 235 170)"/>
+  </g>
+  <g id="dot-float">
+    <circle cx="382" cy="34" r="13" fill="#7303FB"/>
+  </g>
+  <g id="shield">
+    <g id="shield-left" fill="#7303FB">
+      <path d="M233 28C193 49 154 55 117 59Q109 60 109 69V149C109 230 149 281 233 321Z"/>
+    </g>
+    <g id="shield-right" fill="#5603C9">
+      <path d="M233 28C273 49 312 55 347 59Q355 60 355 69V149C355 230 316 281 233 321Z"/>
+    </g>
+    <g id="shield-outline">
+      <path d="M233 28C193 49 154 55 117 59Q109 60 109 69V149C109 230 149 281 233 321C316 281 355 230 355 149V69Q355 60 347 59C312 55 273 49 233 28Z" fill="none" stroke="#2F0850" stroke-width="8" stroke-linejoin="round"/>
+    </g>
+    <g id="shield-shine">
+      <path d="M134 93Q139 76 160 72" fill="none" stroke="#B98CFF" stroke-width="8" stroke-linecap="round"/>
+    </g>
+    <g id="shield-logo">
+      <path d="M187.236 6.80566C203.616 6.47343 212.701 25.6468 202.072 38.1133L158.106 89.6787H196.499C206.711 89.6787 214.989 97.957 214.989 108.169V163.641C214.989 173.853 206.711 182.131 196.499 182.131H141.027C130.816 182.131 122.537 173.852 122.537 163.641V131.395L84.5391 175.961C80.9311 180.193 75.6498 182.631 70.0889 182.631H18.9902C8.50236 182.631 0 174.128 0 163.64V144.828C0.00027621 138.77 2.89144 133.074 7.78223 129.498L95.5684 65.3145L25.0977 89.249C12.7814 93.4318 0 84.2738 0 71.2666V29.2129C0.000308438 18.8752 8.26991 10.4364 18.6055 10.2266L187.236 6.80566ZM230.706 0C239.386 0 246.423 7.03664 246.423 15.7168C246.423 24.397 239.386 31.4336 230.706 31.4336C222.026 31.4334 214.989 24.3969 214.989 15.7168C214.989 7.03675 222.026 0.000175653 230.706 0Z" transform="translate(174 130) scale(.476)" fill="#FFFFFF"/>
+    </g>
+  </g>
+</svg>

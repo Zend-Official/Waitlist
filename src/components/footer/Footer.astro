@@ -1,0 +1,384 @@
+---
+// Footer ("Just Zend It"). Not part of the pinned story: it simply scrolls
+// in after the FAQ. As it arrives the top bar contracts into the day/night
+// toggle, which floats in the top-right corner (footer.ts).
+import SmartPicture from '../SmartPicture.astro';
+import Logo from '../../assets/icons/logo.svg';
+import Instagram from '../../assets/icons/instagram.svg';
+import X from '../../assets/icons/x.svg';
+import Mail from '../../assets/icons/mail.svg';
+import { CONTACT_EMAIL, SOCIALS } from '../../data/contact';
+import Chevron from '../../assets/icons/chevron-right.svg';
+import Pattern from '../Pattern.astro';
+import { FOOTER_COLUMNS } from '../../data/footer';
+import sofa from '../../assets/footer/sofa.png';
+import girl from '../../assets/footer/girl.png';
+import lamp from '../../assets/footer/room-lamp.png';
+import plant from '../../assets/footer/room-plant.png';
+import rug from '../../assets/footer/room-rug.png';
+import frame from '../../assets/footer/room-frame.png';
+
+const box = (d: readonly number[], m: readonly number[]) =>
+  [
+    `--dx:${d[0]};--dy:${d[1]}`,
+    d[2] !== undefined ? `--dw:${d[2]}` : '',
+    d[3] !== undefined ? `--dh:${d[3]}` : '',
+    `--mx:${m[0]};--my:${m[1]}`,
+    m[2] !== undefined ? `--mw:${m[2]}` : '',
+    m[3] !== undefined ? `--mh:${m[3]}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${dfs};--dlh:${dlh};--mfs:${mfs};--mlh:${mlh}`;
+
+// Footer links (shared with the inner pages' short footer). Story links
+// jump to their frame here (footer.ts) and go to /#… from other pages.
+const COLUMNS = FOOTER_COLUMNS;
+// Column x positions in the frames (desktop / mobile).
+const COL_X = [
+  [812, 30],
+  [1099, 148],
+  [1368, 254],
+];
+const SIZES = '(max-aspect-ratio: 5/4) 112vw, 48vw';
+---
+
+<footer id="footer" class="foot" data-nav="footer" data-label="Just Zend It" aria-labelledby="foot-title">
+  <Pattern id="pat-ft" class="pattern--ft" />
+  <!-- A soft lilac glow that grows up from the bottom as the footer arrives (footer.ts). -->
+  <div class="foot-glow" aria-hidden="true"></div>
+
+  <!-- Call to action -->
+  <h2 id="foot-title" class="foot-title fs pos dc dt mc mt" style={`${box([0, 62, 1728], [0, 44, 402])};${type(76, 77, 34, 38)}`}>Just Zend It</h2>
+  <p class="foot-sub fs pos dc dt mc mt" style={`${box([0, 172, 1728], [0, 106, 402])};${type(28, 34, 17, 22)}`}>Payment as simple as sending a text</p>
+  <div class="foot-cta-row pos dc dt mc mt" style={box([0, 236, 1728], [0, 154, 402])}>
+    <a class="btn fs foot-cta" href="#" data-waitlist style={type(35, 38, 20, 22)}>
+      <span class="li">Join waitlist</span>
+      <Chevron class="btn__icon" aria-hidden="true" />
+    </a>
+  </div>
+
+  <!-- Brand -->
+  <div class="foot-brand pos dc dt mc mt" style={box([161, 406, 400], [30, 258, 340])}>
+    <p class="foot-logo">
+      <Logo class="foot-logo__mark" aria-hidden="true" />
+      <span class="foot-logo__word fs" style={type(40, 40, 20, 22)}>Zend</span>
+    </p>
+    <p class="foot-tag fs" style={type(24, 30, 16, 24)}>Safe payment for things<br />you buy and sell on social media</p>
+    <ul class="foot-social" aria-label="Zend on social media">
+      <li><a href={SOCIALS.instagram.url} target="_blank" rel="noopener" aria-label="Zend on Instagram"><Instagram aria-hidden="true" /></a></li>
+      <li><a href={SOCIALS.x.url} target="_blank" rel="noopener" aria-label="Zend on X"><X aria-hidden="true" /></a></li>
+      <li><a href={`mailto:${CONTACT_EMAIL}`} aria-label={`Email Zend: ${CONTACT_EMAIL}`}><Mail aria-hidden="true" /></a></li>
+    </ul>
+  </div>
+
+  <!-- Link columns -->
+  {
+    COLUMNS.map((col, i) => (
+      <nav class="foot-col pos dc dt mc mt" aria-label={col.title} style={box([COL_X[i][0], 425, 260], [COL_X[i][1], 430, 140])}>
+        <h3 class="foot-col__title fs" style={type(28, 34, 17, 22)}>{col.title}</h3>
+        <ul>
+          {col.links.map((l) => (
+            <li>
+              <a class="fs" href={l.href} data-frame={l.frame} style={type(24, 47, 15, 27)}>
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ))
+  }
+
+  <!-- Legal line -->
+  <p class="foot-copy fs pos dc dt mc mt" style={`${box([150, 661, 700], [20, 569, 380])};${type(24, 30, 16, 30)}`}>© 2026 Zend. All rights reserved.</p>
+  <p class="foot-partner fs pos dc dt mc mt" style={`${box([876, 661, 700], [24, 599, 380])};${type(24, 30, 16, 30)}`}>In partnership with Stellar</p>
+
+  <!-- Big outlined ZEND behind the girl -->
+  <svg class="foot-zend only-desktop pos dc db" style={box([30, 782, 1660, 330], [0, 0])} viewBox="0 0 1660 330" preserveAspectRatio="none" aria-hidden="true">
+    <text x="0" y="326" textLength="1660" lengthAdjust="spacing">ZEND</text>
+  </svg>
+  <svg class="foot-zend foot-zend--m only-mobile pos mc mb" style={box([0, 0], [-4, 696, 410, 178])} viewBox="0 0 410 178" preserveAspectRatio="none" aria-hidden="true">
+    <text x="0" y="176" textLength="410" lengthAdjust="spacingAndGlyphs">ZEND</text>
+  </svg>
+
+  <!-- The girl on the sofa in a cozy living room: rug, lamp, plant and a
+       framed Zend logo around her. Props are placed in the sofa picture's
+       818x386 space (percentages), so they scale with it. -->
+  <div class="foot-girl pos dc db mc mb" style={box([459, 731, 818, 386], [19, 700, 368, 174])} aria-hidden="true">
+    <SmartPicture class="room room--rug" src={rug} widths={[450, 900]} sizes={SIZES} defer="scroll" />
+    <SmartPicture class="room room--frame" src={frame} widths={[180]} sizes="180px" defer="scroll" />
+    <SmartPicture class="room room--lamp" src={lamp} widths={[220]} sizes="220px" defer="scroll" />
+    <SmartPicture class="room room--plant" src={plant} widths={[260]} sizes="260px" defer="scroll" />
+    <SmartPicture class="foot-girl__sofa" src={sofa} widths={[450, 818, 1200]} sizes={SIZES} mobileMax={800} defer="scroll" />
+    <SmartPicture class="foot-girl__girl" src={girl} widths={[450, 818, 1200]} sizes={SIZES} mobileMax={800} defer="scroll" />
+  </div>
+</footer>
+
+<style>
+  .foot {
+    position: relative;
+    height: 100svh;
+    min-height: calc(var(--stage-h) * var(--u));
+    overflow: hidden;
+    background: var(--c-bg);
+    color: var(--c-foot-text);
+  }
+  /* The pattern comes in from the top-left corner and fades out toward the
+     bottom right (replaces the hero's fades). */
+  .foot :global(.pattern--ft) {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(135deg, #000 0%, #000 15%, transparent 60%);
+    -webkit-mask-composite: source-over;
+    mask-image: linear-gradient(135deg, #000 0%, #000 15%, transparent 60%);
+    mask-composite: add;
+  }
+  .foot > :not(.pattern) {
+    z-index: 1;
+  }
+  .foot-title,
+  .foot-sub,
+  .foot-copy,
+  .foot-partner,
+  .foot-brand p,
+  .foot-col__title {
+    margin: 0;
+  }
+  .foot-title,
+  .foot-sub,
+  .foot-cta-row,
+  .foot-copy,
+  .foot-partner,
+  .foot-brand,
+  .foot-col {
+    height: auto;
+  }
+  .foot-title {
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--c-foot-title);
+  }
+  .foot-sub {
+    --fs-max: 22px;
+    text-align: center;
+  }
+  .foot-cta-row {
+    display: flex;
+    justify-content: center;
+  }
+  .foot-cta {
+    background: var(--c-foot-btn);
+    color: var(--c-foot-btn-text);
+  }
+
+  .foot-logo {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(12 * var(--u));
+    color: var(--c-foot-title);
+  }
+  .foot-logo__mark {
+    width: calc(73 * var(--u));
+    height: calc(54 * var(--u));
+    min-width: 32px;
+    min-height: 24px;
+    overflow: visible;
+  }
+  .foot-logo__word {
+    --fs-max: 30px;
+    font-weight: 500;
+  }
+  .foot-tag {
+    --fs-max: 19px;
+    margin-top: calc(28 * var(--u)) !important;
+  }
+  .foot-social {
+    display: flex;
+    gap: calc(10 * var(--u));
+    margin: calc(28 * var(--u)) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .foot-social a {
+    display: grid;
+    place-items: center;
+    color: var(--c-foot-icon);
+  }
+  .foot-social svg {
+    width: calc(32 * var(--u));
+    height: calc(32 * var(--u));
+    min-width: 22px;
+    min-height: 22px;
+  }
+
+  .foot-col__title {
+    --fs-max: 22px;
+    font-weight: 500;
+    color: var(--c-foot-title);
+    margin-bottom: calc(10 * var(--u)) !important;
+  }
+  .foot-col ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .foot-col a {
+    --fs-max: 19px;
+    display: inline-block;
+    color: var(--c-foot-link);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .foot-col a:hover,
+  .foot-social a:hover {
+    color: var(--c-foot-btn);
+  }
+
+  .foot-copy,
+  .foot-partner {
+    --fs-max: 19px;
+  }
+  .foot-partner {
+    text-align: right;
+  }
+
+  /* Big outlined ZEND */
+  .foot-zend {
+    overflow: visible;
+    z-index: 0 !important;
+  }
+  .foot-zend text {
+    font-family: var(--font-display);
+    font-size: 455px;
+    fill: none;
+    stroke: var(--c-foot-outline);
+    stroke-width: 3;
+  }
+  /* Mobile: the word runs the screen's full width, edge to edge, whatever
+     the phone's width (not just the 402-unit frame). */
+  .foot-zend--m {
+    left: -2px !important;
+    width: calc(100% + 4px) !important;
+  }
+  .foot-zend--m text {
+    font-size: 245px;
+    stroke-width: 2;
+  }
+
+  /* Girl on the sofa: two stacked layers */
+  .foot-girl {
+    z-index: 2 !important;
+  }
+  .foot-girl :global(img) {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  /* Room props, in % of the 818x386 sofa picture */
+  .foot-girl :global(img.room) {
+    inset: auto;
+    max-width: none; /* (the reset caps images at 100%) */
+  }
+  .foot-girl :global(img.room--rug) {
+    left: -5%;
+    top: 75.1%;
+    width: 110%;
+    height: 36.3%;
+  }
+  .foot-girl :global(img.room--frame) {
+    left: 17.1%;
+    top: 5.2%;
+    width: 22%;
+    height: 36.3%;
+  }
+  .foot-girl :global(img.room--lamp) {
+    left: -15%;
+    top: -24.4%;
+    width: 26.9%;
+    height: 124.4%;
+  }
+  .foot-girl :global(img.room--plant) {
+    left: 89%;
+    top: 6.2%;
+    width: 31.8%;
+    height: 93.3%;
+    transform-origin: 50% 97.8%; /* the bottom of the pot */
+  }
+  /* Glow from the bottom, like light rising (grows in, footer.ts) */
+  .foot-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(120% 60% at 50% 100%, var(--c-foot-glow) 0%, transparent 70%),
+      linear-gradient(to top, var(--c-foot-glow-soft) 0%, transparent 55%);
+    transform-origin: 50% 100%;
+    pointer-events: none;
+  }
+  .foot-girl__girl,
+  .foot-girl :global(.foot-girl__girl) {
+    transform-origin: 50% 100%;
+  }
+
+  @media (max-aspect-ratio: 5/4) {
+    /* Phones: the footer scrolls normally, so it doesn't need to fit the
+       screen's height. Size it from the width alone, so the content sits as
+       close to the edges as in the mobile frame (30 of 402 units) on every
+       phone; it grows taller than the screen if it has to. */
+    .foot {
+      --u: calc(100vw / 402);
+      height: auto;
+      min-height: max(100svh, calc(874 * var(--u)));
+    }
+    /* Narrow screen: the lamp and plant stay closer so they fit. */
+    .foot-girl :global(img.room--lamp) {
+      left: -8%;
+    }
+    .foot-girl :global(img.room--plant) {
+      left: 80%;
+    }
+    .foot-partner {
+      text-align: left;
+    }
+    .foot-logo {
+      gap: calc(8 * var(--u));
+    }
+    .foot-logo__mark {
+      width: calc(36 * var(--u));
+      height: calc(27 * var(--u));
+    }
+    .foot-logo__word {
+      --fs-max: 20px;
+    }
+    .foot-tag {
+      --fs-max: 16px;
+      margin-top: calc(14 * var(--u)) !important;
+    }
+    .foot-social {
+      margin-top: calc(18 * var(--u));
+    }
+    .foot-social svg {
+      width: calc(22 * var(--u));
+      height: calc(22 * var(--u));
+    }
+    .foot-col__title {
+      --fs-max: 17px;
+      margin-bottom: calc(4 * var(--u)) !important;
+    }
+    .foot-col a {
+      --fs-max: 15px;
+    }
+    .foot-copy,
+    .foot-partner {
+      --fs-max: 16px;
+    }
+    .foot-sub {
+      --fs-max: 17px;
+    }
+  }
+</style>

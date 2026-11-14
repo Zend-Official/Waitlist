@@ -1,0 +1,900 @@
+---
+// How it works (buyer steps), frame 1 design. Rendered inside the hero's
+// pinned stage, so Hero 2 can turn into it seamlessly (see hiw.ts).
+// Desktop: one step at a time on the left (badge + title + text); a dot
+// carries the badge down a dashed trail to the next step. Mobile: the
+// title/text rise through a faded window; pager dots show the step.
+// The phone on the right shows what the buyer sees at each step.
+import Chevron from '../../assets/icons/chevron-right.svg';
+import Bag from '../../assets/icons/bag.svg';
+import DoubleCheck from '../../assets/icons/double-check.svg';
+import ExternalLink from '../../assets/icons/external-link.svg';
+import { HIW_SHAPE, STEPS, STEP_POS } from '../../data/hiw';
+import Logo from '../../assets/icons/logo.svg';
+import shieldSvg from '../../assets/security/shield.svg?raw';
+
+const box = (d: readonly number[], m: readonly number[]) =>
+  [
+    `--dx:${d[0]};--dy:${d[1]}`,
+    d[2] !== undefined ? `--dw:${d[2]}` : '',
+    d[3] !== undefined ? `--dh:${d[3]}` : '',
+    `--mx:${m[0]};--my:${m[1]}`,
+    m[2] !== undefined ? `--mw:${m[2]}` : '',
+    m[3] !== undefined ? `--mh:${m[3]}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${dfs};--dlh:${dlh};--mfs:${mfs};--mlh:${mlh}`;
+
+// One dashed trail from under badge 1 to just above badge 3, revealed in two
+// parts (to step 2, then to step 3). One line keeps the dash spacing even
+// all the way down.
+const TRAIL = {
+  top: STEP_POS[0].badge[1] + 50,
+  h: STEP_POS[2].badge[1] - (STEP_POS[0].badge[1] + 50),
+};
+---
+
+<div class="hiw" id="how-it-works" aria-labelledby="hiw-title">
+  <h2 id="hiw-title" class="sr-only">How it works</h2>
+
+  <!-- The dark shape is drawn by the hero arrow morphing into it (hero.ts);
+       this copy is the target, and is shown when the morph can't run. -->
+  <div class="hiw-shape" aria-hidden="true">
+    <svg class="only-desktop" viewBox="0 0 1728 1117" preserveAspectRatio="none" focusable="false">
+      <path data-hiw-shape="desktop" d={HIW_SHAPE.desktop.d} transform={`translate(${HIW_SHAPE.desktop.offset.join(' ')})`} />
+    </svg>
+    <svg class="only-mobile" viewBox="0 0 402 874" preserveAspectRatio="none" focusable="false">
+      <path data-hiw-shape="mobile" d={HIW_SHAPE.mobile.d} transform={`translate(${HIW_SHAPE.mobile.offset.join(' ')})`} />
+    </svg>
+  </div>
+
+  <!-- Join waitlist: header centre (desktop), under the text (mobile). -->
+  <a class="btn fs hiw-cta pos dc dt mc mt" href="#" data-waitlist style={`${box([864, 77.5], [205.5, 293.5])};${type(35, 38, 20, 22)}`}>
+    <span class="li">Join waitlist</span>
+    <Chevron class="btn__icon" aria-hidden="true" />
+  </a>
+
+  <!-- Desktop steps -->
+  <ol class="hiw-steps only-desktop">
+    {
+      STEPS.map((s, i) => (
+        <li class={`hiw-step hiw-step--${i + 1}`}>
+          <span class="hiw-badge pos dc dt" style={box([...STEP_POS[i].badge, 50, 50], [0, 0])} aria-hidden="true">
+            <span class="hiw-badge__num">{i + 1}</span>
+          </span>
+          <div class="hiw-text pos dc dt" style={box(STEP_POS[i].text, [0, 0])}>
+            <h3 class="hiw-title fs" style={type(48, 49, 36, 37)}>
+              {s.title.desktop.map((line, j) => (
+                <>
+                  {j > 0 && <br />}
+                  {line}
+                </>
+              ))}
+            </h3>
+            <p class="hiw-body fs" style={type(28, 33, 18, 22)}>
+              {s.body.desktop}
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <svg class="hiw-trail pos dc dt only-desktop" style={box([143, TRAIL.top, 12, TRAIL.h], [0, 0])} viewBox={`0 0 12 ${TRAIL.h}`} aria-hidden="true" focusable="false">
+    <circle cx="6" cy="14" r="4.5" />
+    <line x1="6" y1="30" x2="6" y2={TRAIL.h - 26} />
+    <circle cx="6" cy={TRAIL.h - 14} r="4.5" />
+  </svg>
+
+  <!-- Mobile: pager dots and the text window -->
+  <div class="hiw-pager pos mc mt only-mobile" style={box([0, 0], [180, 104, 42, 12])} aria-hidden="true">
+    <span><i></i></span><span><i></i></span><span><i></i></span>
+  </div>
+  <div class="hiw-window pos mc mt only-mobile" style={box([0, 0], [20, 118, 362, 150])}>
+    {
+      STEPS.map((s, i) => (
+        <div class={`hiw-mtext hiw-mtext--${i + 1}`}>
+          <h3 class="hiw-title fs" style={type(48, 49, 36, 37)}>
+            {s.title.mobile.map((line, j) => (
+              <>
+                {j > 0 && <br />}
+                {line}
+              </>
+            ))}
+          </h3>
+          <p class="hiw-body fs" style={type(28, 33, 18, 22)}>
+            {s.body.mobile}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Hero 2 squeezes into this circle at the centre of the screen; it then
+       travels to step 1 (desktop) or the first pager dot (mobile). -->
+  <span class="hiw-squeeze" aria-hidden="true"></span>
+
+  <!-- The dot that carries a step down the dashed trail (hiw.ts). -->
+  <span class="hiw-dot pos dc dt mc mt" style={box([...STEP_POS[0].badge, 50, 50], [176, 146, 50, 50])} aria-hidden="true"></span>
+
+  <!-- The phone: what the buyer sees at each step -->
+  <div class="hiw-phone pos dc dt mc mt" style={box([742, 265, 722, 1300], [5, 360, 392, 900])} aria-hidden="true">
+    <!-- Back of the phone: shown when it flips over and shrinks into the
+         seller's hand (sellers.ts); styled like the phone he holds. -->
+    <div class="phone__back"><span class="phone__cams"><i></i><i></i></span></div>
+    <div class="phone__front">
+    <div class="phone__inner">
+      <span class="phone__notch"></span>
+      <div class="phone__head">
+        <span class="phone__who phone__who--vox"><span class="phone__avatar">V</span><span class="phone__name">Vox bags</span></span>
+        <span class="phone__who phone__who--zend"><span class="phone__avatar">Z</span><span class="phone__name">Zend</span></span>
+      </div>
+      <!-- One chat thread: new messages arrive at the bottom and push the
+           older ones up (hiw.ts). -->
+      <div class="phone__screen wall">
+        <div class="thread">
+          <!-- 1. The seller's link: product page -->
+          <div class="product bubble" data-msg>
+            <div class="product__img"><Bag class="product__bag" /></div>
+            <div class="product__info">
+              <span class="product__name">Vox bag</span>
+              <span class="product__price">N150,000</span>
+            </div>
+          </div>
+          <!-- 2. Pay in chat -->
+          <div class="card pay bubble" data-msg>
+            <div class="pay__row">
+              <span class="pay__thumb"><Bag class="pay__bag" /></span>
+              <span class="pay__text"><span class="pay__name">Vox bag</span><span class="pay__price">N150,000</span></span>
+            </div>
+            <span class="card__link"><ExternalLink class="card__icon" />Pay N150,000</span>
+          </div>
+          <div class="msg msg--2 bubble" data-msg><span class="msg__tick"><DoubleCheck /></span><span>You have paid. The seller hasn’t been paid yet</span></div>
+          <!-- 3. Confirm your order -->
+          <div class="card confirm bubble" data-msg>
+            <span class="confirm__q">Did you receive your order?</span>
+            <span class="card__link"><ExternalLink class="card__icon" />Yes i got it.</span>
+            <span class="card__link"><ExternalLink class="card__icon" />Report a problem</span>
+          </div>
+          <div class="msg msg--3 bubble" data-msg><span class="msg__tick"><DoubleCheck /></span><span>Thank you! Vox bags has been paid</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Security screen: swapped in while the phone is turned to its back,
+         as it grows out of the seller's hand (security.ts). -->
+    <div class="phone__secure wall">
+      <div class="secure__head">
+        <span class="secure__icon"><Logo /></span>
+        <span class="secure__who"><b>Zend</b><span>Protected payment</span></span>
+      </div>
+      <span class="secure__pill">Escrow order</span>
+      <p class="secure__msg"><span class="msg__tick"><DoubleCheck /></span><span>Treasure paid ₦45,000 for the Vox Bags weekend bag.</span></p>
+      <div class="secure__card">
+        <div class="secure__art">
+          <span class="secure__glow"></span>
+          <Fragment set:html={shieldSvg} />
+        </div>
+        <b class="secure__title">Payment secured</b>
+        <span class="secure__note">Secured on the Stellar blockchain until the order is confirmed.</span>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hiw {
+    position: absolute;
+    inset: 0;
+    z-index: 2; /* above the seller scene: the phone lands in front of the boy */
+    pointer-events: none; /* only the button takes clicks */
+    visibility: hidden; /* shown by hero.ts when the story reaches it */
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Same box as the hero arrow (top-aligned, frame height, full width). */
+  .hiw-shape {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(var(--stage-h) * var(--u));
+    visibility: hidden;
+  }
+  .hiw-shape svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: var(--c-hiw-shape);
+  }
+
+  /* ---------- Join waitlist ---------- */
+  .hiw-cta {
+    translate: -50% -50%;
+    width: auto;
+    height: auto;
+    pointer-events: auto;
+  }
+  /* Desktop: Join waitlist lives in the top bar (SiteNav .bar__cta). */
+  @media not all and (max-aspect-ratio: 5/4) {
+    .hiw-cta {
+      display: none;
+    }
+  }
+
+  /* ---------- Desktop steps ---------- */
+  .hiw-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hiw-badge,
+  .hiw-dot {
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--c-phone);
+  }
+  .hiw-badge__num {
+    color: var(--c-badge-text);
+    font-size: calc(28 * var(--u));
+    font-weight: 400;
+    line-height: 1;
+  }
+  .hiw-dot {
+    visibility: hidden;
+  }
+  .hiw-squeeze {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(50 * var(--u));
+    height: calc(50 * var(--u));
+    translate: -50% -50%; /* centred on the screen; GSAP moves it with transform */
+    border-radius: 50%;
+    background: var(--c-phone);
+    visibility: hidden;
+  }
+  .hiw-text {
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: calc(20 * var(--u));
+  }
+  .hiw-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--c-hiw-head);
+    white-space: nowrap;
+  }
+  .hiw-body {
+    --fs-max: 22px;
+    margin: 0;
+    width: 15em; /* the frame's line breaks at any (capped) size */
+    font-weight: 400;
+    color: var(--c-text);
+  }
+  .hiw-step:not(.hiw-step--1) .hiw-badge,
+  .hiw-step:not(.hiw-step--1) .hiw-text {
+    visibility: hidden;
+  }
+  .hiw-trail {
+    overflow: visible;
+    visibility: hidden;
+  }
+  .hiw-trail circle {
+    fill: var(--c-phone);
+  }
+  /* Pill-shaped dashes: 3 wide with round ends, so each dash shows as
+     5 + 3 = 8 long with 8 clear between (in frame units, scaling with the
+     frame like everything else). */
+  .hiw-trail line {
+    stroke: var(--c-phone);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 5 11;
+  }
+
+  /* ---------- Mobile pager + text window ---------- */
+  @media not all and (max-aspect-ratio: 5/4) {
+    .hiw-pager {
+      display: none !important; /* mobile only */
+    }
+  }
+  .hiw-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(8 * var(--u));
+  }
+  .hiw-pager span {
+    width: calc(6 * var(--u));
+    height: calc(6 * var(--u));
+    border-radius: 50%;
+    border: 1px solid var(--c-hiw-head);
+    box-sizing: border-box;
+  }
+  .hiw-pager span {
+    position: relative;
+  }
+  /* Fill of the current step's dot (faded in/out by hiw.ts). */
+  .hiw-pager i {
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background: var(--c-hiw-head);
+    opacity: 0;
+  }
+  /* Text rises through this window: it fades in just above the button and
+     fades out just below the header. */
+  .hiw-window {
+    overflow: hidden;
+    /* Fades only where text passes while moving; resting text sits fully in
+       the solid middle (text 12..~140 of 150). */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(10 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 calc(10 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
+  }
+  .hiw-mtext {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(12 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(10 * var(--u));
+    text-align: center;
+  }
+  .hiw-mtext .hiw-body {
+    --fs-max: 18px;
+    width: auto;
+    max-width: calc(342 * var(--u));
+  }
+  .hiw-mtext:not(.hiw-mtext--1) {
+    visibility: hidden;
+  }
+
+  /* ---------- Phone ---------- */
+  .hiw-phone {
+    /* phone units: desktop = frame units; mobile = the narrower phone */
+    --pu: var(--u);
+    --phone-r: calc(150 * var(--u));
+    transform-style: preserve-3d; /* front and back faces for the flip */
+  }
+  .phone__front,
+  .phone__back {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  /* A complete phone (the bottom normally runs off the screen, but it shows
+     when the phone shrinks into or grows out of the seller's hand). */
+  .phone__front {
+    border: calc(25 * var(--u)) solid var(--c-phone);
+    border-radius: var(--phone-r);
+    background: var(--c-screen);
+    overflow: hidden;
+  }
+  /* Desktop: a slimmer bezel (the user, 2026-11-13). */
+  @media not all and (max-aspect-ratio: 5/4) {
+    .phone__front { border-width: calc(13 * var(--u)); }
+  }
+  /* The back: cream with a dark cartoon outline and the two-lens camera,
+     like the phone drawn in the seller's hand. */
+  .phone__back {
+    transform: rotateY(180deg);
+    border: calc(22 * var(--u)) solid #2a2433;
+    border-radius: var(--phone-r);
+    background: #f4e4c4;
+  }
+  .phone__cams {
+    position: absolute;
+    left: 9%;
+    top: 6%;
+    display: flex;
+    flex-direction: column;
+    gap: 6%;
+    width: 26%;
+    aspect-ratio: 1 / 2.1;
+    padding: 4%;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: #e8d3ab;
+  }
+  .phone__cams i {
+    flex: 1;
+    border-radius: 50%;
+    background: #2a2433;
+    box-shadow: inset 0 0 0 calc(6 * var(--u)) #4a4352;
+  }
+  .phone__inner {
+    position: absolute;
+    inset: 0;
+  }
+  .phone__notch {
+    position: absolute;
+    left: 50%;
+    top: calc(21 * var(--u));
+    width: calc(140 * var(--u));
+    height: calc(26 * var(--u));
+    translate: -50% 0;
+    border-radius: 999px;
+    background: var(--c-phone);
+    z-index: 2; /* above the header strip */
+  }
+  /* Apple devices show the pill notch (like an iPhone); Android and everything
+     else show a round punch-hole camera (html.apple is set in Base.astro). */
+  :global(html:not(.apple)) .phone__notch {
+    width: calc(30 * var(--u));
+    height: calc(30 * var(--u));
+    top: calc(19 * var(--u));
+    border-radius: 50%;
+  }
+  .phone__head {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(162 * var(--u));
+    background: var(--c-screen-head);
+    box-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgb(0 0 0 / 0.04);
+  }
+  .phone__who {
+    position: absolute;
+    left: calc(40 * var(--u));
+    top: calc(86 * var(--u));
+    display: flex;
+    align-items: center;
+    gap: calc(11 * var(--u));
+  }
+  .phone__who--zend {
+    visibility: hidden;
+  }
+  .phone__avatar {
+    display: grid;
+    place-items: center;
+    width: calc(60 * var(--u));
+    height: calc(60 * var(--u));
+    border-radius: 50%;
+    background: var(--c-phone);
+    color: var(--c-badge-text);
+    font-size: calc(36 * var(--u));
+    line-height: 1;
+  }
+  .phone__name {
+    color: var(--c-hiw-head);
+    font-size: calc(30 * var(--u));
+  }
+  .phone__screen {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(162 * var(--u));
+    bottom: 0;
+  }
+  .phone__screen {
+    overflow: hidden;
+  }
+  .thread {
+    position: absolute;
+    left: calc(30 * var(--pu));
+    right: calc(30 * var(--pu));
+    top: calc(41 * var(--pu));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(18 * var(--pu));
+  }
+  /* Messages after the first arrive with the steps (hiw.ts). */
+  .thread > :not(:first-child) {
+    visibility: hidden;
+  }
+
+  /* 1. Product page */
+  /* The seller's link arrives as a chat message (a link preview bubble). */
+  .product {
+    box-sizing: border-box;
+    width: calc(100% - var(--tail));
+    background: var(--c-card-bg);
+    border: var(--bw) solid var(--c-card-border);
+    border-radius: calc(14 * var(--pu));
+    padding: calc(8 * var(--pu));
+  }
+  .product__img {
+    display: grid;
+    place-items: center;
+    border-radius: calc(8 * var(--pu));
+    height: calc(289 * var(--pu));
+    background: var(--c-chip-box);
+    color: var(--c-chip-icon);
+  }
+  .product__bag {
+    width: calc(52 * var(--pu));
+    height: calc(65 * var(--pu));
+    overflow: visible;
+  }
+  .product__info {
+    display: flex;
+    flex-direction: column;
+    padding: calc(16 * var(--pu)) calc(21 * var(--pu)) calc(14 * var(--pu));
+    color: var(--c-chip-text);
+  }
+  .product__name {
+    font-size: calc(20 * var(--pu));
+    font-weight: 300;
+  }
+  .product__price {
+    font-size: calc(24 * var(--pu));
+    font-weight: 500;
+  }
+
+  /* 2 + 3. Chat cards */
+  .card {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--c-card-bg);
+    border: calc(2 * var(--pu)) solid var(--c-card-border);
+    border-radius: calc(14 * var(--pu));
+    color: var(--c-chip-text);
+  }
+  .pay__row {
+    display: flex;
+    align-items: center;
+    gap: calc(22 * var(--pu));
+    padding: calc(22 * var(--pu)) calc(26 * var(--pu));
+  }
+  .pay__thumb {
+    display: grid;
+    place-items: center;
+    width: calc(100 * var(--pu));
+    height: calc(100 * var(--pu));
+    border-radius: calc(12 * var(--pu));
+    background: var(--c-chip-box);
+    color: var(--c-chip-icon);
+  }
+  .pay__bag {
+    width: calc(40 * var(--pu));
+    height: calc(50 * var(--pu));
+    overflow: visible;
+  }
+  .pay__text {
+    display: flex;
+    flex-direction: column;
+  }
+  .pay__name {
+    font-size: calc(26 * var(--pu));
+    font-weight: 300;
+  }
+  .pay__price {
+    font-size: calc(34 * var(--pu));
+    font-weight: 500;
+  }
+  .card__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(12 * var(--pu));
+    margin: 0 calc(26 * var(--pu));
+    padding: calc(20 * var(--pu)) 0;
+    border-top: calc(2 * var(--pu)) solid var(--c-card-border);
+    color: var(--c-link);
+    font-size: calc(26 * var(--pu));
+  }
+  .card__icon {
+    width: calc(28 * var(--pu));
+    height: calc(28 * var(--pu));
+  }
+  .confirm__q {
+    display: block;
+    padding: calc(30 * var(--pu)) calc(26 * var(--pu)) calc(22 * var(--pu));
+    text-align: center;
+    font-size: calc(26 * var(--pu));
+  }
+  .msg {
+    display: flex;
+    align-items: center;
+    gap: calc(14 * var(--pu));
+    max-width: 92%;
+    box-sizing: border-box;
+    padding: calc(16 * var(--pu)) calc(22 * var(--pu));
+    background: var(--c-card-bg);
+    border: calc(2 * var(--pu)) solid var(--c-card-border);
+    border-radius: calc(14 * var(--pu));
+    color: var(--c-chip-text);
+    font-size: calc(24 * var(--pu));
+    line-height: 1.2;
+  }
+  /* Incoming chat bubble: the top-left corner is squared off into a small
+     pointed tail (like WhatsApp), outlined like the bubble. Two layers: the
+     outline colour, and the fill on top, so the tail keeps the border. */
+  .bubble {
+    --bw: calc(2 * var(--pu));
+    --tail: calc(15 * var(--pu));
+    position: relative;
+    border-top-left-radius: 0;
+    margin-left: var(--tail); /* room for the tail */
+  }
+  .card.bubble {
+    width: calc(100% - var(--tail));
+  }
+  .bubble::before,
+  .bubble::after {
+    content: '';
+    position: absolute;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+  .bubble::before {
+    top: calc(-1 * var(--bw));
+    left: calc(-1 * var(--tail) - var(--bw));
+    width: calc(var(--tail) + var(--bw));
+    height: calc(var(--tail) * 1.3);
+    background: var(--c-card-border);
+  }
+  .bubble::after {
+    top: 0;
+    left: calc(-1 * var(--tail) + var(--bw) * 0.6);
+    width: calc(var(--tail) + var(--bw));
+    height: calc(var(--tail) * 1.3 - var(--bw) * 2.2);
+    background: var(--c-card-bg);
+  }
+  .msg__tick {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: calc(40 * var(--pu));
+    height: calc(40 * var(--pu));
+    border-radius: 50%;
+    background: var(--c-success);
+    color: #fff;
+  }
+  .msg__tick :global(svg) {
+    width: 62%;
+    height: 62%;
+  }
+
+  /* ---------- Chat wallpaper ----------
+     WhatsApp-style doodles: small line-drawn icons (bubbles, bags, coins,
+     shields, padlocks, parcels, ticks, a tiny Zend logo...) scattered at
+     different angles on a darker screen. The doodles are a mask over a
+     coloured layer, so they follow the theme. */
+  .wall {
+    background-color: var(--c-wall);
+    isolation: isolate;
+  }
+  .wall::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--c-wall-logo);
+    -webkit-mask: url('../../assets/hiw/zend-wall.svg') repeat 0 0 / calc(375 * var(--pu)) calc(375 * var(--pu));
+    mask: url('../../assets/hiw/zend-wall.svg') repeat 0 0 / calc(375 * var(--pu)) calc(375 * var(--pu));
+    pointer-events: none;
+  }
+
+  /* ---------- Security screen (phone units: --pu) ---------- */
+  .phone__secure {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--c-wall); /* chat wallpaper (.wall) */
+    visibility: hidden;
+  }
+  .secure__head {
+    display: flex;
+    align-items: center;
+    gap: calc(24 * var(--pu));
+    align-self: stretch;
+    box-sizing: border-box;
+    /* frame: icon 93 below the top (under the notch), 32 above the bottom */
+    padding: calc(93 * var(--pu)) calc(39 * var(--pu)) calc(40 * var(--pu));
+    background: var(--c-screen-head);
+  }
+  .secure__icon {
+    display: grid;
+    place-items: center;
+    width: calc(84 * var(--pu));
+    height: calc(84 * var(--pu));
+    border-radius: calc(20 * var(--pu));
+    background: #320262;
+    color: #fff;
+  }
+  .secure__icon :global(svg) {
+    width: 58%;
+    height: auto;
+  }
+  .secure__who {
+    display: flex;
+    flex-direction: column;
+    color: var(--c-chip-text);
+    font-size: calc(26 * var(--pu));
+    line-height: 1.3;
+  }
+  .secure__who b {
+    font-size: calc(32 * var(--pu));
+    font-weight: 700;
+  }
+  .secure__who span {
+    opacity: 0.65;
+  }
+  .secure__pill {
+    margin-top: calc(34 * var(--pu));
+    padding: calc(7 * var(--pu)) calc(22 * var(--pu));
+    border-radius: 999px;
+    background: rgb(195 143 248 / 0.25);
+    color: var(--c-chip-text);
+    font-size: calc(24 * var(--pu));
+  }
+  .secure__msg {
+    display: flex;
+    align-items: flex-start;
+    gap: calc(16 * var(--pu));
+    align-self: stretch;
+    margin: calc(25 * var(--pu)) calc(41 * var(--pu)) 0 calc(29 * var(--pu));
+    padding: calc(22 * var(--pu)) calc(32 * var(--pu));
+    border-radius: calc(30 * var(--pu));
+    background: var(--c-card-bg);
+    color: var(--c-chip-text);
+    font-size: calc(28 * var(--pu));
+    line-height: 1.5;
+  }
+  .secure__msg .msg__tick {
+    width: calc(40 * var(--pu));
+    height: calc(40 * var(--pu));
+    margin-top: calc(2 * var(--pu));
+  }
+  .secure__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    margin: calc(21 * var(--pu)) calc(26 * var(--pu)) 0 calc(30 * var(--pu));
+    padding: calc(50 * var(--pu)) calc(30 * var(--pu)) calc(40 * var(--pu));
+    border: calc(4 * var(--pu)) solid #8c25fa;
+    border-radius: calc(40 * var(--pu));
+    background: var(--c-card-bg);
+    text-align: center;
+  }
+  .secure__art {
+    position: relative;
+    width: calc(425 * var(--pu));
+    aspect-ratio: 470 / 340;
+  }
+  .secure__art :global(svg) {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  /* Night: the shield in bright lilac (the dark purple disappears on the
+     dark card). :global() because the shield is inserted as raw SVG, which
+     the component's style scoping doesn't reach. */
+  :global([data-theme='dark']) .secure__art :global(#shield-left path) {
+    fill: #c38ff8;
+  }
+  :global([data-theme='dark']) .secure__art :global(#shield-right path) {
+    fill: #a96cf2;
+  }
+  :global([data-theme='dark']) .secure__art :global(#shield-outline path) {
+    stroke: #5b1fa8;
+  }
+  :global([data-theme='dark']) .secure__art :global(#shield-shine path) {
+    stroke: #f0e2ff;
+  }
+  /* Soft glow behind the shield; pulses (security.ts). */
+  .secure__glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 60%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(128 0 255 / 0.35), rgb(128 0 255 / 0) 70%);
+  }
+  .secure__title {
+    margin-top: calc(26 * var(--pu));
+    color: var(--c-chip-text);
+    font-size: calc(36 * var(--pu));
+    font-weight: 700;
+  }
+  .secure__note {
+    margin-top: calc(10 * var(--pu));
+    max-width: 80%;
+    color: var(--c-chip-text);
+    opacity: 0.65;
+    font-size: calc(22 * var(--pu));
+    line-height: 1.4;
+  }
+
+  /* ---------- Mobile frame values ---------- */
+  @media (max-aspect-ratio: 5/4) {
+    /* Phone mockup at standard proportions: ~8px bezel, ~44px corner
+       radius, a slim notch, and chat-app sizes (34px avatar, 16px name). */
+    .hiw-phone {
+      --pu: calc(var(--u) * 0.55);
+      --phone-r: calc(46 * var(--u));
+    }
+    .phone__front {
+      border-width: calc(8 * var(--u));
+    }
+    .phone__back {
+      border-width: calc(7 * var(--u));
+    }
+    .phone__notch {
+      top: calc(10 * var(--u));
+      width: calc(62 * var(--u));
+      height: calc(10 * var(--u));
+    }
+    :global(html:not(.apple)) .phone__notch {
+      width: calc(13 * var(--u));
+      height: calc(13 * var(--u));
+      top: calc(9 * var(--u));
+    }
+    .phone__head {
+      height: calc(84 * var(--u));
+    }
+    .phone__screen {
+      top: calc(84 * var(--u));
+    }
+    .phone__who {
+      left: calc(18 * var(--u));
+      top: calc(34 * var(--u));
+      gap: calc(10 * var(--u));
+    }
+    .phone__avatar {
+      width: calc(34 * var(--u));
+      height: calc(34 * var(--u));
+      font-size: calc(17 * var(--u));
+    }
+    .phone__name {
+      font-size: calc(16 * var(--u));
+    }
+    /* Mobile frame: the product box is narrower but just as tall. */
+    .thread {
+      left: calc(16 * var(--u));
+      right: calc(16 * var(--u));
+      top: calc(16 * var(--u));
+      gap: calc(10 * var(--u));
+    }
+    .product__img {
+      height: calc(230 * var(--u));
+    }
+    .product__bag {
+      width: calc(40 * var(--u));
+      height: calc(50 * var(--u));
+    }
+    .product__info {
+      padding: calc(10 * var(--u)) calc(12 * var(--u));
+    }
+    .product__name {
+      font-size: calc(13 * var(--u));
+    }
+    .product__price {
+      font-size: calc(15 * var(--u));
+    }
+    .hiw-dot {
+      visibility: hidden;
+      background: var(--c-hiw-head); /* it becomes a pager dot */
+    }
+    .hiw-squeeze {
+      background: var(--c-hiw-head); /* it becomes the first pager dot */
+    }
+  }
+</style>

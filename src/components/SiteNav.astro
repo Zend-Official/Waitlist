@@ -1,0 +1,619 @@
+---
+// Fixed site chrome: logo + section label (top), section rail (desktop, right)
+// and the scrolling icon pill (mobile, top-right).
+import Logo from '../assets/icons/logo.svg';
+import Home from '../assets/icons/home.svg';
+import How from '../assets/icons/how.svg';
+import Faq from '../assets/icons/faq.svg';
+import Support from '../assets/icons/support.svg';
+import Caret from '../assets/icons/chevron-right.svg';
+import Sun from '../assets/icons/sun.svg';
+import Moon from '../assets/icons/moon.svg';
+import Chevron from '../assets/icons/chevron-right.svg';
+import { NAV_ITEMS } from '../data/nav';
+
+const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret } as const;
+---
+
+<header class="site-header">
+  <!-- Desktop top bar: a floating white pill holding the logo, the section
+     label, the day/night toggle and Join waitlist. (Mobile keeps the open
+     header and the icon pill.) -->
+  <span class="bar" aria-hidden="true"></span>
+  <a class="brand" href="#home" aria-label="Zend, back to top">
+    <Logo class="brand__mark" aria-hidden="true" />
+    <span class="brand__word fs nav-in" style="--dfs:40;--dlh:29;--mfs:20;--mlh:15">Zend</span>
+  </a>
+  <div class="hdr-end">
+    <p class="section-label fs nav-in" style="--dfs:40;--dlh:29;--mfs:20;--mlh:15" aria-live="polite">
+      <span class="section-label__text">Home</span>
+    </p>
+    <!-- Desktop day/night toggle, right after the section label (mobile: in the pill). -->
+    <button class="hdr-theme fs nav-in" type="button" data-theme-toggle aria-label="Switch to night mode" aria-pressed="false" style="--dfs:40;--dlh:29;--mfs:20;--mlh:15">
+      <Moon class="hdr-theme__icon theme-icon theme-icon--moon" aria-hidden="true" />
+      <Sun class="hdr-theme__icon theme-icon theme-icon--sun" aria-hidden="true" />
+    </button>
+  </div>
+  <!-- Join waitlist in the pill (desktop). It has a fixed spot so the hero's
+       button can glide exactly onto it; shown by hiw.ts. -->
+  <a class="btn fs bar__cta" href="#" data-waitlist style="--dfs:35;--dlh:38;--mfs:20;--mlh:22">
+    <span class="li">Join waitlist</span>
+    <Chevron class="btn__icon" aria-hidden="true" />
+  </a>
+</header>
+
+<nav class="rail" aria-label="Sections">
+  <ul class="rail__list">
+    {
+      NAV_ITEMS.map((item, i) => {
+        const Icon = ICONS[item.icon];
+        return (
+          <Fragment>
+          <li class="nav-in">
+            <a
+              class={`rail__btn rail__btn--${item.icon}`}
+              href={item.id === 'contact' ? '/contact' : `#${item.id}`}
+              data-nav-target={item.id}
+              aria-label={item.id === 'footer' ? 'Go to the end' : item.label}
+              aria-current={i === 0 ? 'true' : undefined}
+            >
+              <Icon class="rail__icon" aria-hidden="true" />
+            </a>
+          </li>
+          {/* Mobile day/night toggle: first in the pill (see CSS order); hidden on desktop. */}
+          {i === 0 && (
+            <li class="nav-in rail__item--theme">
+              <button class="rail__btn rail__btn--theme" type="button" data-theme-toggle aria-label="Switch to night mode" aria-pressed="false">
+                <Moon class="rail__icon theme-icon theme-icon--moon" aria-hidden="true" />
+                <Sun class="rail__icon theme-icon theme-icon--sun" aria-hidden="true" />
+              </button>
+            </li>
+          )}
+          </Fragment>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<!-- Footer: the top bar has contracted into the toggle (desktop: the header's
+     own toggle floats top right; mobile: this one), and an up arrow floats
+     bottom right. Faded in by footer.ts (--foot-m). -->
+<button class="foot-theme" type="button" data-theme-toggle aria-label="Switch to night mode" aria-pressed="false">
+  <Moon class="foot-theme__icon theme-icon theme-icon--moon" aria-hidden="true" />
+  <Sun class="foot-theme__icon theme-icon theme-icon--sun" aria-hidden="true" />
+</button>
+<a class="foot-up" href="#home" data-foot-up aria-label="Back to top">
+  <Caret class="foot-up__icon" aria-hidden="true" />
+</a>
+
+<style>
+  /* ---------- Footer: contract into the toggle ----------
+     footer.ts sets --foot-k (the bar contracting, 0-1) and --foot-m (the
+     toggle moving to the corner, 0-1) on <html> while the footer scrolls in,
+     plus html[data-foot] (shrink | on). */
+  :global(html) {
+    --foot-k: 0;
+    --foot-m: 0;
+  }
+  .foot-theme,
+  .foot-up {
+    position: fixed;
+    z-index: 51;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--c-bar-bg);
+    color: var(--c-rail-icon);
+    box-shadow: 0 10px 30px rgb(20 0 39 / 0.12);
+    cursor: pointer;
+    opacity: var(--foot-m);
+    scale: calc(0.6 + 0.4 * var(--foot-m));
+    pointer-events: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :global(html[data-foot='on']) .foot-theme,
+  :global(html[data-foot='on']) .foot-up {
+    pointer-events: auto;
+  }
+  .foot-up {
+    right: 24px;
+    bottom: 24px;
+  }
+  .foot-up__icon {
+    width: 10px;
+    height: 20px;
+    rotate: -90deg;
+    overflow: visible;
+  }
+  .foot-theme {
+    display: none; /* desktop: the header's own toggle floats instead */
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    background: var(--c-pill-bg);
+    color: var(--c-nav-active);
+  }
+  .foot-theme__icon {
+    width: 20px;
+    height: 20px;
+    overflow: visible;
+  }
+  :global(html.loading) .foot-theme,
+  :global(html.loading) .foot-up {
+    visibility: hidden;
+  }
+  /* What gives way: the logo, the label and the rail fade out early. */
+  .brand,
+  .section-label,
+  .rail {
+    opacity: calc(1 - 1.6 * var(--foot-k));
+  }
+  :global(html[data-foot]) .brand,
+  :global(html[data-foot]) .section-label,
+  :global(html[data-foot='on']) .rail {
+    pointer-events: none;
+  }
+  .rail {
+    translate: calc(40px * var(--foot-k)) 0;
+  }
+  @media not all and (max-aspect-ratio: 5/4) {
+    /* The pill shrinks onto the toggle (a 52px circle around it), then the
+       toggle and its circle float to the top-right corner. Scroll-driven, so
+       no CSS easing. Toggle centre in the pill: 50% + pill/2 - 46px. */
+    :global(html[data-foot]) .site-header .bar {
+      --fc: calc(50% + (var(--bar-wv) / 2 - 46px) * var(--foot-k));
+      left: calc(var(--fc) + (100% - 42px - var(--fc)) * var(--foot-m));
+      width: calc(var(--bar-wv) * (1 - var(--foot-k)) + 52px * var(--foot-k));
+      height: calc(60px - 8px * var(--foot-k));
+      top: calc(16px + 4px * var(--foot-k));
+      transition: none;
+    }
+    /* In its circle the toggle needs no box of its own. */
+    :global(html[data-foot]) .site-header .hdr-theme {
+      background: transparent;
+    }
+    :global(html[data-foot]) .site-header .hdr-end {
+      right: calc((50% - var(--bar-wv) / 2 + 28px) * (1 - var(--foot-m)) + 24px * var(--foot-m));
+      transition: none;
+    }
+  }
+  @media (max-aspect-ratio: 5/4) {
+    /* Mobile: the pill shrinks up into its toggle, which floats top right. */
+    .rail {
+      translate: 0 0;
+      scale: 1 calc(1 - 0.7 * var(--foot-k));
+      transform-origin: 50% 0;
+    }
+    .foot-theme {
+      display: grid;
+    }
+    .foot-up {
+      right: 16px;
+      bottom: 16px;
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  .site-header {
+    /* Hero 1: logo on the arrow, label on the page (see data-hdr below). */
+    --hdr-logo: var(--c-on-shape);
+    --hdr-label: var(--c-hdr-on-bg);
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    pointer-events: none;
+  }
+  .site-header > * {
+    pointer-events: auto;
+  }
+  /* What sits behind the logo / label (set by hero.ts from the story):
+     h1 = logo on the arrow; h2 = label on the arrow (desktop); hiw = both on
+     the page. */
+  :global(.site-header[data-hdr='h2']) {
+    --hdr-logo: var(--c-hdr-on-bg);
+    --hdr-label: var(--c-on-shape);
+  }
+  :global(.site-header[data-hdr='hiw']) {
+    --hdr-logo: var(--c-hdr-on-bg);
+    --hdr-label: var(--c-hdr-on-bg);
+  }
+  /* ---------- Desktop top bar (pill) ----------
+     The hero has the open header. From How it works on (data-bar="on", set
+     by hero.ts) a white pill grows in at the top and the logo, label and
+     toggle glide into it; Join waitlist joins them (hiw.ts). */
+  .site-header {
+    --bar-w: min(720px, calc(100vw - 200px));
+    --cta-w: 150px;
+    /* When Join waitlist leaves the bar (Security), the pill contracts to fit
+       what's left: data-cta="off" (hero.ts). */
+    --cta-gap: 0px;
+    --bar-wv: calc(var(--bar-w) - var(--cta-gap));
+  }
+  /* Without the button the pill gets the same 28px padding on the right as
+     on the left (the gap is 18px less than the button's space). */
+  :global(.site-header[data-cta='off']) {
+    --cta-gap: calc(var(--cta-w) - 4px);
+  }
+  .bar {
+    position: absolute;
+    left: 50%;
+    top: 16px;
+    width: var(--bar-wv);
+    height: 60px;
+    translate: -50% 0;
+    border-radius: 999px;
+    background: var(--c-bar-bg);
+    box-shadow: 0 10px 30px rgb(20 0 39 / 0.1);
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.25 0.5;
+    visibility: hidden;
+    transition:
+      opacity 0.35s ease,
+      scale 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1),
+      width 0.45s ease,
+      visibility 0s 0.45s;
+  }
+  .bar__cta {
+    --fs-max: 16px;
+    position: absolute;
+    top: 46px; /* pill centre */
+    right: calc(50% - var(--bar-w) / 2 + 10px);
+    translate: 0 -50%;
+    width: var(--cta-w);
+    box-sizing: border-box;
+    padding: 0.6em 0;
+    visibility: hidden; /* shown by hiw.ts once the hero's button lands on it */
+  }
+  @media not all and (max-aspect-ratio: 5/4) {
+    /* The logo, label and toggle glide between the open header and the pill. */
+    .site-header .brand,
+    .site-header .brand__mark,
+    .site-header .brand__word,
+    .site-header .hdr-end {
+      transition:
+        left 0.45s ease,
+        right 0.45s ease,
+        top 0.45s ease,
+        width 0.45s ease,
+        height 0.45s ease,
+        color 0.3s;
+    }
+    :global(.site-header[data-bar='on']) .bar {
+      opacity: 1;
+      scale: 1;
+      visibility: visible;
+      transition:
+        opacity 0.25s ease,
+        scale 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1),
+        width 0.45s ease,
+        visibility 0s;
+    }
+    :global(.site-header[data-bar='on']) .brand {
+      left: calc(50% - var(--bar-wv) / 2 + 28px);
+      top: 33px; /* pill centre 46 - logo 13 */
+    }
+    :global(.site-header[data-bar='on']) .brand__mark {
+      width: 35px;
+      height: 26px;
+    }
+    :global(.site-header[data-bar='on']) .brand__word {
+      left: 45px;
+      top: 13px;
+    }
+    :global(.site-header[data-bar='on']) .hdr-end {
+      right: calc(50% - var(--bar-wv) / 2 + 10px + var(--cta-w) + 14px - var(--cta-gap));
+      top: 46px;
+    }
+  }
+  @media (max-aspect-ratio: 5/4) {
+    .bar,
+    .bar__cta {
+      display: none !important; /* desktop only */
+    }
+  }
+  /* Hidden while the loading screen is up (intro.ts). */
+  :global(html.loading) .bar,
+  :global(html.loading) .bar__cta {
+    visibility: hidden !important;
+  }
+
+  .brand {
+    position: absolute;
+    left: calc(60 * var(--u));
+    top: calc(40 * var(--u));
+    display: block;
+    color: var(--hdr-logo);
+    text-decoration: none;
+  }
+  .brand__mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: calc(73 * var(--u));
+    height: calc(54 * var(--u));
+    overflow: visible;
+  }
+  /* Nav text is capped at standard sizes (--fs-max) and positioned by its
+     vertical centre, so it stays level with the logo / mobile icons. */
+  .brand__word {
+    --fs-max: 18px;
+    position: absolute;
+    left: calc(83 * var(--u));
+    top: calc(39.5 * var(--u)); /* frame: top 25 + half of 29 */
+    translate: 0 -50%; /* separate from transform, which the intro animates */
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  /* Section label (+ desktop theme toggle after it), right-aligned, centred
+     vertically on the frame's label line. */
+  .hdr-end {
+    position: absolute;
+    right: calc(60 * var(--u));
+    top: calc(79.5 * var(--u)); /* frame: top 65 + half of 29 */
+    translate: 0 -50%;
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+  }
+  .section-label {
+    --fs-max: 18px;
+    margin: 0;
+    color: var(--hdr-label);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Desktop rail */
+  .rail {
+    position: fixed;
+    right: calc(40.5 * var(--u));
+    bottom: calc(44.5 * var(--u));
+    z-index: 50;
+  }
+  .rail__list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(30 * var(--u));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rail__btn {
+    display: grid;
+    place-items: center;
+    width: calc(60 * var(--u));
+    height: calc(60 * var(--u));
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    background: var(--c-rail-bg);
+    color: var(--c-rail-icon);
+    box-shadow: var(--rail-shadow);
+  }
+  .rail__btn[aria-current='true'] {
+    background: var(--c-rail-active-bg);
+    color: var(--c-rail-active-icon);
+  }
+  /* Toggle shows what you'll switch to: moon by day, sun by night. */
+  .theme-icon--sun,
+  :global([data-theme='dark']) .theme-icon--moon {
+    display: none;
+  }
+  :global([data-theme='dark']) .theme-icon--sun {
+    display: block;
+  }
+  .rail__icon {
+    width: calc(35 * var(--u));
+    height: calc(35 * var(--u));
+    overflow: visible;
+  }
+  .rail__btn--home .rail__icon {
+    width: calc(37.8 * var(--u));
+    height: calc(33.6 * var(--u));
+  }
+  .rail__item--theme {
+    display: none; /* desktop toggle lives in the header */
+  }
+  /* Caret: the chevron turned to point down (to the footer); on the footer
+     it turns to point up (back home). */
+  .rail__btn--caret .rail__icon {
+    width: calc(14 * var(--u));
+    height: calc(30 * var(--u));
+    rotate: 90deg;
+    transition: rotate 0.35s ease;
+  }
+  .rail__btn--caret[aria-current='true'] .rail__icon {
+    rotate: -90deg;
+  }
+
+  /* Desktop toggle: same colour as the section label, sized to its text,
+     with a 44px tap area. */
+  .hdr-theme {
+    --fs-max: 18px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    margin-left: 0.35em; /* with the 0.25em row gap: ~0.6em after the label */
+    padding: 0;
+    border: 0;
+    border-radius: 0.35em;
+    background: var(--c-toggle-bg);
+    color: var(--c-toggle-icon);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  /* 44px tap area around the smaller box */
+  .hdr-theme::before {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    translate: -50% -50%;
+  }
+  /* Hero 2 (desktop): the label sits on the purple arrow, so the box flips. */
+  :global(.site-header[data-hdr='h2']) .hdr-theme {
+    background: var(--c-toggle-bg-swap);
+    color: var(--c-toggle-icon-swap);
+  }
+  .hdr-theme__icon {
+    width: 0.95em;
+    height: 0.95em;
+    overflow: visible;
+  }
+
+  /* Desktop, from How it works on: the rail becomes one white column of
+     square buttons; the current one is a solid square (html[data-rail='bar'],
+     set by hero.ts). */
+  .rail__list,
+  .rail__btn {
+    transition:
+      gap 0.35s ease,
+      border-radius 0.35s ease,
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.35s ease;
+  }
+  /* The column has no background of its own: each button carries the white,
+     and the top and bottom buttons the round ends. (A white column behind a
+     dark button leaves a faint white fringe on the curved edge.) */
+  :global(html[data-rail='bar']) .rail__list {
+    gap: 0;
+    border-radius: 999px; /* capsule: round ends, like a circle at top and bottom */
+    box-shadow: 0 10px 30px rgb(20 0 39 / 0.1);
+  }
+  :global(html[data-rail='bar']) .rail__btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 0;
+    background: var(--c-bar-bg);
+    box-shadow: none;
+  }
+  :global(html[data-rail='bar']) .rail__btn--home {
+    border-radius: 26px 26px 0 0;
+  }
+  :global(html[data-rail='bar']) .rail__btn--caret {
+    border-radius: 0 0 26px 26px;
+  }
+  :global(html[data-rail='bar']) .rail__btn[aria-current='true'] {
+    background: var(--c-bar-active);
+    color: #fff;
+  }
+  :global(html[data-rail='bar']) .rail__icon {
+    width: 24px;
+    height: 24px;
+  }
+  :global(html[data-rail='bar']) .rail__btn--home .rail__icon {
+    width: 26px;
+    height: 23px;
+  }
+  :global(html[data-rail='bar']) .rail__btn--caret .rail__icon {
+    width: 10px;
+    height: 20px;
+  }
+
+  /* Mobile: logo/label in frame units, icon strip in a white pill */
+  @media (max-aspect-ratio: 5/4) {
+    .brand {
+      left: calc(25 * var(--u));
+      top: calc(22 * var(--u));
+    }
+    .brand__mark {
+      width: calc(40 * var(--u));
+      height: calc(30 * var(--u));
+    }
+    .brand__word {
+      --fs-max: 16px;
+      left: calc(45 * var(--u));
+      top: calc(22.5 * var(--u)); /* frame: top 15 + half of 15 */
+    }
+    .hdr-end {
+      right: calc(47 * var(--u));
+      top: calc(44.5 * var(--u)); /* frame: top 37 + half of 15 = active icon centre */
+    }
+    .section-label {
+      --fs-max: 16px;
+    }
+    .hdr-theme {
+      display: none; /* mobile toggle lives in the pill */
+    }
+    /* The strip runs from the very top of the screen. The active icon sits
+       level with the section label: label centre = 37 + 15/2 = 44.5 units,
+       icon slot is 35 tall, so the active slot starts 27 units down. */
+    .rail {
+      --slot: calc(35 * var(--u));
+      --active-top: calc(27 * var(--u));
+      right: calc(4 * var(--u));
+      top: 0;
+      bottom: auto;
+      width: calc(41 * var(--u));
+      background: var(--c-pill-bg);
+      border-radius: 0 0 calc(20.5 * var(--u)) calc(20.5 * var(--u));
+    }
+    .rail__list {
+      position: relative; /* offsetTop of items is measured from here */
+      gap: 0;
+      /* active slot + 2 more icons + the tip of the next, faded at both ends */
+      height: calc(var(--active-top) + 3 * var(--slot) + 15 * var(--u));
+      padding-top: var(--active-top);
+      padding-bottom: calc(90 * var(--u)); /* lets the last icon reach the active slot */
+      box-sizing: border-box;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scroll-snap-type: y mandatory;
+      scroll-padding-top: var(--active-top);
+      scrollbar-width: none;
+      --fade-in: calc(var(--active-top) - 5 * var(--u));
+      --fade-out: calc(var(--active-top) + 91 * var(--u));
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-in), #000 var(--fade-out), transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-in), #000 var(--fade-out), transparent 100%);
+    }
+    .rail__list::-webkit-scrollbar {
+      display: none;
+    }
+    .rail__list li {
+      scroll-snap-align: start;
+    }
+    /* In the pill the toggle comes first, above Home, so it rests in the top
+       fade until the strip is scrolled up to it. */
+    .rail__item--theme {
+      display: list-item;
+      order: -1;
+    }
+    .rail__btn {
+      width: calc(41 * var(--u));
+      height: var(--slot);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: var(--c-nav-idle);
+    }
+    .rail__btn[aria-current='true'] {
+      background: transparent;
+      color: var(--c-nav-active);
+    }
+    .rail__icon {
+      width: calc(20 * var(--u));
+      height: calc(20 * var(--u));
+    }
+    .rail__btn--home .rail__icon {
+      width: calc(25 * var(--u));
+      height: calc(22 * var(--u));
+    }
+    .rail__btn--caret .rail__icon {
+      width: calc(8 * var(--u));
+      height: calc(17 * var(--u));
+    }
+  }
+</style>

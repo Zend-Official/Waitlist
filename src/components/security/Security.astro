@@ -1,0 +1,99 @@
+---
+// Security ("Safe for buyers. Sure for sellers"). Rendered in the hero's
+// pinned stage after the seller frames; the phone in the seller's hand grows
+// back into the big phone, which now shows this screen (security.ts). The
+// phone itself is How it works' phone: its Security screen is in
+// HowItWorks.astro (.phone__secure).
+import Chevron from '../../assets/icons/chevron-right.svg';
+
+const box = (d: readonly number[], m: readonly number[]) =>
+  [
+    `--dx:${d[0]};--dy:${d[1]}`,
+    d[2] !== undefined ? `--dw:${d[2]}` : '',
+    d[3] !== undefined ? `--dh:${d[3]}` : '',
+    `--mx:${m[0]};--my:${m[1]}`,
+    m[2] !== undefined ? `--mw:${m[2]}` : '',
+    m[3] !== undefined ? `--mh:${m[3]}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${dfs};--dlh:${dlh};--mfs:${mfs};--mlh:${mlh}`;
+---
+
+<div class="sec" id="security" aria-labelledby="sec-title">
+  <!-- Heading + subtitle rise through this window, like the seller frames. -->
+  <div class="sec-window pos dc dt mc mt" style={box([24, 142, 820, 520], [10, 70, 382, 230])}>
+    <div class="sec-text">
+      <h2 id="sec-title" class="sec-title fs" style={type(76, 77, 38, 40)}>Safe for buyers.<br />Sure for sellers</h2>
+      <p class="sec-body fs" style={type(28, 33, 18, 20)}>
+        Zend secures every payment on the Stellar blockchain, so buyers and sellers can deal with each other without fear
+      </p>
+    </div>
+  </div>
+
+  <!-- Desktop: where Join waitlist comes to rest (it travels down from the top
+       bar; security.ts). Its top is set from the subtitle's bottom. -->
+  <a class="btn fs sec-cta pos dc dt only-desktop" href="#" data-waitlist style={`${box([50, 579], [0, 0])};${type(35, 38, 20, 22)}`}>
+    <span class="li">Join waitlist</span>
+    <Chevron class="btn__icon" aria-hidden="true" />
+  </a>
+</div>
+
+<style>
+  .sec {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    visibility: hidden; /* shown by security.ts when the story reaches it */
+  }
+  .sec-window {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(40 * var(--u)), #000 calc(100% - 50 * var(--u)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 calc(40 * var(--u)), #000 calc(100% - 50 * var(--u)), transparent 100%);
+  }
+  .sec-text {
+    position: absolute;
+    left: calc(26 * var(--u));
+    top: calc(81 * var(--u)); /* frame: heading at y 211 */
+    display: flex;
+    flex-direction: column;
+    gap: calc(72 * var(--u));
+  }
+  .sec-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--c-hiw-head);
+    white-space: nowrap;
+  }
+  .sec-body {
+    --fs-max: 22px;
+    margin: 0;
+    width: 19.6em; /* 3 lines, like the frame */
+    color: var(--c-text);
+  }
+  .sec-cta {
+    width: auto;
+    height: auto;
+    pointer-events: auto;
+    visibility: hidden;
+  }
+
+  @media (max-aspect-ratio: 5/4) {
+    /* Mobile frame: heading at y 103, subtitle 198-252 (button 25 below it). */
+    .sec-window {
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(10 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0, #000 calc(10 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
+    }
+    .sec-text {
+      left: calc(17 * var(--u));
+      top: calc(26 * var(--u));
+      gap: calc(16 * var(--u));
+    }
+    .sec-body {
+      --fs-max: 18px;
+      width: calc(300 * var(--u));
+    }
+  }
+</style>

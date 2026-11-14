@@ -1,0 +1,147 @@
+---
+import '../styles/global.css';
+import { FB_DOMAIN_VERIFICATION, GA_ID } from '../data/contact';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 'home' plays the loading intro and resumes the scroll story; 'page' (privacy, terms…) doesn't. */
+  page?: 'home' | 'page';
+  /** Link preview image (1200x630, in /public/og). */
+  image?: string;
+  /** Keep this page out of search results (share links). */
+  noindex?: boolean;
+}
+const {
+  page = 'home',
+  image = '/og/buyers.jpg',
+  noindex = false,
+  title = 'Zend · Pay safely on social media',
+  description = 'Zend protects you when you buy and sell on social media. The seller only gets paid after you receive your order.',
+} = Astro.props;
+// Link previews need full addresses: the site's address comes from SITE_URL
+// (astro.config.mjs). Share links (/s/…) point their canonical at the home page.
+const site = Astro.site ?? new URL('https://zendpay.io');
+const pageUrl = new URL(Astro.url.pathname.startsWith('/s/') ? '/' : Astro.url.pathname, site).href;
+const imageUrl = new URL(image, site).href;
+---
+
+<!doctype html>
+<html lang="en" data-page={page}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#320262" />
+    <link rel="canonical" href={pageUrl} />
+    <meta name="facebook-domain-verification" content={FB_DOMAIN_VERIFICATION} />
+    <!-- Google Analytics, loaded once the page has settled so it never slows
+         the first load. -->
+    <script is:inline define:vars={{ GA_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+          document.head.appendChild(s);
+        }, 1500);
+      });
+    </script>
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Link previews (WhatsApp, X, Instagram, Facebook…) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Zend" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Zend: safe payments on social media" />
+    <meta property="og:locale" content="en_NG" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Zend_Hq" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <link rel="preload" href="/fonts/archivo-black.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Runs before first paint: decides lite mode and whether the intro plays today. -->
+    <script is:inline>
+      (function () {
+        var html = document.documentElement;
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var nav = navigator;
+        var conn = nav.connection || {};
+        var lite =
+          (nav.deviceMemory && nav.deviceMemory <= 2) ||
+          (nav.hardwareConcurrency && nav.hardwareConcurrency <= 2) ||
+          conn.saveData === true;
+        // A recent real-world measurement found this device slow (see perf.ts).
+        try {
+          var perf = JSON.parse(localStorage.getItem('zend-perf') || 'null');
+          if (perf && perf.lite && perf.until > Date.now()) lite = true;
+        } catch (e) {}
+        // Day/night: the visitor's saved choice (toggle), else the device setting.
+        var theme = null;
+        try { theme = localStorage.getItem('zend-theme'); } catch (e) {}
+        if (theme !== 'dark' && theme !== 'light') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        html.setAttribute('data-theme', theme);
+
+        // iPhone / iPad / Mac: the phone mock-up gets the pill notch; others a round camera.
+        // ?iphone previews the iPhone look on any device.
+        if (/iPhone|iPad|iPod|Macintosh/.test(nav.userAgent) || /[?&]iphone(&|=|$)/.test(location.search)) html.classList.add('apple');
+        if (lite) html.classList.add('lite');
+        // Arriving via the page wave (page-wave.ts): start blank, then rise in.
+        try {
+          if (!reduce && sessionStorage.getItem('zend-wave') === '1' && html.getAttribute('data-page') !== 'home') {
+            html.classList.add('wave-in');
+            setTimeout(function () { html.classList.remove('wave-in'); }, 2500); // failsafe
+          }
+        } catch (e) {}
+        if (reduce) html.classList.add('reduce-motion');
+
+        // Reload resumes where the visitor was, snapped to the nearest frame
+        // (restore.ts). The browser's own restore is off: it would land
+        // mid-transition. The page is laid out in screen heights, so the old
+        // position is scaled to the current screen height.
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        var resumeY = 0;
+        try {
+          var saved = JSON.parse(sessionStorage.getItem('zend-scroll') || 'null');
+          if (saved && saved.h > 0) resumeY = (saved.y / saved.h) * window.innerHeight;
+        } catch (e) {}
+        // Nearer Hero 1 than Hero 2 (the hero transition is one screen long)?
+        var resumeTop = resumeY < window.innerHeight * 0.5;
+        window.__zendResume = resumeTop ? 0 : resumeY;
+
+        // The loading screen (intro) plays on every load except for reduced
+        // motion. On a reload further down, the page moves to its frame
+        // behind it, so the top never flashes first.
+        if (!reduce && html.getAttribute('data-page') === 'home') {
+          html.classList.add('intro');
+          // Failsafe: never leave the page hidden if the script fails to start.
+          setTimeout(function () {
+            if (!window.__zendIntroStarted) html.classList.remove('intro');
+          }, 3500);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
