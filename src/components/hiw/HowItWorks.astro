@@ -50,7 +50,7 @@ const TRAIL = {
   </div>
 
   <!-- Join waitlist: header centre (desktop), under the text (mobile). -->
-  <a class="btn fs hiw-cta pos dc dt mc mt" href="#" data-waitlist style={`${box([864, 77.5], [205.5, 293.5])};${type(35, 38, 20, 22)}`}>
+  <a class="btn fs hiw-cta pos dc dt mc mt" href="#" data-waitlist style={`${box([864, 77.5], [205.5, 314])};${type(35, 38, 20, 22)}`}>
     <span class="li">Join waitlist</span>
     <Chevron class="btn__icon" aria-hidden="true" />
   </a>
@@ -90,7 +90,7 @@ const TRAIL = {
   <div class="hiw-pager pos mc mt only-mobile" style={box([0, 0], [180, 104, 42, 12])} aria-hidden="true">
     <span><i></i></span><span><i></i></span><span><i></i></span>
   </div>
-  <div class="hiw-window pos mc mt only-mobile" style={box([0, 0], [20, 118, 362, 150])}>
+  <div class="hiw-window pos mc mt only-mobile" style={box([0, 0], [20, 118, 362, 165])}>
     {
       STEPS.map((s, i) => (
         <div class={`hiw-mtext hiw-mtext--${i + 1}`}>
@@ -118,7 +118,7 @@ const TRAIL = {
   <span class="hiw-dot pos dc dt mc mt" style={box([...STEP_POS[0].badge, 50, 50], [176, 146, 50, 50])} aria-hidden="true"></span>
 
   <!-- The phone: what the buyer sees at each step -->
-  <div class="hiw-phone pos dc dt mc mt" style={box([742, 265, 722, 1300], [5, 360, 392, 900])} aria-hidden="true">
+  <div class="hiw-phone pos dc dt mc mt" style={box([742, 265, 722, 1300], [5, 385, 392, 900])} aria-hidden="true">
     <!-- Back of the phone: shown when it flips over and shrinks into the
          seller's hand (sellers.ts); styled like the phone he holds. -->
     <div class="phone__back"><span class="phone__cams"><i></i><i></i></span></div>
@@ -341,7 +341,7 @@ const TRAIL = {
   .hiw-window {
     overflow: hidden;
     /* Fades only where text passes while moving; resting text sits fully in
-       the solid middle (text 12..~140 of 150). */
+       the solid middle (text 12..~150 of 165). */
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(10 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0, #000 calc(10 * var(--u)), #000 calc(100% - 8 * var(--u)), transparent 100%);
   }
@@ -353,7 +353,7 @@ const TRAIL = {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(10 * var(--u));
+    gap: calc(16 * var(--u)); /* heading to subtitle */
     text-align: center;
   }
   .hiw-mtext .hiw-body {
@@ -740,6 +740,9 @@ const TRAIL = {
     color: var(--c-chip-text);
     font-size: calc(24 * var(--pu));
   }
+  :global([data-theme='dark']) .secure__pill {
+    background: #231436; /* lighter dark, not lilac */
+  }
   .secure__msg {
     display: flex;
     align-items: flex-start;
@@ -769,6 +772,9 @@ const TRAIL = {
     border-radius: calc(40 * var(--pu));
     background: var(--c-card-bg);
     text-align: center;
+  }
+  :global([data-theme='dark']) .secure__card {
+    border-color: rgb(255 255 255 / 0.1); /* like the other message borders */
   }
   .secure__art {
     position: relative;

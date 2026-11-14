@@ -76,15 +76,22 @@
   .wl[hidden] {
     display: none;
   }
-  /* The wave: the page background, revealed in a growing circle from the
-     button (clip-path set by waitlist.ts). */
+  /* The wave: the page background as a circle that grows from the button.
+     Sized once to reach every corner, then only scaled (waitlist.ts), so
+     the phone's graphics chip does the work: no repaint or layout per frame. */
   .wl-wave {
     position: fixed;
-    inset: 0;
+    left: 0;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
     background: var(--c-bg);
-    clip-path: circle(0px at 50% 50%);
+    transform: scale(0);
+    will-change: transform;
   }
-  /* Its leading edge: a soft lilac ring running just ahead of the wave. */
+  /* Its leading edge: a soft lilac ring running just ahead of the wave
+     (also drawn at full size and only scaled). */
   .wl-ring {
     position: fixed;
     left: 0;
@@ -96,6 +103,7 @@
     box-shadow: 0 0 40px 8px rgb(195 143 248 / 0.35);
     opacity: 0;
     pointer-events: none;
+    will-change: transform, opacity;
   }
 
   .wl-close {
@@ -165,22 +173,18 @@
     box-sizing: border-box;
     height: 52px;
     padding: 0 16px;
-    border: 1.5px solid var(--c-card-border);
+    border: 1.5px solid transparent; /* no outline (kept for the error state) */
     border-radius: 14px;
     background: var(--c-card-bg);
     color: var(--c-text);
     font: inherit;
     font-size: 16px; /* 16px stops phones zooming in */
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s;
   }
   .wl-input::placeholder {
     color: currentColor;
     opacity: 0.45;
-  }
-  .wl-input:focus {
-    border-color: var(--c-accent);
-    box-shadow: 0 0 0 4px rgb(195 143 248 / 0.25);
   }
   .wl-input[aria-invalid='true'] {
     border-color: #e5484d;

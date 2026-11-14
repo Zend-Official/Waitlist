@@ -99,7 +99,7 @@ const poses = Object.keys(POSE_LAYERS) as PoseKey[];
   </div>
 
   <!-- The boy, in his own 1452px canvas (726 units desktop, 403 mobile). -->
-  <div class="boy-box pos dc dt mc mt" style={box([500, 367, 726, 726], [0, 413, 403, 403])} aria-hidden="true">
+  <div class="boy-box pos dc dt mc mt" style={box([500, 367, 726, 726], [0, 455, 403, 403])} aria-hidden="true">
     <!-- He slides in from behind an invisible edge (not the screen edge). -->
     <div class="boy-clip">
       <div class="boy">
@@ -350,6 +350,12 @@ const poses = Object.keys(POSE_LAYERS) as PoseKey[];
     color: inherit;
     opacity: 0.85;
   }
+  /* Night: your own bubbles in the lighter dark too (lilac is for buttons). */
+  :global([data-theme='dark']) .bub--you,
+  :global([data-theme='dark']) .bub--you-card {
+    background: #231436;
+    color: rgb(255 255 255 / 0.85);
+  }
   .bub__price {
     font-weight: 500;
   }
@@ -396,8 +402,8 @@ const poses = Object.keys(POSE_LAYERS) as PoseKey[];
 
   /* ---------- Mobile frame values ---------- */
   @media (max-aspect-ratio: 5/4) {
-    /* Mobile frame 4: heading at y 160, subtitle 23 below it; Join waitlist
-       follows 28 below the subtitle (sellers.ts), so longer subtitles push
+    /* Mobile: heading at y 160, subtitle 22 below it; Join waitlist follows
+       the same 22 below the subtitle (sellers.ts), so longer subtitles push
        it down instead of crowding it. */
     .sell-text {
       left: calc(20 * var(--u));

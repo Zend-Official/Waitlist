@@ -92,6 +92,7 @@ const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${df
     background: var(--c-faq-card);
     overflow: hidden;
     pointer-events: auto;
+    contain: layout paint; /* its size changes as it grows never relayout the page */
   }
   .faq-notch {
     position: absolute;
@@ -138,6 +139,9 @@ const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${df
   .faq-list:not([data-ready]) {
     overflow: hidden;
     pointer-events: none;
+    /* Not drawn or laid out at all while hidden: as the card grows out of
+       the phone, its ten questions would otherwise re-wrap every frame. */
+    content-visibility: hidden;
   }
   .faq-list::-webkit-scrollbar {
     width: 8px;
@@ -285,6 +289,9 @@ const type = (dfs: number, dlh: number, mfs: number, mlh: number) => `--dfs:${df
       top: calc(9 * var(--u));
     }
     .faq-list {
+      /* Phones: the list never passes a swipe on to the page by itself;
+         swipe.ts turns the page at its ends (else it would move twice). */
+      overscroll-behavior-y: contain;
       --clear: calc(25 * var(--u));
       padding: calc(40 * var(--u)) calc(22 * var(--u)) calc(40 * var(--u));
       gap: calc(22 * var(--u));

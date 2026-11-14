@@ -111,8 +111,8 @@
   --c-pattern: #c38ff8;
   --c-chip-bg: #140027;
   --c-chip-text: #ffffff;
-  --c-chip-box: #c38ff8;
-  --c-chip-icon: #10001f;
+  --c-chip-box: #231436; /* lighter dark (was lilac): lilac is for buttons only */
+  --c-chip-icon: rgb(255 255 255 / 0.85);
   --c-rail-bg: #140027;
   --c-rail-icon: #c38ff8;
   --c-rail-active-bg: #c38ff8;
@@ -127,24 +127,24 @@
   --c-screen: #1e1e1e;
   --c-screen-head: #140027;
   --c-card-bg: #140027;
-  --c-card-border: rgb(195 143 248 / 0.4);
+  --c-card-border: rgb(255 255 255 / 0.1);
   --c-wall: #080010;
   --c-wall-logo: rgb(255 255 255 / 0.08); /* faint white doodles, like WhatsApp dark */
-  --c-link: #c38ff8;
-  --c-bubble-name: #c38ff8;
+  --c-link: rgb(255 255 255 / 0.85);
+  --c-bubble-name: rgb(255 255 255 / 0.6);
   --c-scroll-thumb: #320262;
   --c-foot-title: #ffffff;
   --c-foot-text: rgb(255 255 255 / 0.72); /* off-white: all footer text that isn't a heading */
   --c-foot-link: rgb(255 255 255 / 0.72); /* faint white */
-  --c-foot-icon: #c38ff8;
+  --c-foot-icon: rgb(255 255 255 / 0.72); /* off-white */
   --c-foot-btn: #c38ff8;
   --c-foot-btn-text: #10001f;
   --c-foot-outline: rgb(195 143 248 / 0.18);
   --c-foot-glow: rgb(128 0 255 / 0.32);
   --c-foot-glow-soft: rgb(50 2 98 / 0.35);
   --c-faq-card: #140027;
-  --c-faq-chip: #c38ff8;
-  --c-faq-chip-text: #10001f;
+  --c-faq-chip: #231436; /* lighter dark, like the chat boxes */
+  --c-faq-chip-text: rgb(255 255 255 / 0.85);
   --c-faq-ans: #0b0015;
   --c-faq-ans-text: #ffffff;
   --c-faq-btn: #c38ff8;
@@ -391,19 +391,29 @@ body {
    Same wave as Join waitlist: the page background sweeps out from the tapped
    link, led by a soft lilac ring; the next page rises in from blank. */
 .page-wave {
+  /* A circle sized around the link and grown with scale (page-wave.ts). */
   position: fixed;
-  inset: 0;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
   z-index: 200;
+  border-radius: 50%;
   background: var(--c-bg);
-  clip-path: circle(0px at 50% 50%);
+  transform: scale(0);
+  will-change: transform;
   pointer-events: none;
 }
 .page-wave__ring {
   position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 201;
+  pointer-events: none;
   width: 10px;
   height: 10px;
-  translate: -50% -50%;
   border-radius: 50%;
+  will-change: transform, opacity;
   border: 3px solid var(--c-accent);
   box-shadow: 0 0 40px 8px rgb(195 143 248 / 0.35);
 }

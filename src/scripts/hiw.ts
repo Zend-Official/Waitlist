@@ -77,6 +77,29 @@ export function home(el: HTMLElement) {
   return { left, top, width, height, right: left + width, bottom: top + height };
 }
 
+/** Top of an element within root from layout alone (no transforms, so never
+ *  thrown off by an animation in progress). */
+export function layoutTop(el: HTMLElement, root: HTMLElement): number {
+  let t = 0;
+  let n: HTMLElement | null = el;
+  while (n && n !== root) {
+    t += n.offsetTop;
+    n = n.offsetParent as HTMLElement | null;
+  }
+  return t;
+}
+
+/** Phones: the move (y) that rests the mobile Join waitlist `gap` px under
+ *  `above`, and the button's bottom edge there (both in hero layout px). */
+export function ctaUnder(hero: HTMLElement, cta: HTMLElement, above: HTMLElement, gap: number): { y: number; bottom: number } {
+  const top = layoutTop(above, hero) + above.offsetHeight + gap;
+  // With no move the button sits at its layout box, raised by its own
+  // centring (translate -50%, which GSAP keeps as yPercent).
+  const yPct = Number(gsap.getProperty(cta, 'yPercent')) || 0;
+  const rest = layoutTop(cta, hero) + (yPct / 100) * cta.offsetHeight;
+  return { y: top - rest, bottom: top + cta.offsetHeight };
+}
+
 /** Layout box of an element on screen, ignoring its GSAP transform. */
 function rect(el: HTMLElement) {
   const saved = el.style.transform;

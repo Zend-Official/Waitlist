@@ -14,7 +14,7 @@ export function initPageWave(): void {
   document.addEventListener('click', onClick);
   // Back/forward from the cache: never leave the wave covering the page.
   window.addEventListener('pageshow', (e) => {
-    if (e.persisted) document.querySelectorAll('.page-wave').forEach((n) => n.remove());
+    if (e.persisted) document.querySelectorAll('.page-wave, .page-wave__ring').forEach((n) => n.remove());
   });
 }
 
@@ -42,18 +42,20 @@ function leave(from: Element, href: string) {
   wave.className = 'page-wave';
   const ring = document.createElement('div');
   ring.className = 'page-wave__ring';
-  wave.append(ring);
-  document.body.append(wave);
+  document.body.append(wave, ring); // siblings: the wave's scale must not shrink the ring
 
   const ease = 'cubic-bezier(0.65, 0, 0.35, 1)';
-  const sweep = wave.animate(
-    [{ clipPath: `circle(0px at ${cx}px ${cy}px)` }, { clipPath: `circle(${R}px at ${cx}px ${cy}px)` }],
-    { duration: 650, easing: ease, fill: 'forwards' },
-  );
+  // Both circles are sized once around the link; only their scale (and the
+  // ring's opacity) animate, so the phone's graphics chip does the work.
+  const D = R * 2;
+  const RD = D + 60;
+  Object.assign(wave.style, { left: `${cx - R}px`, top: `${cy - R}px`, width: `${D}px`, height: `${D}px` });
+  Object.assign(ring.style, { left: `${cx - RD / 2}px`, top: `${cy - RD / 2}px`, width: `${RD}px`, height: `${RD}px` });
+  const sweep = wave.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 650, easing: ease, fill: 'forwards' });
   ring.animate(
     [
-      { left: `${cx}px`, top: `${cy}px`, width: '10px', height: '10px', opacity: 0.9 },
-      { left: `${cx}px`, top: `${cy}px`, width: `${R * 2 + 60}px`, height: `${R * 2 + 60}px`, opacity: 0 },
+      { transform: `scale(${10 / RD})`, opacity: 0.9 },
+      { transform: 'scale(1)', opacity: 0 },
     ],
     { duration: 700, easing: ease, fill: 'forwards' },
   );
@@ -88,7 +90,7 @@ function arrive() {
   }
   // html.wave-in (set before first paint in Base.astro) keeps the page blank.
   requestAnimationFrame(() => {
-    const parts = Array.from(document.querySelectorAll<HTMLElement>('body > :not(script):not(.page-wave):not([hidden])'));
+    const parts = Array.from(document.querySelectorAll<HTMLElement>('body > :not(script):not(.page-wave):not(.page-wave__ring):not([hidden])'));
     html.classList.remove('wave-in');
     parts.forEach((el, i) =>
       el.animate([{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' }], {

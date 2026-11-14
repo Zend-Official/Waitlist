@@ -5,7 +5,7 @@ import { T } from '../data/hiw';
 import { PHONE } from '../data/sellers';
 import { SECURITY_SHAPE } from '../data/security';
 import { unit } from './env';
-import { centre, home, mapPath } from './hiw';
+import { centre, ctaUnder, home, layoutTop, mapPath } from './hiw';
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger);
 
@@ -32,6 +32,30 @@ type Ctx = {
   reduce: boolean;
   arrowFrom: SVGPathElement;
 };
+
+/**
+ * Where the Security frame puts the phone, relative to its How it works
+ * spot. Phones: at the design's spot, or lower if needed so it always starts
+ * a clear gap below Join waitlist (which rests under the subtitle, however
+ * many lines that wraps to). Shared with the FAQ, whose card grows from it.
+ */
+export function securityPlace(desktop: boolean, hero: HTMLElement): { x: number; y: number } {
+  const u = unit();
+  if (desktop) return { x: (800 - 742) * u, y: (205 - 265) * u };
+  const phone = hero.querySelector<HTMLElement>('.hiw-phone');
+  let y = (379 - 385) * u; // design: phone top at 379 (layout spot 385)
+  const c = mobileCtaSpot(hero);
+  if (phone && c) y = Math.max(y, c.bottom + 32 * u - layoutTop(phone, hero));
+  return { x: (82 - 5) * u, y };
+}
+
+/** Phones: where Join waitlist rests in the Security frame, 28 units (never
+ *  under 22px) below the subtitle. */
+function mobileCtaSpot(hero: HTMLElement): { y: number; bottom: number } | null {
+  const body = hero.querySelector<HTMLElement>('.sec-body');
+  const cta = hero.querySelector<HTMLElement>('.hiw-cta');
+  return body && cta ? ctaUnder(hero, cta, body, Math.max(28 * unit(), 22)) : null;
+}
 
 export function addSecurity({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cleanup: () => void; onUpdate: (t: number) => void } {
   const q = gsap.utils.selector(hero);
@@ -126,7 +150,7 @@ export function addSecurity({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cl
     };
   };
   // Where the Security frame puts the phone, relative to How it works' spot.
-  const place = () => (desktop ? { x: (800 - 742) * unit(), y: (205 - 265) * unit() } : { x: (82 - 5) * unit(), y: (379 - 360) * unit() });
+  const place = () => securityPlace(desktop, hero);
   tl.set(secureScreen, { autoAlpha: 1 }, S)
     .set(
       phone,
@@ -170,7 +194,7 @@ export function addSecurity({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cl
     tl.to(mobileCta, { autoAlpha: 0, duration: 0.1, ease: 'power1.in' }, S)
       .set(
         mobileCta,
-        { x: () => home(secText).left - home(mobileCta).left, y: () => home(secBody).bottom + Math.max(28 * unit(), 22) - home(mobileCta).top },
+        { x: () => home(secText).left - home(mobileCta).left, y: () => mobileCtaSpot(hero)?.y ?? 0 },
         S + 0.3,
       )
       .fromTo(mobileCta, { scale: 0.85, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.2, ease: 'back.out(2)', immediateRender: false }, S + 0.45);

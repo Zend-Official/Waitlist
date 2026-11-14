@@ -90,7 +90,7 @@ export const SELLER_FRAMES: SellerFrame[] = [
     title: ['Build trust.', 'Get paid'],
     body: 'Buyers trust Zend, so they trust you. Once they confirm their order, you get paid. Its that simple!',
     bubbles: [
-      { kind: 'zend', who: 'Zend', text: 'You’ve been paid for Vox’s bag.', x: 71.9, y: -0.1, green: true },
+      { kind: 'zend', who: 'Zend', text: 'You’ve been paid for Vox’s bag.', x: 71.9, y: -0.1, my: 36, green: true }, // phones: below his face
       { kind: 'them', who: 'Treasure', text: 'Got it! Love the bag. I’ll buy again.', x: 71.9, y: 13.6, my: 15.5 },
     ],
   },

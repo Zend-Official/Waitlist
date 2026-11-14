@@ -61,6 +61,25 @@ export function storyY(t: number): number {
   return Math.round(st.start + (t / tl.duration()) * (st.end - st.start));
 }
 
+/**
+ * How much of frame k -> k+1's scroll actually animates (0..1): its
+ * transition ends early and the rest of that screen of scrolling just rests
+ * on the next frame. Used to page through the moving part only (swipe.ts).
+ */
+export function storyActive(k: number): number {
+  if (!story) return 1;
+  let endT = k;
+  story.tl.getChildren(false, true, true).forEach((c) => {
+    const s = c.startTime();
+    const e = c.endTime();
+    if (!Number.isFinite(e) || s < k - 0.001 || s >= k + 1) return;
+    // (The 0.1s filler that keeps the timeline STORY_END long is not motion.)
+    if (e >= STORY_END - 0.001 && c.duration() <= 0.1001) return;
+    endT = Math.max(endT, Math.min(e, k + 1));
+  });
+  return Math.max(0.25, Math.min(1, endT - k));
+}
+
 /** Story time at the current scroll position. */
 export function storyTime(): number {
   if (!story) return 0;

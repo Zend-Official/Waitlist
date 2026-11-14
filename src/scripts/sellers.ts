@@ -5,7 +5,7 @@ import { T } from '../data/hiw';
 import { PHONE, PIVOTS, SELLER_FRAMES, SELLER_SHAPE } from '../data/sellers';
 import partsJson from '../data/boy-parts.json';
 import { unit } from './env';
-import { home, mapPath } from './hiw';
+import { ctaUnder, home, mapPath } from './hiw';
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger);
 
@@ -174,9 +174,11 @@ export function addSellers({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cle
     S + 0.15,
   );
 
-  // Mobile: Join waitlist sits 28 units under the current subtitle (like the
-  // frame), so it follows when a longer or shorter subtitle comes in.
-  const ctaY = (k: number) => home(texts[k]).bottom + Math.max(28 * unit(), 22) - home(mobileCta).top; // never under 22px
+  // Mobile: Join waitlist sits under the current subtitle as far as the
+  // subtitle is under the heading (the same 22-unit gap, never under 18px),
+  // so it follows when a longer or shorter subtitle comes in. Measured from
+  // the layout, not mid-animation.
+  const ctaY = (k: number) => ctaUnder(hero, mobileCta, texts[k], Math.max(22 * unit(), 18)).y;
 
   // Mobile: Join waitlist moves under the subtitle, on the left.
   if (!desktop) {
@@ -238,6 +240,9 @@ export function addSellers({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cle
 
   // ---------- Idle: blink, breathe, tilt the head, move the arms ----------
   const idle: gsap.core.Animation[] = [];
+  // Each pose's own loops: only the pose on screen runs (0..3 = frames 1..4).
+  const byPose: gsap.core.Animation[][] = [[], [], [], []];
+  const POSES = ['worried', 'wink', 'packing', 'peace'] as const;
   // Cheap (a few transforms, paused off screen), so it runs in lite mode too;
   // only reduced motion turns it off.
   if (!reduce) {
@@ -251,16 +256,17 @@ export function addSellers({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cle
     const sway = (key: string, deg: number, dur: number) => {
       const el = part(key);
       if (!el) return;
-      idle.push(gsap.fromTo(el, { rotation: -deg }, { rotation: deg, transformOrigin: origin(key), duration: dur, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
+      byPose[POSES.indexOf(key.split('-')[0] as (typeof POSES)[number])].push(gsap.fromTo(el, { rotation: -deg }, { rotation: deg, transformOrigin: origin(key), duration: dur, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
     };
     (['worried', 'wink', 'packing', 'peace'] as const).forEach((pose) => {
       // Breathing: a tiny rise of the body from the floor.
+      const k = POSES.indexOf(pose);
       const p = part(`${pose}-body`) ?? part(`${pose}-full`);
-      if (p) idle.push(gsap.fromTo(p, { scaleY: 1 }, { scaleY: 1.014, transformOrigin: '50% 100%', duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
+      if (p) byPose[k].push(gsap.fromTo(p, { scaleY: 1 }, { scaleY: 1.014, transformOrigin: '50% 100%', duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
       // Blinking.
       const eyes = part(`${pose}-eyes`);
       if (eyes) {
-        idle.push(
+        byPose[k].push(
           gsap
             .timeline({ repeat: -1, repeatDelay: 2.6 + Math.random() * 1.4, paused: true })
             .set(eyes, { autoAlpha: 1 }, 0)
@@ -274,21 +280,26 @@ export function addSellers({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cle
     (['worried', 'wink', 'packing', 'peace'] as const).forEach((pose, i) => {
       const el = sell.querySelector<HTMLElement>(`.pose--${pose}`);
       if (!el) return;
-      idle.push(
+      byPose[i].push(
         gsap.fromTo(el, { rotation: -0.9 }, { rotation: 0.9, transformOrigin: '50% 98%', duration: 2.1 + i * 0.15, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }),
       );
     });
     sway('packing-head', 1.6, 2.1);
     const bag = part('packing-arms-bag');
-    if (bag) idle.push(gsap.fromTo(bag, { y: 0 }, { y: '3%', duration: 0.6, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
+    if (bag) byPose[2].push(gsap.fromTo(bag, { y: 0 }, { y: '3%', duration: 0.6, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
   }
-  let idling = false;
+  byPose.forEach((list) => idle.push(...list));
+  // Only while the boy is on screen (he slides out as Security starts), and
+  // only the pose he's in: frame k's pose from its start until the next.
+  let playing = -1;
   const onUpdate = (t: number) => {
-    // Only while the boy is on screen.
-    const on = t > S + 0.3;
-    if (on === idling) return;
-    idling = on;
-    idle.forEach((a) => (on ? a.play() : a.pause()));
+    const on = t > S + 0.3 && t < T.sell4 + 0.35;
+    // Pose k+1 takes over 0.22 into each change (T.sell1.. + 0.22).
+    const k = on ? Math.max(0, Math.min(3, Math.floor(t - S - 0.22))) : -1;
+    if (k === playing) return;
+    if (playing >= 0) byPose[playing].forEach((a) => a.pause());
+    playing = k;
+    if (k >= 0) byPose[k].forEach((a) => a.play());
   };
 
   return {

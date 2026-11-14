@@ -58,6 +58,12 @@ function setup(): ((btn: HTMLElement) => void) | null {
   let isOpen = false;
   let busy = false;
   const reduce = () => prefersReducedMotion();
+  // Touch screens: never focus a text box for the visitor (the keyboard
+  // would pop up and push the form around); they tap a box themselves.
+  const touch = () => window.matchMedia('(pointer: coarse)').matches;
+  const focusBox = (i: HTMLInputElement) => {
+    if (!touch()) i.focus({ preventScroll: true });
+  };
 
   // ---------- Errors (friendly hints) ----------
   const showError = (msg: string, field?: HTMLInputElement) => {
@@ -65,7 +71,7 @@ function setup(): ((btn: HTMLElement) => void) | null {
     [nameIn, phoneIn, emailIn].forEach((i) => i.removeAttribute('aria-invalid'));
     if (field) {
       field.setAttribute('aria-invalid', 'true');
-      field.focus();
+      focusBox(field);
     }
   };
   [nameIn, phoneIn, emailIn].forEach((i) =>
@@ -85,7 +91,7 @@ function setup(): ((btn: HTMLElement) => void) | null {
     b.addEventListener('click', () => {
       applyMode(b.dataset.mode as Mode);
       showError('');
-      (mode === 'phone' ? phoneIn : emailIn).focus();
+      focusBox(mode === 'phone' ? phoneIn : emailIn);
     }),
   );
 
@@ -120,22 +126,18 @@ function setup(): ((btn: HTMLElement) => void) | null {
     getLenis()?.stop();
 
     const d = reduce() ? 0.01 : 1;
-    openTl = gsap.timeline({ onComplete: () => nameIn.focus({ preventScroll: true }) });
+    // Desktop: straight into the name box. Phones: the ✕ takes focus (for
+    // keyboards and screen readers) and no keyboard pops up.
+    openTl = gsap.timeline({ onComplete: () => (touch() ? close.focus({ preventScroll: true }) : focusBox(nameIn)) });
+    // Size and place the circles once (centred on the button); from here on
+    // only their scale and opacity change.
+    gsap.set(wave, { x: cx - R, y: cy - R, width: R * 2, height: R * 2, transformOrigin: '50% 50%' });
+    gsap.set(ring, { x: cx - R - 30, y: cy - R - 30, width: R * 2 + 60, height: R * 2 + 60, transformOrigin: '50% 50%' });
     openTl
-      .fromTo(
-        wave,
-        { clipPath: `circle(0px at ${cx}px ${cy}px)` },
-        { clipPath: `circle(${R}px at ${cx}px ${cy}px)`, duration: 0.75 * d, ease: 'power2.inOut' },
-        0,
-      )
-      .fromTo(
-        ring,
-        { x: cx, y: cy, xPercent: -50, yPercent: -50, width: 10, height: 10, opacity: 0.9 },
-        { width: R * 2 + 60, height: R * 2 + 60, opacity: 0, duration: 0.8 * d, ease: 'power2.inOut' },
-        0,
-      )
+      .fromTo(wave, { scale: 0 }, { scale: 1, duration: 0.75 * d, ease: 'power2.inOut' }, 0)
+      .fromTo(ring, { scale: 10 / (R * 2 + 60), opacity: 0.9 }, { scale: 1, opacity: 0, duration: 0.8 * d, ease: 'power2.inOut' }, 0)
       .fromTo(close, { scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.3 * d, ease: 'back.out(2)' }, 0.5 * d)
-      .fromTo(items, { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.05 * d, duration: 0.4 * d, ease: 'power3.out' }, 0.45 * d);
+      .fromTo(items, { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.05 * d, duration: 0.4 * d, ease: 'power3.out' }, 0.72 * d); // once the wave has covered the screen
   };
 
   // ---------- Close: everything plays back to the button ----------

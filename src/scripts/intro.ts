@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { isMobileLayout, unit } from './env';
+import { isLite, isMobileLayout, unit } from './env';
 import { resumeTarget } from './restore';
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger);
@@ -184,7 +184,9 @@ function runLoader({ fresh, place }: LoaderOpts): boolean {
 
     // ...while the dark screen opens: into the arrow on screen (Hero 1 or
     // Hero 2), or lifting away below the hero.
-    if (onHero) {
+    // Slow phones ("lite"): the screen lifts away instead (a plain slide is
+    // far cheaper than reshaping a full-screen shape every frame).
+    if (onHero && !isLite()) {
       // Into the arrow on screen (Hero 1, Hero 2, or How it works' dark
       // shape). The cover keeps its one dark colour throughout.
       tl.to(coverPath, { morphSVG: { shape: arrowPath, shapeIndex: 'auto' }, duration: 0.9, ease: 'power3.inOut' }, GO).set(

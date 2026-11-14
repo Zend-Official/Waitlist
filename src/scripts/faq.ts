@@ -5,6 +5,7 @@ import { T } from '../data/hiw';
 import { FAQ_SHAPE } from '../data/faq';
 import { prefersReducedMotion, unit } from './env';
 import { home, mapPath } from './hiw';
+import { securityPlace } from './security';
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger);
 
@@ -32,9 +33,6 @@ type Ctx = {
   arrowFrom: SVGPathElement;
 };
 
-/** Where the Security frame left the phone, relative to its layout box. */
-const phoneOffset = (desktop: boolean) =>
-  desktop ? { x: (800 - 742) * unit(), y: (205 - 265) * unit() } : { x: (82 - 5) * unit(), y: (379 - 360) * unit() };
 
 export function addFaq({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cleanup: () => void } {
   const q = gsap.utils.selector(hero);
@@ -90,7 +88,7 @@ export function addFaq({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cleanup
   const cardR = desktop ? 90 : 46;
   const fromPhone = () => {
     const p = home(phone);
-    const o = phoneOffset(desktop);
+    const o = securityPlace(desktop, hero);
     // The card's own layout box (minus any offsets currently applied).
     const b = home(card);
     const v = (k: string) => parseFloat(getComputedStyle(card).getPropertyValue(k)) || 0;
@@ -132,7 +130,7 @@ export function addFaq({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cleanup
     list.removeAttribute('data-ready');
     gsap.to([...items, talk], { autoAlpha: 0, duration: 0.15, overwrite: true, onComplete: () => void (list.scrollTop = 0) });
   };
-  tl.to({}, { duration: 0.01, onStart: showChips, onReverseComplete: hideChips }, S + 0.4);
+  tl.to({}, { duration: 0.01, onStart: showChips, onReverseComplete: hideChips }, S + 0.5); // once the card has landed
 
   return {
     cleanup: () => {

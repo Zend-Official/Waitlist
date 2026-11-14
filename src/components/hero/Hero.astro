@@ -509,6 +509,114 @@ const scenes = [
   }
 
   /* ---------- Intro ---------- */
+  /* ---------- The girl's idle life (hero-girl.ts switches it on) ----------
+     Plain CSS animations of transform-style properties and opacity: the
+     browser runs them on the graphics chip, with no script per frame. Only
+     the girl on screen animates (html[data-girl]); reduced motion: none.
+     Timings match the earlier GSAP loops. step-end holds each value until
+     the next keyframe (on/off swaps, like a flip-book). */
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hero 1, worried: a slow sigh now and then, the frown deepens, blinks, types. */
+    :global(html[data-girl='1']) .girl--h1 .girl__art {
+      transform-origin: 70% 100%;
+      animation: girl-sigh 5.9s 1s infinite;
+    }
+    :global(html[data-girl='1']) .girl--h1 :global(.girl__part--frown) {
+      animation: girl-frown 5.75s 2.2s infinite;
+    }
+    :global(html[data-girl='1']) .girl--h1 :global(.girl__part--eyes) {
+      animation: girl-blink 6.4s 0.8s infinite step-end;
+    }
+    :global(html[data-girl='1']) .girl--h1 :global(.girl__part--tap-left) {
+      animation: girl-tap-left 3.605s 0.4s infinite step-end;
+    }
+    :global(html[data-girl='1']) .girl--h1 :global(.girl__part--tap-right) {
+      animation: girl-tap-right 3.605s 0.4s infinite step-end;
+    }
+    /* Hero 2, happy: breathing and a little head bob (its own property each,
+       so they combine), blinks, types. Pivot at her hips (mirrored on phones). */
+    :global(html[data-girl='2']) .girl--h2 .girl__art {
+      transform-origin: 35% 80%;
+      animation:
+        girl-breathe 2.1s infinite alternate ease-in-out,
+        girl-bob 3.42s infinite;
+    }
+    @media (max-aspect-ratio: 5/4) {
+      :global(html[data-girl='2']) .girl--h2 .girl__art {
+        transform-origin: 65% 80%;
+      }
+    }
+    :global(html[data-girl='2']) .girl--h2 :global(.girl__part--eyes) {
+      animation: girl-blink 6.4s 1.6s infinite step-end;
+    }
+    :global(html[data-girl='2']) .girl--h2 :global(.girl__part--tap-left) {
+      animation: girl-tap-left 3.605s 0.9s infinite step-end;
+    }
+    :global(html[data-girl='2']) .girl--h2 :global(.girl__part--tap-right) {
+      animation: girl-tap-right 3.605s 0.9s infinite step-end;
+    }
+  }
+  @keyframes girl-sigh {
+    0% { translate: 0 0; scale: 1 1; animation-timing-function: ease-in-out; }
+    18.64% { translate: 0 -0.9%; scale: 1 1.012; animation-timing-function: ease-in-out; } /* breathe in */
+    40.68% { translate: 0 0.5%; scale: 1 0.994; animation-timing-function: ease-out; } /* sigh out, sink */
+    55.93%, 100% { translate: 0 0; scale: 1 1; }
+  }
+  @keyframes girl-frown {
+    0% { opacity: 0; animation-timing-function: ease-out; }
+    4.35%, 20% { opacity: 1; animation-timing-function: ease-in; }
+    26.96%, 100% { opacity: 0; }
+  }
+  @keyframes girl-blink {
+    0% { opacity: 1; }
+    2.03% { opacity: 0; }
+    45.31% { opacity: 1; }
+    47.34% { opacity: 0; }
+    50.78% { opacity: 1; }
+    52.66% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes girl-tap-left {
+    0% { opacity: 1; }
+    2.91% { opacity: 0; }
+    7.77% { opacity: 1; }
+    10.68% { opacity: 0; }
+    19.42% { opacity: 1; }
+    22.33% { opacity: 0; }
+    27.18% { opacity: 1; }
+    30.10% { opacity: 0; }
+    44.94% { opacity: 1; }
+    47.85% { opacity: 0; }
+    52.70% { opacity: 1; }
+    55.62% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes girl-tap-right {
+    0% { opacity: 0; }
+    3.88% { opacity: 1; }
+    6.80% { opacity: 0; }
+    11.65% { opacity: 1; }
+    14.56% { opacity: 0; }
+    15.53% { opacity: 1; }
+    18.45% { opacity: 0; }
+    23.30% { opacity: 1; }
+    26.21% { opacity: 0; }
+    48.82% { opacity: 1; }
+    51.73% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes girl-breathe {
+    from { scale: 1 1; }
+    to { scale: 1 1.008; }
+  }
+  @keyframes girl-bob {
+    0% { rotate: 0deg; animation-timing-function: ease-in-out; }
+    8.19% { rotate: -0.9deg; animation-timing-function: ease-in-out; }
+    16.37% { rotate: 0.3deg; animation-timing-function: ease-in-out; }
+    23.98% { rotate: -0.7deg; animation-timing-function: ease-out; }
+    35.67%, 100% { rotate: 0deg; }
+  }
+
   /* Loading screen: fixed to the screen (intro.ts moves both to <body> so a
      reload can resume below the hero behind them). */
   .intro-logo {
@@ -520,6 +628,7 @@ const scenes = [
     color: var(--c-white);
     transform: translate(-50%, -50%);
     z-index: 5;
+    will-change: transform; /* its own GPU layer for the flight to the corner */
   }
   /* Same box as Hero 1's arrow (.shape-box), above everything else. */
   .intro-cover {
@@ -531,6 +640,9 @@ const scenes = [
     height: calc(var(--stage-h) * var(--u));
     z-index: 4;
     pointer-events: none;
+    /* Its own layer: the morph into the arrow redraws only this, never the
+       page underneath. */
+    will-change: transform;
   }
   .intro-cover svg {
     position: absolute;
