@@ -599,7 +599,12 @@ const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret }
       box-shadow: none;
       color: var(--c-nav-idle);
     }
-    .rail__btn[aria-current='true'] {
+    /* Night: unselected icons off-white (lilac is for buttons only). */
+    :global([data-theme='dark']) .rail__btn {
+      color: rgb(255 255 255 / 0.72);
+    }
+    .rail__btn[aria-current='true'],
+    :global([data-theme='dark']) .rail__btn[aria-current='true'] {
       background: transparent;
       color: var(--c-nav-active);
     }
