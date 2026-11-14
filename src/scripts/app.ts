@@ -18,6 +18,7 @@ import { initDeferredImages } from './images';
 import { initPageWave } from './page-wave';
 import { initHeroGirl } from './hero-girl';
 import { initJoinedCount } from './joined';
+import { initSwipePaging } from './swipe';
 
 export function initApp() {
   // ScrollTrigger re-measures everything on these events. Skip its
@@ -37,6 +38,7 @@ export function initApp() {
     () => {
       initNav();
       initFaqCard();
+      initSwipePaging(); // phones: one swipe = one frame
     },
     () => initFooter(),
     () => {

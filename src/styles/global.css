@@ -102,7 +102,9 @@
    device setting). The arrow (#320262), the text on it, and the tick stay. */
 :root[data-theme="dark"] {
   --c-bg: #0b0015;
-  --c-text: #c38ff8;
+  /* Night: lilac is for buttons only; subtitles and body text are off-white
+     (same as the footer's), phone edges a solid off-white. */
+  --c-text: rgb(255 255 255 / 0.72);
   --c-hdr-on-bg: #ffffff;
   --c-accent: #c38ff8;
   --c-btn-text: #10001f;
@@ -119,7 +121,7 @@
   --c-bar-bg: #140027;
   --c-bar-active: #c38ff8;
   --c-hiw-shape: #320262;
-  --c-phone: #c38ff8;
+  --c-phone: #e8e6eb;
   --c-badge-text: #10001f;
   --c-hiw-head: #ffffff;
   --c-screen: #1e1e1e;
