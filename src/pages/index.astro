@@ -7,6 +7,7 @@ import Sellers from '../components/sellers/Sellers.astro';
 import Security from '../components/security/Security.astro';
 import Faq from '../components/faq/Faq.astro';
 import Footer from '../components/footer/Footer.astro';
+import FlowTimeline from '../components/flow/FlowTimeline.astro';
 import Waitlist from '../components/Waitlist.astro';
 ---
 
@@ -20,6 +21,8 @@ import Waitlist from '../components/Waitlist.astro';
       <Security />
       <Faq />
     </Hero>
+    <!-- Phones in scroll mode: put in place by stack.ts (hidden otherwise). -->
+    <FlowTimeline />
 
     <Footer />
   </main>

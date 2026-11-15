@@ -8,6 +8,9 @@ import { initPageWave } from './page-wave';
  * the first tap), the floating scrollbar and the offline cache.
  */
 export function initPage(): void {
+  // "© … Zend. All rights reserved.": always this year.
+  document.querySelectorAll('[data-year]').forEach((n) => (n.textContent = String(new Date().getFullYear())));
+
   initPageWave();
   initTheme();
   document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) => b.addEventListener('click', () => toggleTheme()));

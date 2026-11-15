@@ -241,53 +241,9 @@ export function addSellers({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cle
   // ---------- Idle: blink, breathe, tilt the head, move the arms ----------
   const idle: gsap.core.Animation[] = [];
   // Each pose's own loops: only the pose on screen runs (0..3 = frames 1..4).
-  const byPose: gsap.core.Animation[][] = [[], [], [], []];
-  const POSES = ['worried', 'wink', 'packing', 'peace'] as const;
   // Cheap (a few transforms, paused off screen), so it runs in lite mode too;
   // only reduced motion turns it off.
-  if (!reduce) {
-    const part = (key: string) => sell.querySelector<HTMLElement>(`[data-part="${key}"]`);
-    const origin = (key: string) => {
-      const pv = PIVOTS[key];
-      const p = PARTS[`boy-${key}`];
-      if (!pv || !p) return '50% 100%';
-      return `${(((pv[0] - p.x) / p.w) * 100).toFixed(1)}% ${(((pv[1] - p.y) / p.h) * 100).toFixed(1)}%`;
-    };
-    const sway = (key: string, deg: number, dur: number) => {
-      const el = part(key);
-      if (!el) return;
-      byPose[POSES.indexOf(key.split('-')[0] as (typeof POSES)[number])].push(gsap.fromTo(el, { rotation: -deg }, { rotation: deg, transformOrigin: origin(key), duration: dur, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
-    };
-    (['worried', 'wink', 'packing', 'peace'] as const).forEach((pose) => {
-      // Breathing: a tiny rise of the body from the floor.
-      const k = POSES.indexOf(pose);
-      const p = part(`${pose}-body`) ?? part(`${pose}-full`);
-      if (p) byPose[k].push(gsap.fromTo(p, { scaleY: 1 }, { scaleY: 1.014, transformOrigin: '50% 100%', duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
-      // Blinking.
-      const eyes = part(`${pose}-eyes`);
-      if (eyes) {
-        byPose[k].push(
-          gsap
-            .timeline({ repeat: -1, repeatDelay: 2.6 + Math.random() * 1.4, paused: true })
-            .set(eyes, { autoAlpha: 1 }, 0)
-            .set(eyes, { autoAlpha: 0 }, 0.13),
-        );
-      }
-    });
-    // Worried, wink and peace are single seamless pictures (see POSE_LAYERS),
-    // so each pose rocks gently as a whole and he breathes and blinks. In the
-    // packing pose the head tilts a little and the bag pushes into the box.
-    (['worried', 'wink', 'packing', 'peace'] as const).forEach((pose, i) => {
-      const el = sell.querySelector<HTMLElement>(`.pose--${pose}`);
-      if (!el) return;
-      byPose[i].push(
-        gsap.fromTo(el, { rotation: -0.9 }, { rotation: 0.9, transformOrigin: '50% 98%', duration: 2.1 + i * 0.15, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }),
-      );
-    });
-    sway('packing-head', 1.6, 2.1);
-    const bag = part('packing-arms-bag');
-    if (bag) byPose[2].push(gsap.fromTo(bag, { y: 0 }, { y: '3%', duration: 0.6, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
-  }
+  const byPose: gsap.core.Animation[][] = reduce ? [[], [], [], []] : boyIdle(sell);
   byPose.forEach((list) => idle.push(...list));
   // Only while the boy is on screen (he slides out as Security starts), and
   // only the pose he's in: frame k's pose from its start until the next.
@@ -311,4 +267,58 @@ export function addSellers({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cle
       gsap.set(sell, { clearProps: 'visibility' });
     },
   };
+}
+
+/**
+ * The boy's idle life (blink, breathe, a gentle rock; in the packing pose the
+ * head tilts and the bag pushes into the box), for every pose found under
+ * `root`. Returns paused loops, one list per pose (0..3 = frames 1..4): play
+ * only the pose on screen. Used by the story and by the phones' seller section
+ * (stack.ts), whose copies of the frames each hold one pose.
+ */
+export function boyIdle(root: HTMLElement): gsap.core.Animation[][] {
+  const byPose: gsap.core.Animation[][] = [[], [], [], []];
+  const POSES = ['worried', 'wink', 'packing', 'peace'] as const;
+  const part = (key: string) => root.querySelector<HTMLElement>(`[data-part="${key}"]`);
+  const origin = (key: string) => {
+    const pv = PIVOTS[key];
+    const p = PARTS[`boy-${key}`];
+    if (!pv || !p) return '50% 100%';
+    return `${(((pv[0] - p.x) / p.w) * 100).toFixed(1)}% ${(((pv[1] - p.y) / p.h) * 100).toFixed(1)}%`;
+  };
+  const sway = (key: string, deg: number, dur: number) => {
+    const el = part(key);
+    if (!el) return;
+    byPose[POSES.indexOf(key.split('-')[0] as (typeof POSES)[number])].push(gsap.fromTo(el, { rotation: -deg }, { rotation: deg, transformOrigin: origin(key), duration: dur, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
+  };
+  (['worried', 'wink', 'packing', 'peace'] as const).forEach((pose) => {
+    // Breathing: a tiny rise of the body from the floor.
+    const k = POSES.indexOf(pose);
+    const p = part(`${pose}-body`) ?? part(`${pose}-full`);
+    if (p) byPose[k].push(gsap.fromTo(p, { scaleY: 1 }, { scaleY: 1.014, transformOrigin: '50% 100%', duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
+    // Blinking.
+    const eyes = part(`${pose}-eyes`);
+    if (eyes) {
+      byPose[k].push(
+        gsap
+          .timeline({ repeat: -1, repeatDelay: 2.6 + Math.random() * 1.4, paused: true })
+          .set(eyes, { autoAlpha: 1 }, 0)
+          .set(eyes, { autoAlpha: 0 }, 0.13),
+      );
+    }
+  });
+  // Worried, wink and peace are single seamless pictures (see POSE_LAYERS),
+  // so each pose rocks gently as a whole and he breathes and blinks. In the
+  // packing pose the head tilts a little and the bag pushes into the box.
+  (['worried', 'wink', 'packing', 'peace'] as const).forEach((pose, i) => {
+    const el = root.querySelector<HTMLElement>(`.pose--${pose}`);
+    if (!el) return;
+    byPose[i].push(
+      gsap.fromTo(el, { rotation: -0.9 }, { rotation: 0.9, transformOrigin: '50% 98%', duration: 2.1 + i * 0.15, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }),
+    );
+  });
+  sway('packing-head', 1.6, 2.1);
+  const bag = part('packing-arms-bag');
+  if (bag) byPose[2].push(gsap.fromTo(bag, { y: 0 }, { y: '3%', duration: 0.6, ease: 'sine.inOut', repeat: -1, yoyo: true, paused: true }));
+  return byPose;
 }

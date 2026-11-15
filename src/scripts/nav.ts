@@ -30,14 +30,16 @@ export function initNav() {
       label.textContent = text;
       return;
     }
+    // The old name slides up and fades out; the new one slides up into place.
     gsap.to(label, {
       autoAlpha: 0,
-      y: -6,
-      duration: 0.15,
+      y: -14,
+      duration: 0.22,
+      ease: 'power2.in',
       overwrite: true,
       onComplete: () => {
         label.textContent = labelTarget;
-        gsap.fromTo(label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.2, overwrite: true });
+        gsap.fromTo(label, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.32, ease: 'power3.out', overwrite: true });
       },
     });
   };

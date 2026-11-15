@@ -422,3 +422,122 @@ body {
 html.wave-in body > * {
   opacity: 0;
 }
+
+/* ---------- Phones, scroll mode (stack.ts, html[data-flow]) ---------- */
+/* Nothing may widen the page sideways (artwork overhangs the screen edge on
+   purpose; a wider page would push the bar and buttons off the right edge).
+   clip, not hidden: it keeps the page's own scrolling and sticky parts. */
+@media (max-aspect-ratio: 5/4) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+/* Hero 1's girl is held on screen over the sections scrolling up under her
+   (until she turns into Hero 2's girl). */
+html[data-flow] .hero:not(.hero--frame) .girl--h1 {
+  z-index: 6;
+}
+/* Sellers: one background with the four frames on top; stack.ts pins it
+   and slides the frames sideways as you scroll. */
+html[data-flow] .flow-sell {
+  position: relative;
+  height: 100lvh;
+  overflow: hidden; /* the frames slide in and out at the sides */
+}
+html[data-flow] .flow-sell > .flow-sell__bg,
+html[data-flow] .flow-sell > .flow-sell__frame {
+  position: absolute;
+  inset: 0;
+}
+html[data-flow] .flow-sell > .flow-sell__frame {
+  z-index: 1;
+  background: transparent;
+}
+/* Its pattern fades in from the top left corner (fading out toward the
+   bottom right). */
+html[data-flow] .flow-sell__bg .pattern {
+  transform: none;
+  -webkit-mask-image: linear-gradient(135deg, #000 0%, transparent 64%);
+  mask-image: linear-gradient(135deg, #000 0%, transparent 64%);
+}
+/* Sellers' chat messages type in (stack.ts): dots first, then the message. */
+html[data-flow] .bub__dots {
+  position: absolute;
+  left: 0.9em;
+  top: 50%;
+  translate: 0 -50%;
+  display: none;
+  gap: 4px;
+  align-items: center;
+}
+html[data-flow] .bub__dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  animation: bub-dot 1s infinite ease-in-out;
+}
+html[data-flow] .bub__dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+html[data-flow] .bub__dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes bub-dot {
+  0%, 60%, 100% { opacity: 0.35; transform: none; }
+  30% { opacity: 0.9; transform: translateY(-3px); }
+}
+html[data-flow] .bub[data-typing] .bub__dots {
+  display: flex;
+}
+html[data-flow] .bub[data-typing] > :not(.bub__dots) {
+  visibility: hidden; /* (keeps the bubble's size) */
+}
+/* FAQ: the questions stacked on the page, no phone frame around them. */
+html[data-flow] .flow-faq {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px 72px;
+  background: var(--c-bg);
+}
+/* The brand pattern behind the questions, fading in from the top right
+   corner (fading out toward the bottom left). */
+html[data-flow] .flow-faq__pattern {
+  position: absolute;
+  inset: 0;
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  -webkit-mask-image: linear-gradient(225deg, #000 0%, transparent 60%);
+  mask-image: linear-gradient(225deg, #000 0%, transparent 60%);
+}
+html[data-flow] .flow-faq > :not(.flow-faq__pattern) {
+  position: relative;
+  z-index: 1;
+}
+html[data-flow] .flow-faq .faq-title {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0 0 28px;
+}
+html[data-flow] .flow-faq .faq-list {
+  position: static;
+  inset: auto;
+  overflow: visible;
+  padding: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+  content-visibility: visible;
+  pointer-events: auto;
+}
+html[data-flow] .flow-faq .faq-talk {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+  margin-top: 32px;
+  translate: none;
+}

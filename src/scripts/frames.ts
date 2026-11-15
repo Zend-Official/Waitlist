@@ -2,7 +2,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { prefersReducedMotion } from './env';
 import { scrollToY } from './smooth';
-import { storyY } from './hero';
+import { isStacked, storyY } from './hero';
 import { isMobileLayout } from './env';
 import { T } from '../data/hiw';
 
@@ -137,6 +137,9 @@ export function goToFrame(id: string): void {
   const section = document.getElementById(id === 'faq' ? 'security' : id);
   if (!section) return;
   current?.tl.progress(1); // finish any entrance still playing
+
+  // Stacked phones: glide to the section; it plays its own entrance.
+  if (isStacked()) return scrollToY(frameY(id, section));
 
   // Jump to the section's first frame.
   const y = frameY(id, section);

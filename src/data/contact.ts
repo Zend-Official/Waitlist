@@ -12,6 +12,6 @@ export const FB_DOMAIN_VERIFICATION = 'asi9lykxtj8gd3mxh1uwh42vsrsv12';
 
 export const CONTACT_EMAIL = 'officialzendit@gmail.com';
 export const SOCIALS = {
-  instagram: { handle: '@zend.hq', url: 'https://www.instagram.com/zend.hq' },
+  instagram: { handle: '@zend.hq', url: 'https://www.instagram.com/zend.hq/' },
   x: { handle: '@Zend_Hq', url: 'https://x.com/Zend_Hq' },
 } as const;

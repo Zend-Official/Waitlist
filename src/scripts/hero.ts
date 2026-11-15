@@ -2,6 +2,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
 import { MQ_DESKTOP, MQ_MOBILE, prefersReducedMotion, token, unit } from './env';
+import { buildStack, type Stack } from './stack';
 import { getLenis, scrollToY } from './smooth';
 import { addHowItWorks } from './hiw';
 import { addSellers } from './sellers';
@@ -47,7 +48,11 @@ function mapPathX(d: string, fx: (x: number) => number): string {
   });
 }
 
-let story: { tl: gsap.core.Timeline; st: ScrollTrigger } | null = null;
+let story: { tl: gsap.core.Timeline; st: ScrollTrigger | null } | null = null;
+/** Phones: the story as a page you scroll normally (stack.ts). */
+let stack: Stack | null = null;
+/** True on phones, where the story is a page you scroll normally. */
+export const isStacked = () => stack !== null;
 /** Resolves once every scroll scene has joined the story timeline. */
 export let scenesReady: Promise<void> = Promise.resolve();
 /** Story time to return to after a layout switch rebuilds the story. */
@@ -56,7 +61,15 @@ let lastT: number | null = null;
 
 /** Scroll position where the story timeline is at time t (see T in data/hiw.ts). */
 export function storyY(t: number): number {
-  if (!story) return 0;
+  if (stack) {
+    // Stacked: frame k is section k; in between, part way down to the next.
+    const tops = stack.tops();
+    const k = Math.max(0, Math.min(STORY_END, Math.floor(t)));
+    const a = tops[k];
+    const b = tops[k + 1] ?? a + window.innerHeight;
+    return Math.round(a + (t - k) * (b - a));
+  }
+  if (!story?.st) return 0;
   const { tl, st } = story;
   return Math.round(st.start + (t / tl.duration()) * (st.end - st.start));
 }
@@ -82,7 +95,18 @@ export function storyActive(k: number): number {
 
 /** Story time at the current scroll position. */
 export function storyTime(): number {
-  if (!story) return 0;
+  if (stack) {
+    const tops = stack.tops();
+    const y = window.scrollY;
+    for (let k = tops.length - 1; k >= 0; k--) {
+      if (y >= tops[k]) {
+        const b = tops[k + 1] ?? tops[k] + window.innerHeight;
+        return Math.min(STORY_END, k + (y - tops[k]) / Math.max(1, b - tops[k]));
+      }
+    }
+    return 0;
+  }
+  if (!story?.st) return 0;
   const { tl, st } = story;
   const p = (window.scrollY - st.start) / (st.end - st.start || 1);
   return Math.max(0, Math.min(1, p)) * tl.duration();
@@ -100,6 +124,8 @@ export function initHeroScroll() {
     const lenis = getLenis();
     const reduce = prefersReducedMotion();
     const success = token('--c-success');
+    // Phones: the story as a page you scroll normally (stack.ts).
+    const stacked = !desktop;
 
     const layout = desktop ? '.only-desktop' : '.only-mobile';
     const arrowFrom = q(`.scene--h1 .shape${layout} path`)[0] as SVGPathElement;
@@ -243,8 +269,9 @@ export function initHeroScroll() {
         if (!alive) return resolve();
         const step = steps.shift();
         if (!step) {
+          if (stacked) stack = buildStack(hero, tl, header); // the frames as sections
           // Put the story at the current scroll position now that it's whole.
-          tl.progress(tl.progress());
+          else tl.progress(tl.progress());
           return resolve();
         }
         step();
@@ -256,7 +283,9 @@ export function initHeroScroll() {
     // Keep the timeline exactly STORY_END long: one unit per screen of scrolling.
     tl.to({}, { duration: 0.1 }, STORY_END - 0.1);
 
-    const st = ScrollTrigger.create({
+    const st = stacked
+      ? null
+      : ScrollTrigger.create({
       trigger: hero,
       start: 'top top',
       end: `+=${STORY_END * 100}%`,
@@ -273,6 +302,7 @@ export function initHeroScroll() {
         lastT = y > 0 && y <= self.end + 2 ? self.progress * STORY_END : null;
       },
     });
+    if (stacked) tl.pause(0); // not driven by the scroll: stays at the hero
 
     story = { tl, st };
     // Switching layout (phone <-> desktop) rebuilds the story: go back to the
@@ -292,7 +322,9 @@ export function initHeroScroll() {
     return () => {
       // Return to this frame after the layout switch (the note kept as you
       // scroll; by now the old scroll length may already be gone).
-      resumeT = lastT;
+      resumeT = stack ? (window.scrollY > 0 && window.scrollY <= storyY(STORY_END) + 2 ? storyTime() : null) : lastT;
+      stack?.cleanup();
+      stack = null;
       ScrollTrigger.removeEventListener('refreshInit', updateMorphTarget);
       morphTarget.remove();
       alive = false;

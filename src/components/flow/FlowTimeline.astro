@@ -1,0 +1,384 @@
+---
+// Phones in scroll mode (stack.ts puts it in place; hidden otherwise):
+// How it works for buyers.
+//  - A heading band: "How to buy with Zend" on the dark purple, with the
+//    faded brand pattern behind it and a lilac shape at the right edge.
+//  - Three steps down a solid line: a numbered circle, the step's name, and
+//    under it a subtle chat bubble showing what you see in the chat. Each
+//    bubble "types" in (dots first) as it comes into view (stack.ts).
+//  - Join waitlist at the end.
+// The band's art, as designed (assets/svgs/HeadingZendOutlinePatternWhite.svg
+// and heading-lilac.svg, copied unchanged).
+import BandPattern from '../../assets/svgs/band-pattern.svg';
+import BandLilac from '../../assets/svgs/band-lilac.svg';
+import Bag from '../../assets/icons/bag.svg';
+import Chevron from '../../assets/icons/chevron-right.svg';
+import DoubleCheck from '../../assets/icons/double-check.svg';
+import ExternalLink from '../../assets/icons/external-link.svg';
+---
+
+<section class="flow-tl" aria-labelledby="flow-tl-title" hidden>
+  <div class="flow-tl__band">
+    <BandPattern class="flow-tl__pattern" preserveAspectRatio="xMidYMid slice" aria-hidden="true" />
+    <BandLilac class="flow-tl__shape" aria-hidden="true" />
+    <h2 id="flow-tl-title" class="flow-tl__title">How to buy<br />with Zend</h2>
+  </div>
+
+  <ol class="flow-tl__list">
+
+    <li class="flow-tl__step">
+      <span class="flow-tl__num" aria-hidden="true">1</span>
+      <span class="flow-tl__seg" aria-hidden="true"></span>
+      <div class="flow-tl__body">
+        <h3 class="flow-tl__name">Open the seller’s link</h3>
+        <div class="flow-tl__bubble" data-type>
+          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="flow-tl__msg flow-tl__msg--row">
+            <span class="flow-tl__thumb"><Bag class="flow-tl__icon" aria-hidden="true" /></span>
+            <span class="flow-tl__item"><span>Vox bag</span><b>N150,000</b></span>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="flow-tl__step">
+      <span class="flow-tl__num" aria-hidden="true">2</span>
+      <span class="flow-tl__seg" aria-hidden="true"></span>
+      <div class="flow-tl__body">
+        <h3 class="flow-tl__name">Pay with Zend</h3>
+        <div class="flow-tl__bubble" data-type>
+          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="flow-tl__msg">
+            <span class="flow-tl__msg--row">
+              <span class="flow-tl__thumb"><Bag class="flow-tl__icon" aria-hidden="true" /></span>
+              <span class="flow-tl__item"><span>Vox bag</span><b>N150,000</b></span>
+            </span>
+            <span class="flow-tl__link"><ExternalLink class="flow-tl__link-icon" aria-hidden="true" />Pay N150,000</span>
+          </div>
+        </div>
+        <div class="flow-tl__bubble" data-type data-type-delay="1">
+          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="flow-tl__msg flow-tl__msg--row">
+            <span class="flow-tl__paid"><DoubleCheck aria-hidden="true" /></span>
+            <span>You have paid. The seller hasn’t been paid yet</span>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="flow-tl__step">
+      <span class="flow-tl__num" aria-hidden="true">3</span>
+      <div class="flow-tl__body">
+        <h3 class="flow-tl__name">Check your order</h3>
+        <div class="flow-tl__bubble" data-type>
+          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="flow-tl__msg">
+            <span>Did you receive your order?</span>
+            <span class="flow-tl__link"><ExternalLink class="flow-tl__link-icon" aria-hidden="true" />Yes i got it.</span>
+            <span class="flow-tl__link"><ExternalLink class="flow-tl__link-icon" aria-hidden="true" />Report a problem</span>
+          </div>
+        </div>
+        <div class="flow-tl__bubble" data-type data-type-delay="1">
+          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="flow-tl__msg flow-tl__msg--row">
+            <span class="flow-tl__paid"><DoubleCheck aria-hidden="true" /></span>
+            <span>Thank you! Vox bags has been paid</span>
+          </div>
+        </div>
+        <!-- Join waitlist, as one more message: pops in once the last one is sent (stack.ts). -->
+        <a class="flow-tl__bubble flow-tl__join" href="#" data-waitlist data-join>
+          <span>Join waitlist</span>
+          <Chevron class="flow-tl__join-icon" aria-hidden="true" />
+        </a>
+      </div>
+    </li>
+  </ol>
+
+</section>
+
+<style>
+  .flow-tl {
+    /* Subtle chat bubbles: a soft lilac by day, a lighter dark at night. */
+    --tl-bubble: #f3eafd;
+    --tl-pill: #ffffff;
+    --tl-tick: #8c25fa;
+    --tl-line: #c9a6f2;
+    position: relative;
+    padding: 0 0 24px; /* (the band starts right where Hero 2 ends) */
+    background: var(--c-bg);
+    color: var(--c-text);
+  }
+  :global([data-theme='dark']) .flow-tl {
+    --tl-bubble: #231436;
+    --tl-pill: rgb(255 255 255 / 0.08);
+    --tl-tick: rgb(255 255 255 / 0.85);
+    --tl-line: rgb(255 255 255 / 0.22);
+  }
+  .flow-tl[hidden] {
+    display: none;
+  }
+
+  /* ---------- Heading band ---------- */
+  /* The band keeps the design's 312 x 134 proportions: the faint outline
+     pattern fills it, the lilac shape sits at its right edge, full height. */
+  .flow-tl__band {
+    position: relative;
+    display: flex;
+    align-items: center;
+    aspect-ratio: 312 / 134;
+    overflow: hidden;
+    padding: 0 20px;
+    box-sizing: border-box;
+    background: #320262;
+  }
+  /* Faded like the sections' pattern: hidden toward the top right, showing
+     toward the bottom left (same fade as Pattern.astro). */
+  .flow-tl__pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: linear-gradient(234deg, transparent 36%, #000 100%);
+    mask-image: linear-gradient(234deg, transparent 36%, #000 100%);
+  }
+  .flow-tl__shape {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 141 / 134;
+  }
+  .flow-tl__title {
+    position: relative;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 8.4vw, 34px);
+    line-height: 1.08;
+    color: #ffffff;
+  }
+
+  /* ---------- Steps ---------- */
+  .flow-tl__list {
+    position: relative;
+    margin: 36px 20px 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  /* The thread: a solid line from each number down to the next (none after
+     the last); it draws itself down as you scroll (stack.ts). */
+  .flow-tl__seg {
+    position: absolute;
+    left: 16px; /* through the circles' centres */
+    top: 34px; /* from under this circle */
+    bottom: -30px; /* to the next circle (the gap between steps) */
+    width: 2px;
+    border-radius: 2px;
+    background: var(--tl-line);
+    transform-origin: 50% 0;
+  }
+  .flow-tl__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  /* Each number in a solid circle. */
+  .flow-tl__num {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #320262;
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1;
+  }
+  :global([data-theme='dark']) .flow-tl__num {
+    background: var(--c-phone);
+    color: var(--c-badge-text);
+  }
+  .flow-tl__name {
+    margin: 0 0 12px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.25;
+    color: var(--c-hiw-head);
+  }
+  /* A chat bubble with a little tail at its bottom left. */
+  .flow-tl__bubble {
+    position: relative;
+    min-height: 48px;
+    padding: 14px 16px;
+    border-radius: 18px 18px 18px 6px;
+    background: var(--tl-bubble);
+    color: var(--c-hiw-head);
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .flow-tl__bubble::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    background: var(--tl-bubble);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+  :global([data-theme='dark']) .flow-tl__bubble,
+  :global([data-theme='dark']) .flow-tl__name {
+    color: rgb(255 255 255 / 0.85);
+  }
+  :global([data-theme='dark']) .flow-tl__name {
+    color: #ffffff;
+  }
+  .flow-tl__msg {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .flow-tl__msg--row {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .flow-tl__body > .flow-tl__bubble + .flow-tl__bubble {
+    margin-top: 10px;
+  }
+  .flow-tl__msg--row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  /* The product's picture box, as in the chat. */
+  .flow-tl__thumb {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--tl-pill);
+  }
+  .flow-tl__icon {
+    width: 20px;
+    height: 20px;
+  }
+  .flow-tl__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .flow-tl__item b {
+    font-weight: 700;
+  }
+  /* A tappable line in the message, as in the chat. */
+  .flow-tl__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--tl-line);
+    font-weight: 500;
+  }
+  .flow-tl__link-icon {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+  /* Money moved: always the green circle with the double tick. */
+  .flow-tl__paid {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--c-success);
+    color: #ffffff;
+  }
+  .flow-tl__paid :global(svg) {
+    width: 15px;
+    height: 15px;
+  }
+  /* A second message waits out of sight until it's its turn to type. */
+  .flow-tl__bubble[data-type-delay]:not([data-typing]):not([data-typed]) {
+    visibility: hidden !important;
+  }
+  /* Typing: three dots first, then the message (stack.ts sets data-typing
+     as the bubble comes into view, and data-typed once it has "sent"). */
+  /* The dots sit over the message's space, so the bubble is its full size
+     from the start (nothing below it moves when the message appears). */
+  .flow-tl__dots {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    translate: 0 -50%;
+    display: none;
+    gap: 5px;
+    align-items: center;
+    height: 20px;
+  }
+  .flow-tl__dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.4;
+    animation: tl-dot 1s infinite ease-in-out;
+  }
+  .flow-tl__dots i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .flow-tl__dots i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes tl-dot {
+    0%, 60%, 100% { opacity: 0.35; transform: none; }
+    30% { opacity: 0.9; transform: translateY(-3px); }
+  }
+  .flow-tl__bubble[data-typing] .flow-tl__dots {
+    display: flex;
+  }
+  .flow-tl__bubble[data-typing] .flow-tl__msg,
+  .flow-tl__bubble[data-type]:not([data-typed]):not([data-typing]) .flow-tl__msg {
+    visibility: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flow-tl__bubble .flow-tl__msg {
+      visibility: visible !important;
+    }
+    .flow-tl__bubble .flow-tl__dots {
+      display: none !important;
+    }
+  }
+
+  /* Join waitlist as a message: a bubble the same size as the others, in the
+     button colour. */
+  .flow-tl__join {
+    --tl-bubble: var(--c-accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: var(--c-btn-text) !important;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .flow-tl__join-icon {
+    width: 16px;
+    height: 16px;
+  }
+</style>

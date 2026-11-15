@@ -11,6 +11,26 @@ import Sun from '../assets/icons/sun.svg';
 import Moon from '../assets/icons/moon.svg';
 import Chevron from '../assets/icons/chevron-right.svg';
 import { NAV_ITEMS } from '../data/nav';
+import { FOOTER_COLUMNS } from '../data/footer';
+import UserIcon from '../assets/icons/user.svg';
+import UserPlus from '../assets/icons/user-plus.svg';
+import PrivacyIcon from '../assets/icons/privacy.svg';
+
+// Phones: the menu's links, each with a small icon before it.
+const SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>';
+const DOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>';
+const MENU_ICONS: Record<string, any> = {
+  Home: Home,
+  'How it works': How,
+  'For sellers': UserIcon,
+  Security: SHIELD,
+  FAQ: Faq,
+  'Contact us': Support,
+  Partners: UserPlus,
+  'Privacy policy': PrivacyIcon,
+  'Terms & conditions': DOC,
+};
+const MENU_LINKS = [{ label: 'Home', href: '/#home', frame: 'home' }, ...FOOTER_COLUMNS.flatMap((c) => c.links)];
 
 const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret } as const;
 ---
@@ -33,6 +53,10 @@ const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret }
       <Moon class="hdr-theme__icon theme-icon theme-icon--moon" aria-hidden="true" />
       <Sun class="hdr-theme__icon theme-icon theme-icon--sun" aria-hidden="true" />
     </button>
+    <!-- Phones: the menu (mobile-menu.ts). Three lines that turn into an ✕. -->
+    <button class="hdr-menu nav-in" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="m-menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
   <!-- Join waitlist in the pill (desktop). It has a fixed spot so the hero's
        button can glide exactly onto it; shown by hiw.ts. -->
@@ -41,6 +65,36 @@ const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret }
     <Chevron class="btn__icon" aria-hidden="true" />
   </a>
 </header>
+
+<!-- Phones: the menu panel, sliding in from the right (mobile-menu.ts). -->
+<div class="m-menu" id="m-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="m-menu__card">
+    <nav class="m-menu__nav" aria-label="Menu">
+      {MENU_LINKS.map((l) => {
+        const Icon = MENU_ICONS[l.label];
+        return (
+          <a class="m-menu__link" href={l.href} data-menu-frame={l.frame}>
+            <span class="m-menu__icon" aria-hidden="true">
+              {typeof Icon === 'string' ? <Fragment set:html={Icon} /> : Icon ? <Icon /> : null}
+            </span>
+            {l.label}
+          </a>
+        );
+      })}
+    </nav>
+    <a class="btn m-menu__cta" href="#" data-waitlist>
+      <span class="li">Join waitlist</span>
+      <Chevron class="btn__icon" aria-hidden="true" />
+    </a>
+    <div class="m-menu__end">
+      <span class="m-menu__brand"><Logo class="m-menu__mark" aria-hidden="true" />Zend</span>
+      <span class="m-menu__copy">© <span data-year>2026</span> Zend. All rights reserved.</span>
+      <p class="m-menu__about">
+        Zend helps you buy and sell on social media without fear, starting with WhatsApp. We keep the money safe until the buyer gets their order.
+      </p>
+    </div>
+  </div>
+</div>
 
 <nav class="rail" aria-label="Sections">
   <ul class="rail__list">
@@ -314,9 +368,8 @@ const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret }
     }
   }
   @media (max-aspect-ratio: 5/4) {
-    .bar,
     .bar__cta {
-      display: none !important; /* desktop only */
+      display: none !important; /* desktop only (phones: the bar has no button) */
     }
   }
   /* Hidden while the loading screen is up (intro.ts). */
@@ -619,6 +672,334 @@ const ICONS = { home: Home, how: How, faq: Faq, support: Support, caret: Caret }
     .rail__btn--caret .rail__icon {
       width: calc(8 * var(--u));
       height: calc(17 * var(--u));
+    }
+  }
+
+  /* ---------- Phones: top bar and menu ----------
+     At the top of the home page the bar is flat: the logo at the left end,
+     and at the right the section label, the day/night toggle and the menu.
+     Scrolled down a little (html[data-float], mobile-menu.ts) it becomes a
+     floating pill in the bar colour. The section icons are gone (the menu
+     has every link); "go to the end" floats bottom right. Opening the menu
+     squeezes the bar into a circle round the menu button, which turns into
+     an ✕, while the menu slides in from the right. The bar fades away as
+     the footer comes in (the footer has its own toggle). */
+  @media (max-aspect-ratio: 5/4) {
+    .site-header .bar {
+      left: 10px;
+      right: 10px;
+      top: 10px;
+      width: auto;
+      height: 54px;
+      translate: none;
+      scale: 1;
+      opacity: 0;
+      visibility: visible;
+      box-shadow: var(--rail-shadow, 0 10px 30px rgb(20 0 39 / 0.1));
+      transition:
+        opacity 0.35s ease,
+        right 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    :global(html[data-float]) .site-header .bar,
+    :global(html[data-menu]) .site-header .bar {
+      opacity: calc(1 - var(--foot-k));
+    }
+    /* Menu open: the bar squeezes into a circle at its left end, round the ✕. */
+    :global(html[data-menu]) .site-header .bar {
+      right: calc(100% - 64px);
+      opacity: 1;
+    }
+    .site-header .brand {
+      display: flex;
+      align-items: center;
+      left: 20px;
+      top: 32px;
+      translate: 0 -50%;
+      opacity: calc(1 - var(--foot-k));
+      transition:
+        left 0.35s ease,
+        top 0.35s ease,
+        opacity 0.25s ease,
+        color 0.3s;
+    }
+    .site-header .brand__mark {
+      position: static;
+      width: 27px;
+      height: 21px;
+    }
+    .site-header .brand__word {
+      --fs-max: 15px;
+      position: static;
+      translate: none;
+      margin-left: 7px;
+      font-weight: 700;
+    }
+    .site-header .hdr-end {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      right: 10px;
+      top: 32px;
+      translate: 0 -50%;
+      opacity: calc(1 - var(--foot-k));
+      transition:
+        right 0.35s ease,
+        top 0.35s ease;
+    }
+    :global(html[data-float]) .site-header .brand,
+    :global(html[data-menu]) .site-header .brand {
+      left: 24px; /* 14px inside the pill, same as the menu box on the right */
+      top: 37px; /* the pill's centre */
+      color: var(--c-hdr-on-bg);
+    }
+    :global(html[data-float]) .site-header .hdr-end,
+    :global(html[data-menu]) .site-header .hdr-end {
+      right: 24px; /* 14px inside the pill, same as the logo on the left */
+      top: 37px;
+    }
+    /* The section label: the bar's dark text colour (no highlight). */
+    .site-header .section-label {
+      --fs-max: 16px;
+      position: static;
+      translate: none;
+      margin-right: 2px;
+    }
+    :global(html[data-float]) .site-header .section-label {
+      color: var(--c-hdr-on-bg);
+    }
+    /* Toggle and menu: each in its own small rounded square with a faint
+       tint (white at night, the dark purple by day). */
+    .site-header .hdr-theme,
+    .site-header .hdr-menu {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: rgb(50 2 98 / 0.06);
+    }
+    :global([data-theme='dark']) .site-header .hdr-theme,
+    :global([data-theme='dark']) .site-header .hdr-menu {
+      background: rgb(255 255 255 / 0.08);
+    }
+    .site-header .hdr-theme {
+      color: inherit;
+    }
+    :global(html[data-float]) .site-header .hdr-theme,
+    :global(html[data-float]) .site-header .hdr-menu {
+      color: var(--c-hdr-on-bg);
+    }
+    /* Menu open: only the ✕ stays in the circle. */
+    :global(html[data-menu]) .site-header .brand,
+    :global(html[data-menu]) .site-header .section-label,
+    :global(html[data-menu]) .site-header .hdr-theme {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .hdr-menu {
+      position: relative;
+      display: grid;
+      place-items: center;
+      border: 0;
+      padding: 0;
+      color: var(--hdr-label);
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    /* Menu open: the ✕ travels with the bar to the circle at the left end
+       (its centre 37px from the left; the button's is 24 + 16 from the right),
+       and loses its square (the circle is its frame now). */
+    :global(html[data-menu]) .site-header .hdr-menu {
+      color: var(--c-hdr-on-bg);
+      background: transparent;
+      transform: translateX(calc(77px - 100vw));
+    }
+    /* The menu icon, from the user's SVG (horizontally_mirrored.svg): three
+       rounded bars, lined up on the right, 211 : 141 : 83 long, 24 thick,
+       71 apart (in its 301-wide drawing), here 20px wide. They cross into
+       an ✕ when the menu is open. */
+    .hdr-menu span {
+      position: absolute;
+      right: 6px;
+      height: 2.3px;
+      border-radius: 2px;
+      background: currentColor;
+      transition:
+        transform 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+        width 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+        opacity 0.2s;
+    }
+    .hdr-menu span:nth-child(1) {
+      width: 20px;
+      transform: translateY(-6.7px);
+    }
+    .hdr-menu span:nth-child(2) {
+      width: 13.4px;
+    }
+    .hdr-menu span:nth-child(3) {
+      width: 7.9px;
+      transform: translateY(6.7px);
+    }
+    :global(html[data-menu]) .hdr-menu span:nth-child(1) {
+      width: 20px;
+      transform: rotate(45deg);
+    }
+    :global(html[data-menu]) .hdr-menu span:nth-child(2) {
+      opacity: 0;
+    }
+    :global(html[data-menu]) .hdr-menu span:nth-child(3) {
+      width: 20px;
+      transform: rotate(-45deg);
+    }
+
+    /* The section icons are gone; only "go to the end" stays, floating
+       bottom right (in the footer the "back to top" button takes over). */
+    .rail {
+      left: auto;
+      right: 16px;
+      top: auto;
+      bottom: 16px;
+      width: auto;
+      height: auto;
+      background: transparent;
+      border-radius: 0;
+      scale: none;
+      translate: none;
+      opacity: calc(1 - var(--foot-k));
+    }
+    :global(html[data-foot='on']) .rail,
+    :global(html[data-menu]) .rail {
+      visibility: hidden;
+    }
+    .rail__list {
+      display: block;
+      height: auto;
+      padding: 0;
+      overflow: visible;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .rail__list > li {
+      display: none;
+    }
+    .rail__list > li:has(.rail__btn--caret) {
+      display: block;
+    }
+    .rail .rail__btn--caret {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--c-bar-bg);
+      color: var(--c-nav-idle);
+      box-shadow: var(--rail-shadow, 0 10px 30px rgb(20 0 39 / 0.12));
+    }
+    .rail__btn--caret .rail__icon {
+      width: 7px;
+      height: 14px;
+    }
+
+    /* The menu: the page dims, and a rounded card slides in from the right
+       beside the ✕ circle. */
+    .m-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 49; /* under the bar's ✕ */
+      background: rgb(0 0 0 / 0.6);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .m-menu[hidden] {
+      display: block;
+      visibility: hidden;
+    }
+    :global(html[data-menu]) .m-menu {
+      opacity: 1;
+    }
+    .m-menu__card {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 80px; /* only the side by the ✕ stands off the edge */
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      padding: 28px 22px 24px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      border-radius: 28px 0 0 28px;
+      background: var(--c-bar-bg);
+      color: var(--c-text);
+      transform: translateX(calc(100% + 20px));
+      transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    :global(html[data-menu]) .m-menu__card {
+      transform: none;
+    }
+    .m-menu__about {
+      margin: 4px 0 0;
+      font-size: 14px;
+      line-height: 1.55;
+      opacity: 0.8;
+    }
+    .m-menu__nav {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .m-menu__link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      color: var(--c-hdr-on-bg);
+      font-size: 16px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .m-menu__icon {
+      display: grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      flex: none;
+    }
+    .m-menu__icon :global(svg) {
+      width: 20px;
+      height: 20px;
+    }
+    .m-menu__cta {
+      align-self: flex-start;
+    }
+    .m-menu__end {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 12px;
+    }
+    .m-menu__brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--c-hdr-on-bg);
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .m-menu__mark {
+      width: 26px;
+      height: 20px;
+    }
+    .m-menu__copy {
+      font-size: 13px;
+      opacity: 0.7;
+    }
+  }
+  @media not all and (max-aspect-ratio: 5/4) {
+    .hdr-menu,
+    .m-menu {
+      display: none;
     }
   }
 </style>

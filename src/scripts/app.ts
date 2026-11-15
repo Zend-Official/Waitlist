@@ -1,5 +1,5 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { storyTime, storyY } from './hero';
+import { isStacked, scenesReady, storyTime, storyY } from './hero';
 import { STORY_END, T } from '../data/hiw';
 import { HASH_FRAMES } from '../data/footer';
 import { scrollToY } from './smooth';
@@ -18,7 +18,7 @@ import { initDeferredImages } from './images';
 import { initPageWave } from './page-wave';
 import { initHeroGirl } from './hero-girl';
 import { initJoinedCount } from './joined';
-import { initSwipePaging } from './swipe';
+import { initMobileMenu } from './mobile-menu';
 
 export function initApp() {
   // ScrollTrigger re-measures everything on these events. Skip its
@@ -26,6 +26,8 @@ export function initApp() {
   // and it would repeat on the page's load event anyway (each pass is costly
   // on slow phones).
   ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,load,resize' });
+  // "© … Zend. All rights reserved.": always this year.
+  document.querySelectorAll('[data-year]').forEach((n) => (n.textContent = String(new Date().getFullYear())));
   initDeferredImages(); // first: hero images only, the rest after first scroll
   initPageWave();
   initTheme();
@@ -37,8 +39,8 @@ export function initApp() {
   const later = [
     () => {
       initNav();
+      initMobileMenu(); // phones: flat bar -> pill, and the menu
       initFaqCard();
-      initSwipePaging(); // phones: one swipe = one frame
     },
     () => initFooter(),
     () => {
@@ -77,7 +79,9 @@ export function initApp() {
   if (frame) (window as unknown as { __zendResume?: number }).__zendResume = storyY(T[frame]);
   // Reload resumes at its frame behind the loading screen, which waits for it.
   playIntro(initRestore());
-  setTimeout(runLater, 0);
+  // (After the scenes exist: on stacked phones that includes the frame
+  // sections, which the FAQ, nav and joined count also look at.)
+  scenesReady.then(() => setTimeout(runLater, 0));
 
   // Re-measure once fonts and images have settled.
   // (ScrollTrigger already re-measures on the page's load event by itself, so
@@ -100,8 +104,10 @@ export function initApp() {
   // on a different frame; remember the story time instead and go back to it.
   let keepT: number | null = null;
   ScrollTrigger.addEventListener('refreshInit', () => {
-    // Only while inside the story (past its end, e.g. the footer, pixels are fine).
-    const inStory = window.scrollY > 0 && window.scrollY <= storyY(STORY_END) + 2;
+    // Only while inside the pinned story (past its end, e.g. the footer,
+    // pixels are fine; phones scroll a normal page, where moving the scroll
+    // would feel like a snap).
+    const inStory = !isStacked() && window.scrollY > 0 && window.scrollY <= storyY(STORY_END) + 2;
     keepT = inStory ? storyTime() : null;
   });
   ScrollTrigger.addEventListener('refresh', () => {

@@ -150,8 +150,12 @@ export function addFaq({ tl, hero, desktop, reduce, arrowFrom }: Ctx): { cleanup
  *   closes the others; tapping an open one closes it.
  */
 export function initFaqCard(): void {
-  const list = document.querySelector<HTMLElement>('.faq-list');
-  if (!list) return;
+  // Every list not set up yet (stacked phones have a copy of the FAQ too).
+  document.querySelectorAll<HTMLElement>('.faq-list:not([data-bound])').forEach(setupList);
+}
+
+function setupList(list: HTMLElement): void {
+  list.dataset.bound = '';
   const items = Array.from(list.querySelectorAll<HTMLElement>('.faq-item'));
 
   const fades = () => {

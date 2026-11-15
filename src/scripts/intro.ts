@@ -163,7 +163,8 @@ function runLoader({ fresh, place }: LoaderOpts): boolean {
 
   function buildExit() {
     const heroSt = ScrollTrigger.getAll().find((st) => st.pin === hero);
-    const onHero = !heroSt || window.scrollY <= heroSt.end + 2;
+    // (Stacked phones: no pin; on the hero while it's the section on screen.)
+    const onHero = heroSt ? window.scrollY <= heroSt.end + 2 : window.scrollY < hero.offsetHeight / 2;
 
     // 2. The logo flies to the corner (taking on the header logo's colour,
     //    which is purple over a white page on Hero 2).

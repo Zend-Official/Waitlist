@@ -15,14 +15,10 @@ export const frame = () => (isMobileLayout() ? { w: 402, h: 874 } : { w: 1728, h
 /** Current size of one design unit (1 Figma px) in CSS px — mirrors --u in global.css. */
 export function unit(): number {
   const f = frame();
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const w = hero?.offsetWidth ?? window.innerWidth;
-  const h = hero?.offsetHeight ?? window.innerHeight;
+  // The stage (100svh), like --u: the hero box itself is 100lvh so its
+  // background fills the screen when a phone's address bar slides away.
+  const stage = document.querySelector<HTMLElement>('.hero__stage') ?? document.querySelector<HTMLElement>('.hero');
+  const w = stage?.offsetWidth ?? window.innerWidth;
+  const h = stage?.offsetHeight ?? window.innerHeight;
   return Math.min(w / f.w, h / f.h);
-}
-
-/** How much the arrow is stretched sideways beyond the frame (it spans the screen width). */
-export function stretch(): { x: number } {
-  const hero = document.querySelector<HTMLElement>('.hero');
-  return { x: (hero?.offsetWidth ?? 0) / (frame().w * unit()) };
 }
