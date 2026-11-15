@@ -461,6 +461,16 @@ html[data-flow] .flow-sell__bg .pattern {
   -webkit-mask-image: linear-gradient(135deg, #000 0%, transparent 64%);
   mask-image: linear-gradient(135deg, #000 0%, transparent 64%);
 }
+/* Sellers' pager dots: a vertical column at the left edge, halfway down. */
+html[data-flow] .flow-sell__bg .sell-pager {
+  left: 14px;
+  top: 50%;
+  width: auto;
+  height: auto;
+  translate: 0 -50%;
+  flex-direction: column;
+  gap: 10px;
+}
 /* Sellers' chat messages type in (stack.ts): dots first, then the message. */
 html[data-flow] .bub__dots {
   position: absolute;
