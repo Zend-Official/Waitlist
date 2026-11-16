@@ -1,6 +1,6 @@
 import { T } from '../data/hiw';
 import { prefersReducedMotion } from './env';
-import { storyY } from './hero';
+import { isStacked, storyY } from './hero';
 
 /**
  * The hero girl is alive while she's on screen:
@@ -32,6 +32,30 @@ export function initHeroGirl(): void {
   // Start once the loading intro has finished (not underneath it: on slow
   // phones every animation frame during the intro is expensive).
   const start = () => {
+    // Phones (the page scrolls normally): native, an IntersectionObserver
+    // with a line across the middle of the screen; the girl whose hero
+    // section is on that line animates.
+    if (isStacked()) {
+      const [h1, h2] = Array.from(document.querySelectorAll<HTMLElement>('.hero'));
+      const on = new Set<string>();
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            const k = e.target === h1 ? '1' : '2';
+            if (e.isIntersecting) on.add(k);
+            else on.delete(k);
+          });
+          const now = on.has('1') ? '1' : on.has('2') ? '2' : '';
+          if (now) html.dataset.girl = now;
+          else delete html.dataset.girl;
+        },
+        { rootMargin: '-50% 0px -50% 0px' },
+      );
+      if (h1) io.observe(h1);
+      if (h2) io.observe(h2);
+      return;
+    }
+    // Desktop: the pinned story (its scroll positions are frames, not sections).
     window.addEventListener('scroll', check, { passive: true });
     check();
   };

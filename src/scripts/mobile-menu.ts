@@ -18,14 +18,16 @@ export function initMobileMenu(): void {
   const mobile = () => window.matchMedia(MQ_MOBILE).matches;
 
   // ---------- Flat at the top, a pill once scrolled ----------
-  const float = () => {
-    const on = window.scrollY > 24;
-    if (on === html.hasAttribute('data-float')) return;
-    if (on) html.dataset.float = '';
-    else delete html.dataset.float;
-  };
-  window.addEventListener('scroll', float, { passive: true });
-  float();
+  // Native: an IntersectionObserver watches an invisible 24px marker at the
+  // very top of the page; once it has scrolled out of view, the bar floats.
+  const marker = document.createElement('div');
+  marker.setAttribute('aria-hidden', 'true');
+  marker.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:24px;pointer-events:none;visibility:hidden';
+  document.body.prepend(marker);
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) delete html.dataset.float;
+    else html.dataset.float = '';
+  }).observe(marker);
 
   // ---------- Open / close ----------
   let hideTimer = 0;

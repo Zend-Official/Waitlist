@@ -4,13 +4,12 @@
 //  - A heading band: "How to buy with Zend" on the dark purple, with the
 //    faded brand pattern behind it and a lilac shape at the right edge.
 //  - Three steps down a solid line: a numbered circle, the step's name, and
-//    under it a subtle chat bubble showing what you see in the chat. Each
-//    bubble "types" in (dots first) as it comes into view (stack.ts).
+//    under it a subtle chat bubble showing what you see in the chat. The
+//    bubbles slide in as they come into view (stack.ts).
 //  - Join waitlist at the end.
-// The band's art, as designed (assets/svgs/HeadingZendOutlinePatternWhite.svg
-// and heading-lilac.svg, copied unchanged).
+// The band's pattern, as designed (assets/svgs/HeadingZendOutlinePatternWhite.svg,
+// copied unchanged).
 import BandPattern from '../../assets/svgs/band-pattern.svg';
-import BandLilac from '../../assets/svgs/band-lilac.svg';
 import Bag from '../../assets/icons/bag.svg';
 import Chevron from '../../assets/icons/chevron-right.svg';
 import DoubleCheck from '../../assets/icons/double-check.svg';
@@ -20,7 +19,6 @@ import ExternalLink from '../../assets/icons/external-link.svg';
 <section class="flow-tl" aria-labelledby="flow-tl-title" hidden>
   <div class="flow-tl__band">
     <BandPattern class="flow-tl__pattern" preserveAspectRatio="xMidYMid slice" aria-hidden="true" />
-    <BandLilac class="flow-tl__shape" aria-hidden="true" />
     <h2 id="flow-tl-title" class="flow-tl__title">How to buy<br />with Zend</h2>
   </div>
 
@@ -31,8 +29,7 @@ import ExternalLink from '../../assets/icons/external-link.svg';
       <span class="flow-tl__seg" aria-hidden="true"></span>
       <div class="flow-tl__body">
         <h3 class="flow-tl__name">Open the seller’s link</h3>
-        <div class="flow-tl__bubble" data-type>
-          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="flow-tl__bubble">
           <div class="flow-tl__msg flow-tl__msg--row">
             <span class="flow-tl__thumb"><Bag class="flow-tl__icon" aria-hidden="true" /></span>
             <span class="flow-tl__item"><span>Vox bag</span><b>N150,000</b></span>
@@ -46,8 +43,7 @@ import ExternalLink from '../../assets/icons/external-link.svg';
       <span class="flow-tl__seg" aria-hidden="true"></span>
       <div class="flow-tl__body">
         <h3 class="flow-tl__name">Pay with Zend</h3>
-        <div class="flow-tl__bubble" data-type>
-          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="flow-tl__bubble">
           <div class="flow-tl__msg">
             <span class="flow-tl__msg--row">
               <span class="flow-tl__thumb"><Bag class="flow-tl__icon" aria-hidden="true" /></span>
@@ -56,8 +52,7 @@ import ExternalLink from '../../assets/icons/external-link.svg';
             <span class="flow-tl__link"><ExternalLink class="flow-tl__link-icon" aria-hidden="true" />Pay N150,000</span>
           </div>
         </div>
-        <div class="flow-tl__bubble" data-type data-type-delay="1">
-          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="flow-tl__bubble">
           <div class="flow-tl__msg flow-tl__msg--row">
             <span class="flow-tl__paid"><DoubleCheck aria-hidden="true" /></span>
             <span>You have paid. The seller hasn’t been paid yet</span>
@@ -70,23 +65,21 @@ import ExternalLink from '../../assets/icons/external-link.svg';
       <span class="flow-tl__num" aria-hidden="true">3</span>
       <div class="flow-tl__body">
         <h3 class="flow-tl__name">Check your order</h3>
-        <div class="flow-tl__bubble" data-type>
-          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="flow-tl__bubble">
           <div class="flow-tl__msg">
             <span>Did you receive your order?</span>
             <span class="flow-tl__link"><ExternalLink class="flow-tl__link-icon" aria-hidden="true" />Yes i got it.</span>
             <span class="flow-tl__link"><ExternalLink class="flow-tl__link-icon" aria-hidden="true" />Report a problem</span>
           </div>
         </div>
-        <div class="flow-tl__bubble" data-type data-type-delay="1">
-          <span class="flow-tl__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="flow-tl__bubble">
           <div class="flow-tl__msg flow-tl__msg--row">
             <span class="flow-tl__paid"><DoubleCheck aria-hidden="true" /></span>
             <span>Thank you! Vox bags has been paid</span>
           </div>
         </div>
-        <!-- Join waitlist, as one more message: pops in once the last one is sent (stack.ts). -->
-        <a class="flow-tl__bubble flow-tl__join" href="#" data-waitlist data-join>
+        <!-- Join waitlist, as one more message. -->
+        <a class="flow-tl__bubble flow-tl__join" href="#" data-waitlist>
           <span>Join waitlist</span>
           <Chevron class="flow-tl__join-icon" aria-hidden="true" />
         </a>
@@ -119,8 +112,8 @@ import ExternalLink from '../../assets/icons/external-link.svg';
   }
 
   /* ---------- Heading band ---------- */
-  /* The band keeps the design's 312 x 134 proportions: the faint outline
-     pattern fills it, the lilac shape sits at its right edge, full height. */
+  /* The band keeps the design's 312 x 134 proportions, in the page's own
+     background colour, with the faint outline pattern behind the heading. */
   .flow-tl__band {
     position: relative;
     display: flex;
@@ -129,7 +122,7 @@ import ExternalLink from '../../assets/icons/external-link.svg';
     overflow: hidden;
     padding: 0 20px;
     box-sizing: border-box;
-    background: #320262;
+    background: var(--c-bg);
   }
   /* Faded like the sections' pattern: hidden toward the top right, showing
      toward the bottom left (same fade as Pattern.astro). */
@@ -141,13 +134,13 @@ import ExternalLink from '../../assets/icons/external-link.svg';
     -webkit-mask-image: linear-gradient(234deg, transparent 36%, #000 100%);
     mask-image: linear-gradient(234deg, transparent 36%, #000 100%);
   }
-  .flow-tl__shape {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: auto;
-    aspect-ratio: 141 / 134;
+  /* The file draws its outlines in white (at 5%), which shows on the night
+     background; by day they're drawn in the sections' pattern colour. */
+  .flow-tl__pattern :global(path[stroke]) {
+    stroke: var(--c-pattern);
+  }
+  :global([data-theme='dark']) .flow-tl__pattern :global(path[stroke]) {
+    stroke: #ffffff;
   }
   .flow-tl__title {
     position: relative;
@@ -156,7 +149,7 @@ import ExternalLink from '../../assets/icons/external-link.svg';
     font-weight: 400;
     font-size: clamp(28px, 8.4vw, 34px);
     line-height: 1.08;
-    color: #ffffff;
+    color: var(--c-hiw-head);
   }
 
   /* ---------- Steps ---------- */
