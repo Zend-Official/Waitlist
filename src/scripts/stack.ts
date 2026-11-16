@@ -222,11 +222,12 @@ export function buildStack(hero: HTMLElement, tl: gsap.core.Timeline, header: HT
       delete b.dataset.say;
     });
   };
+  let boyHalf = false; // frame 1's boy at least half on screen
   const setFrame = (k: number) => {
     frameNow = k;
     dots.forEach((d) => (d.style.opacity = d === dots[k] ? '1' : '0'));
     chats.forEach((_, i) => {
-      if (!i) return;
+      if (!i) return void (k === 0 && boyHalf && typeChat(0));
       if (i <= k) typeChat(i);
       else untypeChat(i);
     });
@@ -248,15 +249,27 @@ export function buildStack(hero: HTMLElement, tl: gsap.core.Timeline, header: HT
     entries.forEach((e) => {
       sellOnScreen = e.isIntersecting;
       playBoy();
-      if (!e.isIntersecting && e.boundingClientRect.top > 0) untypeChat(0);
+      // Off screen (either way): every message is put back, so they all
+      // type in again next time the section comes on screen.
+      if (!e.isIntersecting) {
+        chats.forEach((_, i) => untypeChat(i));
+        frameNow = -1; // (so whichever frame shows next starts its messages)
+      }
     }),
   );
   trackSeen.observe(track);
   // Frame 1's messages: when the boy is half in view.
   const boy1 = sellFrames[0].querySelector<HTMLElement>('.boy-box') ?? sellFrames[0];
-  const boySeen = new IntersectionObserver((entries) => entries.forEach((e) => e.intersectionRatio >= 0.5 && frameNow === 0 && typeChat(0)), {
-    threshold: [0.5],
-  });
+  const boySeen = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((e) => {
+        boyHalf = e.intersectionRatio >= 0.5;
+        if (boyHalf && frameNow <= 0) typeChat(0);
+      }),
+    {
+      threshold: [0, 0.5],
+    },
+  );
   boySeen.observe(boy1);
   observers.push(frameSeen, trackSeen, boySeen);
 
@@ -324,11 +337,29 @@ export function buildStack(hero: HTMLElement, tl: gsap.core.Timeline, header: HT
     fix(girlA, pageTop(girlA), offsetX(girlA), girlA.offsetWidth, h);
     gsap.set(girlA, { top: 'auto', bottom: stageH - pageTop(girlA) - h });
   };
-  // Hero 2's girl, held where she sits once Hero 2 fills the screen.
+  // Hero 2's girl, held where she sits once Hero 2 fills the screen; also
+  // from the BOTTOM of the screen like Hero 1's, so the two line up whether
+  // the address bar is showing or has slid away.
   const holdB = (on: boolean) => {
     if (!girlB) return;
     gsap.set(girlB, { clearProps: LAYOUT });
-    if (on) fix(girlB, pageTop(girlB) - pageTop(hero2), offsetX(girlB), girlB.offsetWidth, girlB.offsetHeight);
+    girlB.style.removeProperty('translate');
+    if (!on) return;
+    const stageH = hero2.querySelector<HTMLElement>('.hero__stage')?.offsetHeight ?? window.innerHeight;
+    const top = pageTop(girlB) - pageTop(hero2);
+    const h = girlB.offsetHeight;
+    fix(girlB, top, offsetX(girlB), girlB.offsetWidth, h);
+    gsap.set(girlB, { top: 'auto', bottom: stageH - top - h });
+  };
+  // Hero 2 has reached the top: let her go exactly where she is on screen
+  // (back in the page, shifted by any gap the address bar left), so she
+  // scrolls on from there without a jump.
+  const releaseB = () => {
+    if (!girlB) return;
+    const held = girlB.getBoundingClientRect().top;
+    holdB(false);
+    const dy = held - girlB.getBoundingClientRect().top;
+    if (Math.abs(dy) > 0.5) girlB.style.translate = `0 ${dy}px`;
   };
   if (girlA && girlB && artA) {
     holdA();
@@ -397,7 +428,7 @@ export function buildStack(hero: HTMLElement, tl: gsap.core.Timeline, header: HT
           holdB(true);
           play();
         },
-        onLeave: () => holdB(false),
+        onLeave: releaseB,
         onEnterBack: () => holdB(true),
         onLeaveBack: back,
       }),
@@ -612,7 +643,10 @@ export function buildStack(hero: HTMLElement, tl: gsap.core.Timeline, header: HT
       morph?.kill();
       const props = 'position,top,bottom,left,width,height,margin,x,y,scale,opacity,visibility,zIndex';
       if (girlA) gsap.set([girlA, artA], { clearProps: props });
-      if (girlB) gsap.set(girlB, { clearProps: props });
+      if (girlB) {
+        gsap.set(girlB, { clearProps: props });
+        girlB.style.removeProperty('translate');
+      }
       chip1?.removeAttribute('data-sfx');
       delete html.dataset.flow;
     },
