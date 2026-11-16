@@ -33,7 +33,7 @@ id zend-stats >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/
 say "Settings in $CONF"
 install -d -m 750 -o root -g zend-stats "$CONF"
 token=$(grep -E '^STATS_READ_TOKEN=' "$BACKEND_ENV" | tail -1 | cut -d= -f2- | sed -E "s/^[\"']//; s/[\"']\$//")
-[[ "$token" =~ ^[!-~]{32,256}$ ]] || die "STATS_READ_TOKEN in $BACKEND_ENV is missing or not 32-256 characters"
+[[ "$token" =~ ^[[:graph:]]{32,256}$ ]] || die "STATS_READ_TOKEN in $BACKEND_ENV is missing or not 32-256 characters"
 umask 027
 cat > "$CONF/env" <<EOF
 STATS_READ_TOKEN=$token
